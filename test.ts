@@ -2,7 +2,18 @@ import _ from 'axios'
 import { Cookie, CookieJar } from 'tough-cookie'
 import axiosCookieJarSupport from 'axios-cookiejar-support'
 import { contestStyle,contestType } from './src/utils/shared'
+import * as fs from 'fs'
 export const jar = new CookieJar();
+// @ts-ignore
+import MarkdownIt from 'markdown-it';
+// @ts-ignore
+import markdownKatex from '@luogu-dev/markdown-it-katex';
+// @ts-ignore
+import markdownItHighlight from 'markdown-it-highlightjs';
+
+// const md = new MarkdownIt().use(markdownKatex).use(markdownItHighlight);
+
+// export default md
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/
 
@@ -142,7 +153,6 @@ export const countDown = (begin: number, end: number) => {
   let day = 0
   let hour = 0
   let minute = 0
-  let second = 0
   let now = Math.floor(new Date().getTime() / 1000)
   let res = ''
   if (now < begin) {
@@ -224,9 +234,9 @@ export const formatTime = (date: Date, fmt: string) => {
 }
 export const getContest = async (cid: string) =>
   axios.get(API.CONTEST(cid))
-    .then(res => res.data.currentData.contest).then(async res => {
-      let html = generateHTML(res)
-      console.log(html)
+    .then(res => res.data.currentData).then(async res => {
+      let a: Array<number> = res.contestProblems
+      console.log(res)
     }).catch(err => { throw err })
 
 const generateHTML = async (contest: any[]) => {
@@ -253,6 +263,8 @@ const generateHTML = async (contest: any[]) => {
       <div><span data-v-8d4c9aee="" class="lfe-caption">比赛时长：${changeTime(+contest['endTime'] - +contest['startTime'])}</span></div>
       <div><span data-v-8d4c9aee="" class="lfe-caption">${countDown(+contest['startTime'],+contest['endTime'])}</span></div>
       <main data-v-27cf0bac="" class="wrapped lfe-body" style="background-color: rgb(239, 239, 239);"><div data-v-6febb0e8="" data-v-27cf0bac="" class="full-container" currenttemplate="ContestShow" currenttheme="[object Object]" style="margin-top: 2em;"><div data-v-796309f8="" class="card padding-default" data-v-6febb0e8=""><div data-v-8feadc5c="" slot="header" data-v-796309f8=""><div data-v-8feadc5c="" class="category"><!----> <ul data-v-8feadc5c="" class="items"><li data-v-8feadc5c="" class="selected" style="background-color: rgb(52, 152, 219); color: rgb(52, 152, 219);"><!----> <a data-v-8feadc5c="" href="#">比赛说明</a></li><li data-v-8feadc5c="" class=""><!----> <a data-v-8feadc5c="" href="#">题目列表</a></li><li data-v-8feadc5c="" class=""><!----> <a data-v-8feadc5c="" href="#">排行榜</a></li></ul></div></div></div>
+      <section data-v-72177bf8="" data-v-6febb0e8="" class="main"><section data-v-6febb0e8=""><div data-v-6febb0e8=""><div data-v-796309f8="" class="card padding-default"><div data-v-5a58a989="" class="marked" data-v-796309f8=""><p>${contest['description']}</p>
+      </div></div></div></section></section>
       </div>
   </body>
 

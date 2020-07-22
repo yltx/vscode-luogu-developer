@@ -151,7 +151,7 @@ export const searchProblem = async (pid: string) =>
 
 export const searchContest = async (cid: string) =>
   axios.get(API.CONTEST(cid))
-    .then(res => res?.data?.currentData?.contest).then(async res => {
+    .then(res => res?.data?.currentData).then(async res => {
       console.log(res)
       if ((res || null) === null) { throw Error('比赛不存在') }
       return res
