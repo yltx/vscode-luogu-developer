@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
-import { parseProblemID } from '../../utils/api'
+import { parseProblemID } from '@/utils/api'
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import { searchProblem, getResourceFilePath } from './api'
-import Problem from '../model/Problem'
-import md from './markdown'
+import { searchProblem, getResourceFilePath } from '@/utils/api'
+import Problem from '@/model/Problem'
+import md from '@/utils/markdown'
 
 export const showProblem = async (pid: string) => {
   try {

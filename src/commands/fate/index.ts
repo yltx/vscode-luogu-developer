@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
-import { getFate, getStatus } from '../../utils/api'
-import { UserStatus } from '../../utils/shared'
+import { getFate, getStatus } from '@/utils/api'
+import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
 

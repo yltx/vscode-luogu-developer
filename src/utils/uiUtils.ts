@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { luoguChannel } from '../views/luoguChannel'
+import { luoguChannel } from '@/views/luoguChannel'
 
 export namespace DialogOptions {
   export const open: vscode.MessageItem = { title: '重试' }

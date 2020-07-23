@@ -1,7 +1,7 @@
 import SuperCommand from '../SuperCommand'
-import { setUID, setClientID, logout, getStatus } from '../../utils/api'
-import { UserStatus } from '../../utils/shared'
-import luoguStatusBar from '../../views/luoguStatusBar'
+import { setUID, setClientID, logout, getStatus } from '@/utils/api'
+import { UserStatus } from '@/utils/shared'
+import luoguStatusBar from '@/views/luoguStatusBar'
 
 import * as vscode from 'vscode'
 import * as fs from 'fs'

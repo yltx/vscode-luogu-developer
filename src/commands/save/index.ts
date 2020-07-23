@@ -3,10 +3,10 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
-import { searchProblem } from '../../utils/api'
-import { DialogType, promptForOpenOutputChannel } from '../../utils/uiUtils'
-import Problem from '../../model/Problem'
-import { generateProblemHTML } from '../../utils/showProblem'
+import { searchProblem } from '@/utils/api'
+import { DialogType, promptForOpenOutputChannel } from '@/utils/uiUtils'
+import Problem from '@/model/Problem'
+import { generateProblemHTML } from '@/utils/showProblem'
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({

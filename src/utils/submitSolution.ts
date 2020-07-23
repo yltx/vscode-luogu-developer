@@ -1,4 +1,4 @@
-import { axios, csrfToken, API } from './api';
+import { axios, csrfToken, API } from '@/utils/api';
 import * as vscode from 'vscode'
 /**
  * @api 提交题解

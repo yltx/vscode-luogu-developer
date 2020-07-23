@@ -1,9 +1,9 @@
 import SuperCommand from '../SuperCommand'
-import { searchContest, getStatus, formatTime, changeTime, countDown } from '../../utils/api'
+import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, countDown } from '@/utils/api'
 import * as vscode from 'vscode'
-import md from '../../utils/markdown'
-import { UserStatus, contestStyle, contestType } from '../../utils/shared'
-import { getUsernameStyle, getUserSvg } from '../../utils/workspaceUtils'
+import md from '@/utils/markdown'
+import { UserStatus, contestStyle, contestType } from '@/utils/shared'
+import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
 
 export default new SuperCommand({
   onCommand: 'contest',

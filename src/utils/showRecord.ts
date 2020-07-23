@@ -1,9 +1,9 @@
 
 import * as vscode from 'vscode'
-import { Languages, resultState } from './shared'
-import { getStatusText, getStatusColor, getScoreColor } from './workspaceUtils';
-import { fetchResult, getResourceFilePath } from './api'
-import { debug } from './debug'
+import { Languages, resultState } from '@/utils/shared'
+import { getStatusText, getStatusColor, getScoreColor } from '@/utils/workspaceUtils';
+import { fetchResult, getResourceFilePath } from '@/utils/api'
+import { debug } from '@/utils/debug'
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 

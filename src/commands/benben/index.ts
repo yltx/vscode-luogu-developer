@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
-import { fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon } from '../../utils/api'
-import { UserStatus } from '../../utils/shared'
+import { fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon } from '@/utils/api'
+import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 

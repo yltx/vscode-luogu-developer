@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { languageList, Languages, ProblemState, stateColor, colorStyle, fileExtention } from './shared';
+import { languageList, Languages, ProblemState, stateColor, colorStyle, fileExtention } from '@/utils/shared';
 
 export function getSelectedLanguage (selected: string = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!): number {
   // @ts-ignore

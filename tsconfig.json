@@ -13,7 +13,11 @@
     "sourceMap": true,
     "rootDir": "src",
     "strict": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+    }
   },
   "exclude": [
     "node_modules/**/*",

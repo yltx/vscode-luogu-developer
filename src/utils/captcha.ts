@@ -1,8 +1,8 @@
-import { debug } from './debug'
-import { captcha, getResourceFilePath } from './api'
+import { debug } from '@/utils/debug'
+import { captcha, getResourceFilePath } from '@/utils/api'
 import * as path from 'path'
 import * as vscode from 'vscode'
-import { promptForOpenOutputChannel, DialogType } from './uiUtils'
+import { promptForOpenOutputChannel, DialogType } from '@/utils/uiUtils'
 
 const generateHTML = (imageEncoded: string) => `
 <!DOCTYPE html>

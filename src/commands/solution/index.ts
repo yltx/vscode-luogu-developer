@@ -1,11 +1,11 @@
 import SuperCommand from '../SuperCommand'
-import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote } from '../../utils/api'
+import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote } from '@/utils/api'
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as os from 'os'
-import md from '../../utils/markdown'
-import { UserStatus } from '../../utils/shared'
-import { getUsernameStyle, getUserSvg } from '../../utils/workspaceUtils'
+import md from '@/utils/markdown'
+import { UserStatus } from '@/utils/shared'
+import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 
 export default new SuperCommand({

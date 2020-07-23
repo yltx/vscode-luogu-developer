@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { Languages } from '../../utils/shared'
+import { Languages } from '@/utils/shared'
 import * as vscode from 'vscode'
 
 export default new SuperCommand({

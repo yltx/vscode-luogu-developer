@@ -1,12 +1,12 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { UserStatus, Languages } from '../../utils/shared'
+import { UserStatus, Languages } from '@/utils/shared'
 import * as os from 'os'
 import * as path from 'path'
-import { getSelectedLanguage, getLanauageFromExt } from '../../utils/workspaceUtils';
-import { getStatus, parseProblemID } from '../../utils/api'
-import { submitSolution } from '../../utils/submitSolution'
-import showRecord from '../../utils/showRecord'
+import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils';
+import { getStatus, parseProblemID } from '@/utils/api'
+import { submitSolution } from '@/utils/submitSolution'
+import showRecord from '@/utils/showRecord'
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);

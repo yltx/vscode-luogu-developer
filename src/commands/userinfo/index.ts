@@ -1,8 +1,8 @@
 import SuperCommand from '../SuperCommand'
-import { UserStatus } from '../../utils/shared'
-import { fetchHomepage } from '../../utils/api'
+import { UserStatus } from '@/utils/shared'
+import { fetchHomepage } from '@/utils/api'
 import * as vscode from 'vscode'
-import luoguStatusBar from '../../views/luoguStatusBar'
+import luoguStatusBar from '@/views/luoguStatusBar'
 
 export default new SuperCommand({
   onCommand: 'userInfo',
