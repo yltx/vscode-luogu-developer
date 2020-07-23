@@ -1,4 +1,6 @@
 # Set default behavior to automatically normalize line endings.
 * text=auto
 
+resources/* linguist-vendored
+
 *.ts filter=shared
