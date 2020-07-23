@@ -9,7 +9,8 @@ export default {
   input: './src/extension.ts',
   output: {
     file: 'dist/extension.js',
-    format: 'cjs'
+    format: 'cjs',
+    sourcemap: true
   },
   external: builtins,
   plugins: [
