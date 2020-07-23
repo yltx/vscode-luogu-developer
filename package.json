@@ -293,7 +293,6 @@
     "vscode:prepublish": "rollup -c",
     "compile": "rollup -c",
     "watch": "rollup -c -w",
-    "postinstall": "node ./node_modules/vscode/bin/install",
     "test": "cross-env jest -i",
     "lint": "tslint -c tslint.json 'src/**/*.ts'",
     "lint--fix": "npm run lint --fix"
@@ -307,6 +306,7 @@
     "@types/marked": "^0.6.1",
     "@types/node": "^7.0.43",
     "@types/request": "^2.48.4",
+    "@types/vscode": "^1.25.0",
     "@types/ws": "^5.1.2",
     "concurrently": "^4.0.1",
     "cross-env": "^5.2.0",
@@ -324,7 +324,7 @@
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2",
     "typescript-eslint-parser": "^21.0.2",
-    "vscode": "^1.1.29"
+    "vscode-test": "^1.1.29"
   },
   "dependencies": {
     "@luogu-dev/markdown-it-katex": "0.0.1",
