@@ -39,9 +39,9 @@ export namespace API {
 export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
-    withCredentials: true,
-    jar
+    withCredentials: true
   })
+  axiosCookieJarSupport(axios)
 
   const defaults = axios.defaults;
   if (!defaults.transformRequest) {
@@ -53,8 +53,13 @@ export const axios = (() => {
     headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'
     return data
   })
+  defaults.timeout = 6000;
 
-  return axiosCookieJarSupport(axios)
+  // It's correct though TypeScript doesn't think so.
+  // Reference: https://www.npmjs.com/package/axios-cookiejar-support#notice-set-default-cookiejar
+  (defaults.jar as any) = jar;
+
+  return axios
 })()
 
 export const setClientID = async (value: string) => new Promise((resolve, reject) => {
@@ -246,8 +251,25 @@ export const getRanklist = async (cid: string, page: number) => {
   axios.get(API.ranklist(cid, page))
     .then(res => res.data).then(async res => {
       console.log(res)
+      return res
+      // console.log(generateRanklist(res))
     }).catch(err => { throw err })
 }
+
+const generateRanklist = async (res: any[]) => {
+  return `
+  <script>
+  function ranklist(users,n) {
+    var i = 0
+    var ans = ''
+    for (;i < n;i++) {
+      ans += ''
+    }
+  }
+  </script>
+  `
+}
+
 const generateHTML = async (res: any[]) => {
   const contest = res['contest']
   return `
