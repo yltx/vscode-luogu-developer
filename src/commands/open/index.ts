@@ -4,6 +4,7 @@ import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
 import { parseProblemID } from '@/utils/api'
+import { globalState } from '@/store/state'
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({
@@ -16,7 +17,7 @@ export default new SuperCommand({
       defaultID = await parseProblemID(path.parse(edtior.document.fileName).base);
     }
     if (defaultID === '') {
-      defaultID = exports.pid
+      defaultID = globalState.pid.value || ''
     }
     const pid = await vscode.window.showInputBox({
       placeHolder: '输入题号',
@@ -26,7 +27,7 @@ export default new SuperCommand({
     if (!pid) {
       return
     }
-    exports.pid = pid;
+    globalState.pid.value = pid;
     const filename = pid + '.html'
     exports.luoguProblems = path.join(exports.luoguProblemPath, filename)
     if (!fs.existsSync(exports.luoguProblems)) {

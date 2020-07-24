@@ -2,6 +2,7 @@ import SuperCommand from '../SuperCommand'
 import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, countDown } from '@/utils/api'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
+import { globalState } from '@/store/state'
 import { UserStatus, contestStyle, contestType } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
 
@@ -9,11 +10,7 @@ export default new SuperCommand({
   onCommand: 'contest',
   handle: async () => {
     while (!exports.init) { continue }
-    if (await getStatus() === UserStatus.SignedOut.toString()) {
-      vscode.window.showErrorMessage('未登录')
-      return
-    }
-    let defaultID = exports.cid
+    let defaultID = globalState.cid.value
     const cid = await vscode.window.showInputBox({
       placeHolder: '输入比赛编号',
       value: defaultID,
@@ -22,7 +19,7 @@ export default new SuperCommand({
     if (!cid) {
       return
     }
-    exports.cid = cid
+    globalState.cid.value = cid
     try {
       let allres = await searchContest(cid)
       console.log(allres)

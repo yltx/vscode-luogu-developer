@@ -5,6 +5,7 @@ import RegisterCommands from '@/commands'
 import RegisterViews from '@/views'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
+import { state, context as stateContext, globalState } from '@/store/state'
 import { setClientID, setUID, fetchHomepage } from '@/utils/api'
 import * as fs from 'fs'
 import * as os from 'os'
@@ -17,14 +18,12 @@ exports.luoguPath = path.join(os.homedir(), '.luogu')
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName)
 exports.luoguCsrfTokenPath = path.join(exports.luoguPath, luoguCsrfToken)
 exports.luoguUidPath = path.join(exports.luoguPath, luoguUIDName)
-exports.islogged = false
-exports.init = false
-exports.pid = ''
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
   RegisterCommands(context)
   RegisterViews(context)
+  stateContext.value = context;
   console.log('init luogu-vscode success.')
   exports.rootPath = context.extensionPath
   exports.resourcesPath = path.join(exports.rootPath, 'resources')
@@ -118,30 +117,31 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         if (data.currentUser === undefined) {
           vscode.window.showErrorMessage('未登录')
           luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-          exports.islogged = false
+          state.logged.value = false
         } else {
           vscode.window.showInformationMessage('登录成功')
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn)
-          exports.islogged = true
+          state.logged.value = true
         }
       } catch (err) {
         vscode.window.showErrorMessage('获取登录信息失败')
         vscode.window.showErrorMessage(err)
         // vscode.window.showErrorMessage('未登录')
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-        exports.islogged = false
+        state.logged.value = false
       }
     } catch (err) {
       console.error(err)
       vscode.window.showInformationMessage('未登录')
       luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-      exports.islogged = false
+      state.logged.value = false
     }
   } else {
     vscode.window.showInformationMessage('未登录')
     luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-    exports.islogged = false
+    state.logged.value = false
   }
+  state.initialed.value = true
   exports.init = true
   console.log(exports.rootPath)
 }

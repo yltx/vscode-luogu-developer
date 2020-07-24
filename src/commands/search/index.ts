@@ -4,6 +4,7 @@ import * as path from 'path'
 import SuperCommand from '../SuperCommand'
 import { parseProblemID } from '@/utils/api'
 import showProblem from '@/utils/showProblem'
+import { globalState } from '@/store/state'
 
 export default new SuperCommand({
   onCommand: 'searchProblem',
@@ -15,7 +16,7 @@ export default new SuperCommand({
       defaultID = await parseProblemID(path.parse(edtior.document.fileName).base);
     }
     if (defaultID === '') {
-      defaultID = exports.pid
+      defaultID = globalState.pid.value || ''
     }
     const pid = await vscode.window.showInputBox({
       placeHolder: '输入题号',
@@ -30,7 +31,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage('题目不存在')
       return
     }
-    exports.pid = pid;
+    state.pid.value = pid;
     await showProblem(pid)
   }
 })

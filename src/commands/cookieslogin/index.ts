@@ -7,6 +7,7 @@ import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtil
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
+import { state } from '@/store/state'
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -44,7 +45,7 @@ export default new SuperCommand({
         await setClientID(clientID)
         await setUID(uid)
         if (await getStatus() === UserStatus.SignedOut.toString()) {
-          exports.islogged = false;
+          state.logged.value = false;
           luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
           const res = await promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
           if (res?.title === '重试') {
@@ -53,7 +54,7 @@ export default new SuperCommand({
             break;
           }
         } else {
-          exports.islogged = true;
+          state.logged.value = true;
           vscode.window.showInformationMessage('登录成功');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           try {

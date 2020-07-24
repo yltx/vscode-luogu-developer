@@ -4,6 +4,7 @@ import { Languages, resultState } from '@/utils/shared'
 import { getStatusText, getStatusColor, getScoreColor } from '@/utils/workspaceUtils';
 import { fetchResult, getResourceFilePath } from '@/utils/api'
 import { debug } from '@/utils/debug'
+import { state } from '@/store/state';
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
@@ -17,7 +18,7 @@ export const showRecord = async (rid: number) => {
   let retryTimes = 0;
   const maxRetryTimes = 2;
   pannel.onDidDispose(() => pannelClosed = true)
-  while (!pannelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+  while (!pannelClosed && state.logged.value && retryTimes <= maxRetryTimes) {
     try {
       const result = await fetchResult(rid);
       debug('Get result: ', result.record)

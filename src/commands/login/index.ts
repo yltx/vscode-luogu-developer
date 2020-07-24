@@ -9,6 +9,7 @@ import { UserStatus } from '@/utils/shared'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
+import { state } from '@/store/state'
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -25,7 +26,7 @@ export default new SuperCommand({
       } else {
         await setUID('')
         await setClientID('')
-        exports.islogged = false;
+        state.logged.value = false;
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
       }
     }
@@ -57,11 +58,11 @@ export default new SuperCommand({
         console.log(`Get client id: ${clientID = await getClientID()}`)
         debug(`Get captcha: ${captcha}`)
         try {
-          exports.init = false
+          state.initialed.value = false
           await login(username, password, captcha)
-          exports.init = true
+          state.initialed.value = true
           vscode.window.showInformationMessage('登录成功');
-          exports.islogged = true;
+          state.logged.value = true;
           try {
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID }))
           } catch (error) {
@@ -72,7 +73,7 @@ export default new SuperCommand({
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           break;
         } catch (err) {
-          exports.init = true
+          state.initialed.value = true
           if (err.response) {
             if (err.response.data.errorMessage === '验证码错误') {
               const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)

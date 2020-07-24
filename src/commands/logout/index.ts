@@ -7,6 +7,7 @@ import * as vscode from 'vscode'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as os from 'os'
+import { state } from '@/store/state'
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 
 export default new SuperCommand({
@@ -36,7 +37,7 @@ export default new SuperCommand({
     } finally {
       await setUID('')
       await setClientID('')
-      exports.islogged = false;
+      state.logged.value = false;
       luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
       vscode.window.showInformationMessage('注销成功');
     }

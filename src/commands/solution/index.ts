@@ -6,6 +6,7 @@ import * as os from 'os'
 import md from '@/utils/markdown'
 import { UserStatus } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
+import { globalState } from '@/store/state'
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 
 export default new SuperCommand({
@@ -22,7 +23,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(err.toString());
       return;
     }
-    let defaultID = exports.pid
+    let defaultID = globalState.pid.value
     const pid = await vscode.window.showInputBox({
       placeHolder: '输入题号',
       value: defaultID,
@@ -31,7 +32,7 @@ export default new SuperCommand({
     if (!pid) {
       return
     }
-    exports.pid = pid
+    globalState.pid.value = pid
     try {
       const res = await searchSolution(pid)
       console.log(res)

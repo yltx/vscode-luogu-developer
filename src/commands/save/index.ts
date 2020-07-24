@@ -7,6 +7,7 @@ import { searchProblem } from '@/utils/api'
 import { DialogType, promptForOpenOutputChannel } from '@/utils/uiUtils'
 import Problem from '@/model/Problem'
 import { generateProblemHTML } from '@/utils/showProblem'
+import { globalState } from '@/store/state'
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({
@@ -21,7 +22,7 @@ export default new SuperCommand({
       await promptForOpenOutputChannel('', DialogType.error)
       return
     }
-    exports.pid = pid;
+    globalState.pid.value = pid;
     const problem = await searchProblem(pid).then(res => new Problem(res))
     const html = generateProblemHTML(problem)
     const filename = pid + '.html'

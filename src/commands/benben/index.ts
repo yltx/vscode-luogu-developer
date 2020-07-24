@@ -2,6 +2,7 @@ import SuperCommand from '../SuperCommand'
 import { fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon } from '@/utils/api'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
+import { state } from '@/store/state'
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 /*
@@ -75,7 +76,7 @@ export default new SuperCommand({
     pannel.webview.html = await generateHTML();
     let retryTimes = 0;
     const maxRetryTimes = 2;
-    while (!pannelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+    while (!pannelClosed && state.logged.value && retryTimes <= maxRetryTimes) {
       try {
         let ret = (await fetchBenben(mode2, 1)) + (await fetchBenben(mode2, 2)) + (await fetchBenben(mode2, 3));
         let pret = new Array();
