@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { getResourceFilePath, searchContest, getStatus, formatTime,changeTime,getRanklist } from '@/utils/api'
+import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, getRanklist } from '@/utils/api'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType } from '@/utils/shared'
