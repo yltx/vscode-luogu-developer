@@ -27,6 +27,7 @@ export namespace API {
   export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`;
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`;
+  export const ranklist = (cid: string,page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
 }
 
 export const jar = new CookieJar();
@@ -34,9 +35,9 @@ export const jar = new CookieJar();
 export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
-    withCredentials: true
+    withCredentials: true,
+    jar
   })
-  axiosCookieJarSupport(axios)
 
   const defaults = axios.defaults;
   if (!defaults.transformRequest) {
@@ -49,12 +50,7 @@ export const axios = (() => {
     return data
   })
   defaults.timeout = 6000;
-
-  // It's correct though TypeScript doesn't think so.
-  // Reference: https://www.npmjs.com/package/axios-cookiejar-support#notice-set-default-cookiejar
-  (defaults.jar as any) = jar;
-
-  return axios
+  return axiosCookieJarSupport(axios)
 })()
 
 export const setClientID = async (value: string) => new Promise((resolve, reject) => {

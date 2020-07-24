@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, countDown } from '@/utils/api'
+import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime } from '@/utils/api'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType } from '@/utils/shared'
@@ -24,11 +24,9 @@ export default new SuperCommand({
     }
     exports.cid = cid
     try {
-      let allres = await searchContest(cid)
-      console.log(allres)
-      const res = allres.contest
-      allres = allres.contestProblems
-      const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.name}`, vscode.ViewColumn.Two, {
+      let res = await searchContest(cid)
+      console.log(res)
+      const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.contest.name}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
@@ -44,13 +42,17 @@ export default new SuperCommand({
   }
 })
 
-const generateHTML = async (contest: any[]) => {
+const generateHTML = async (res: any[]) => {
+  const contest = res['contest']
   return `
   <!DOCTYPE html>
           <html class="no-js" lang="zh">
 
           <head>
               <meta charset="utf-8">
+              <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
+              <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
+              <link rel="stylesheet" href="${getResourceFilePath('problem.css')}">
               <title>比赛详情 - ${contest['name']}</title>
           </head>
 
@@ -125,8 +127,23 @@ const generateHTML = async (contest: any[]) => {
           </div></div></div></section></section></div>
           </body>
           <!-- 以下为题目列表 -->
+          <div><span data-v-8d4c9aee="" class="lfe-caption" id="problem"> </span></div>
+          <script>
+          function showProblem(problem: any[]) {
+            var i = 0
+            var ans = ''
+            for (;i < contest['problemCount'];i++) {
+              ans += problem[i]['problem']['pid'] + ' ' + problem[i]['problem']['title'] + '\n 满分： ' + problem[i]['score']
+              if (problem[i]['submitted'] === true) {
+                ans += '\n状态：已提交\n'
+              } else {
+                ans += '\n状态：未提交\n'
+              }
+            }
+            return ans
+          }
+          document.getElementById("problem").innerText = showProblem(${res['contestProblems']})
+          </script>
           </html>
   `
 }
-
-// 比赛描述：
