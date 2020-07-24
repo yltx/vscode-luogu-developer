@@ -125,6 +125,7 @@ const generateHTML = async (res: any[]) => {
           <div data-v-17281a3e="" data-v-8d4c9aee="" class="marked" data-v-0776707c="">
           <section data-v-72177bf8="" data-v-6febb0e8="" class="main"><section data-v-6febb0e8=""><div data-v-6febb0e8=""><div data-v-796309f8="" class="card padding-default"><div data-v-5a58a989="" class="marked" data-v-796309f8=""><p>${md.render(contest['description'])}</p>
           </div></div></div></section></section></div>
+          </body>
           <!-- 以下为题目列表 -->
           <div><span data-v-8d4c9aee="" class="lfe-caption" id="problem"> </span></div>
           <script>
@@ -143,7 +144,6 @@ const generateHTML = async (res: any[]) => {
           }
           document.getElementById("problem").innerText = showProblem(${res['contestProblems']})
           </script>
-          </body>
           </html>
   `
 }

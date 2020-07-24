@@ -35,9 +35,9 @@ export const jar = new CookieJar();
 export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
-    withCredentials: true,
-    jar
+    withCredentials: true
   })
+  axiosCookieJarSupport(axios)
 
   const defaults = axios.defaults;
   if (!defaults.transformRequest) {
@@ -50,7 +50,12 @@ export const axios = (() => {
     return data
   })
   defaults.timeout = 6000;
-  return axiosCookieJarSupport(axios)
+
+  // It's correct though TypeScript doesn't think so.
+  // Reference: https://www.npmjs.com/package/axios-cookiejar-support#notice-set-default-cookiejar
+  (defaults.jar as any) = jar;
+
+  return axios
 })()
 
 export const setClientID = async (value: string) => new Promise((resolve, reject) => {
