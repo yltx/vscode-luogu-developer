@@ -27,7 +27,7 @@ export namespace API {
   export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`;
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`;
-  export const ranklist = (cid: string,page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
+  export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
 }
 
 export const jar = new CookieJar();
@@ -158,7 +158,7 @@ export const searchProblem = async (pid: string) =>
 export const searchContest = async (cid: string) =>
   axios.get(API.CONTEST(cid))
     .then(res => res?.data?.currentData).then(async res => {
-      console.log(res)
+      // console.log(res)
       if ((res || null) === null) { throw Error('比赛不存在') }
       return res
     }).catch(err => {
@@ -507,45 +507,13 @@ export const formatTime = (date: Date, fmt: string) => {
   }
   return fmt;
 }
-export const countDown = (begin: number, end: number) => {
-  console.error(begin)
-  console.error(end)
-  let x = 0
-  let day = 0
-  let hour = 0
-  let minute = 0
-  let now = Math.floor(new Date().getTime() / 1000)
-  let res = ''
-  if (now < begin) {
-    res = '据比赛开始还有 '
-    x = begin - now
-  }
-  if (now >= begin && now <= end) {
-    res = '据比赛结束还有 '
-    x = end - now
-  }
-  if (now > end) {
-    return '比赛已经结束了'
-  }
-  if (x >= 86400) {
-    day = Math.floor(x / 86400)
-    x -= day * 86400
-    res += day.toString() + ' 天 '
-  }
-  if (x >= 3600) {
-    hour = Math.floor(x / 3600)
-    x -= hour * 3600
-    res += hour.toString() + ' 小时 '
-  }
-  if (x >= 60) {
-    minute = Math.floor(x / 60)
-    x -= minute * 60
-    res += minute.toString() + ' 分 '
-  }
-  if (x > 0) {
-    res += x.toString() + ' 秒'
-  }
-  return res
+export const getRanklist = async (cid: string, page: number) => {
+  axios.get(API.ranklist(cid, page))
+    .then(res => res.data).then(async res => {
+      console.log(res)
+      return res
+      // console.log(generateRanklist(res))
+    }).catch(err => { throw err })
 }
 export const changeTime = (x: number) => {
   let res = ''

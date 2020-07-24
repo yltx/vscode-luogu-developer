@@ -251,7 +251,8 @@ export const getRanklist = async (cid: string, page: number) => {
   axios.get(API.ranklist(cid, page))
     .then(res => res.data).then(async res => {
       console.log(res)
-      console.log(generateRanklist(res))
+      return res
+      // console.log(generateRanklist(res))
     }).catch(err => { throw err })
 }
 
