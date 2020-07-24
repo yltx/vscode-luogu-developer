@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { getResourceFilePath, searchContest, getStatus, formatTime,changeTime,getRanklist } from '@/utils/api'
+import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, getRanklist } from '@/utils/api'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType } from '@/utils/shared'
@@ -26,14 +26,14 @@ export default new SuperCommand({
     try {
       const res = await searchContest(cid)
       console.log(res)
-      const ranklist = await getRanklist(cid,1)
+      const ranklist = await getRanklist(cid, 1)
       console.log(ranklist)
       const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.contest.name}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
       })
-      const html = await generateHTML(res,ranklist['scoreboard']['result'])
+      const html = await generateHTML(res, ranklist['scoreboard']['result'])
       console.log(html)
       panel.webview.html = html
     } catch (err) {
@@ -44,7 +44,7 @@ export default new SuperCommand({
   }
 })
 
-const generateHTML = async (res: any[],ranklist: any[]) => {
+const generateHTML = async (res: any[], ranklist: any[]) => {
   const contest = res['contest']
   console.log(ranklist)
   return `
