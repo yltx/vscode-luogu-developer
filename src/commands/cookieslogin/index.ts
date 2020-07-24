@@ -4,13 +4,7 @@ import { getStatus, setClientID, setUID, searchUser } from '@/utils/api'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
-import * as os from 'os'
-import * as path from 'path'
-import * as fs from 'fs'
-import { state } from '@/store/state'
-const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+import { state, globalState } from '@/store/state'
 
 export default new SuperCommand({
   onCommand: 'cookieslogin',
@@ -57,12 +51,8 @@ export default new SuperCommand({
           state.logged.value = true;
           vscode.window.showInformationMessage('登录成功');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-          try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID }))
-          } catch (error) {
-            vscode.window.showErrorMessage('写入文件时出现错误');
-            vscode.window.showErrorMessage(error);
-          }
+          globalState.clientID.value = clientID;
+          globalState.uid.value = uid;
           return;
         }
       } catch (err) {

@@ -7,17 +7,9 @@ import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { state, context as stateContext, globalState } from '@/store/state'
 import { setClientID, setUID, fetchHomepage } from '@/utils/api'
-import * as fs from 'fs'
-import * as os from 'os'
 import * as path from 'path'
-const luoguCsrfToken = 'CsrfToken.json'
-const luoguJSONName = 'luogu.json'
-const luoguUIDName = 'uid.json'
-const version = '4.4.7'
-exports.luoguPath = path.join(os.homedir(), '.luogu')
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName)
-exports.luoguCsrfTokenPath = path.join(exports.luoguPath, luoguCsrfToken)
-exports.luoguUidPath = path.join(exports.luoguPath, luoguUIDName)
+import { getVersion, getUserToken } from './utils/compatible'
+const VERSION = '4.4.7'
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
@@ -27,38 +19,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   console.log('init luogu-vscode success.')
   exports.rootPath = context.extensionPath
   exports.resourcesPath = path.join(exports.rootPath, 'resources')
-  const versionPath = path.join(exports.luoguPath, 'version')
-  if (!fs.existsSync(exports.luoguPath)) {
-    try {
-      fs.mkdirSync(exports.luoguPath)
-    } catch (err) {
-      vscode.window.showErrorMessage('创建 .luogu 目录失败')
-      throw err
-    }
-  }
-  let clientID = ''
-  let uid = ''
-  let updated = true
-  if (fs.existsSync(exports.luoguCsrfTokenPath)) {
-    clientID = fs.readFileSync(exports.luoguCsrfTokenPath).toString()
-    fs.unlinkSync(exports.luoguCsrfTokenPath)
-    updated = false
-  }
-  if (fs.existsSync(exports.luoguUidPath)) {
-    uid = fs.readFileSync(exports.luoguUidPath).toString()
-    fs.unlinkSync(exports.luoguUidPath)
-    updated = false
-  }
-  if (!updated) {
-    fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID }))
-  }
+
   const html = `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>vscode-luogu v${version} 更新说明</title>
+    <title>vscode-luogu v${VERSION} 更新说明</title>
   </head>
   <div>
     <h1>置顶说明</h1>
@@ -87,31 +55,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   </div>
   </html>
   `
-  if (fs.existsSync(versionPath)) {
-    if (fs.readFileSync(versionPath).toString() !== version) {
-      const panel = vscode.window.createWebviewPanel('更新说明', 'vscode-luogu v' + version + ' 更新说明', vscode.ViewColumn.Two, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
-      })
-      panel.webview.html = html
-    }
-  } else {
-    const panel = vscode.window.createWebviewPanel('更新说明', 'vscode-luogu' + version + ' 更新说明', vscode.ViewColumn.Two, {
+
+  if (getVersion() !== VERSION) {
+    const panel = vscode.window.createWebviewPanel('更新说明', 'vscode-luogu' + VERSION + ' 更新说明', vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
     })
     panel.webview.html = html
   }
-  fs.writeFileSync(versionPath, version)
-  if (fs.existsSync(exports.luoguJSONPath)) {
+  globalState.version.value = VERSION;
+
+  const token = getUserToken()
+  if (token) {
     try {
-      const jsonData = JSON.parse(fs.readFileSync(exports.luoguJSONPath).toString())
-      const clientID = jsonData.clientID
-      const uid = jsonData.uid
-      await setClientID(clientID)
-      await setUID(uid)
+      await setClientID(token.clientID)
+      await setUID(token.uid)
       try {
         const data = await fetchHomepage();
         if (data.currentUser === undefined) {

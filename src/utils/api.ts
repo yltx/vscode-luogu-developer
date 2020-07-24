@@ -1,13 +1,9 @@
 import _ from 'axios'
 import { Cookie, CookieJar } from 'tough-cookie'
 import axiosCookieJarSupport from 'axios-cookiejar-support'
-import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
-const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/
 

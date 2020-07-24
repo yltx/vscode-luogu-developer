@@ -4,11 +4,7 @@ import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
 
 import * as vscode from 'vscode'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as os from 'os'
-import { state } from '@/store/state'
-exports.luoguPath = path.join(os.homedir(), '.luogu');
+import { state, globalState } from '@/store/state'
 
 export default new SuperCommand({
   onCommand: 'signout',
@@ -24,14 +20,10 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(err.toString());
       return;
     }
-    try {
-      if (fs.existsSync(exports.luoguJSONPath)) {
-        fs.unlinkSync(exports.luoguJSONPath)
-      }
-    } catch (err) {
-      vscode.window.showErrorMessage('删除文件时出现错误');
-      vscode.window.showErrorMessage(err);
-    }
+
+    globalState.uid.value = undefined;
+    globalState.clientID.value = undefined;
+
     try {
       // await logout()
     } finally {

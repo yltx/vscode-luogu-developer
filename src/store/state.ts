@@ -47,7 +47,10 @@ export const context: IContext = {
 
 export const globalState = {
   cid: createPersistenceProperty<string>('cid'),
-  pid: createPersistenceProperty<string>('pid')
+  pid: createPersistenceProperty<string>('pid'),
+  uid: createPersistenceProperty<string>('uid'),
+  clientID: createPersistenceProperty<string>('client_id'),
+  version: createPersistenceProperty<string>('version')
 }
 
 export const state = {

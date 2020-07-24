@@ -7,9 +7,6 @@ import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils'
 import { getStatus, parseProblemID } from '@/utils/api'
 import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
-const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'submitSolution',

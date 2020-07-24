@@ -6,13 +6,7 @@ import { debug } from '@/utils/debug'
 import { getUserCaptcha } from '@/utils/captcha'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
-import * as os from 'os'
-import * as path from 'path'
-import * as fs from 'fs'
-import { state } from '@/store/state'
-const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+import { state, globalState } from '@/store/state'
 
 export default new SuperCommand({
   onCommand: 'signin',
@@ -63,12 +57,11 @@ export default new SuperCommand({
           state.initialed.value = true
           vscode.window.showInformationMessage('登录成功');
           state.logged.value = true;
-          try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID }))
-          } catch (error) {
-            vscode.window.showErrorMessage('写入文件时出现错误')
-            vscode.window.showErrorMessage(error)
-          }
+
+          // since the login is successful, uid and client_id will not be empty
+          globalState.uid.value = await getUID() as string;
+          globalState.clientID.value = await getClientID() as string;
+
           // console.log('done');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           break;
