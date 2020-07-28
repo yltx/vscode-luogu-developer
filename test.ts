@@ -242,9 +242,11 @@ export const formatTime = (date: Date, fmt: string) => {
 export const getContest = async (cid: string) =>
   axios.get(API.CONTEST(cid))
     .then(res => res.data.currentData).then(async res => {
-      let html = generateHTML(res)
+      // console.log('a' as number + 1)
+      // let html = generateHTML(res)
       console.log(res.contestProblems)
-      console.log(html)
+      // console.log(html)
+      // conol
     }).catch(err => { throw err })
 
 export const getRanklist = async (cid: string, page: number) => {
@@ -374,6 +376,7 @@ const generateHTML = async (res: any[]) => {
 }
 
 // tslint:disable-next-line: no-floating-promises
-getRanklist('6724', 1)
+// getRanklist('6724', 1)
+getContest('6724')
 
 console.log(new Date().getTime())

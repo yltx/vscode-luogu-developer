@@ -508,12 +508,8 @@ export const formatTime = (date: Date, fmt: string) => {
   return fmt;
 }
 export const getRanklist = async (cid: string, page: number) => {
-  axios.get(API.ranklist(cid, page))
-    .then(res => res.data).then(async res => {
-      console.log(res)
-      return res
-      // console.log(generateRanklist(res))
-    }).catch(err => { throw err })
+  return axios.get(API.ranklist(cid, page))
+    .then(res => res.data).catch(err => { throw err })
 }
 export const changeTime = (x: number) => {
   let res = ''

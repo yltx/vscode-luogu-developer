@@ -21,7 +21,7 @@ exports.islogged = false
 exports.init = false
 exports.pid = ''
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate (context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
   RegisterCommands(context)
   RegisterViews(context)
@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     </li>
     <li>Add:
     <ol>
-    <li>查看比赛</li>
+    <li>查看比赛（排行榜部分未完工）</li>
     <li>根据文件后缀名识别提交语言</li>
     </ol>
     </li>
@@ -146,6 +146,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   console.log(exports.rootPath)
 }
 
-export function deactivate(): void {
+export function deactivate (): void {
   // Do nothing.
 }
