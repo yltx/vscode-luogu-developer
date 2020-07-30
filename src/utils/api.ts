@@ -1,6 +1,8 @@
 import _ from 'axios'
 import { Cookie, CookieJar } from 'tough-cookie'
 import axiosCookieJarSupport from 'axios-cookiejar-support'
+import { UserStatus } from '@/utils/shared'
+import luoguStatusBar from '@/views/luoguStatusBar'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -241,7 +243,19 @@ export const login = async (username: string, password: string, captcha: string)
 
 export default axios
 
-export const getStatus = async () => { return (await fetchHomepage()).currentUser ? '1' : '2' }
+export const getStatus = async () => {
+  const ret = (await fetchHomepage()).currentUser
+  if (ret) {
+    exports.islogged = true
+    luoguStatusBar.updateStatusBar(UserStatus.SignedIn)
+    return UserStatus.SignedIn.toString()
+  } else {
+    exports.islogged = false
+    luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
+    return UserStatus.SignedOut.toString()
+  }
+}
+
 export const fetchResult = async (rid: number) =>
   axios.get(`/record/${rid}?_contentOnly=1`)
     .then(data => data?.data.currentData).catch(err => {
