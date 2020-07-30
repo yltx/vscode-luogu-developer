@@ -10,3 +10,5 @@ tslint.json
 test.sh
 tests/**/*
 *.zip
+test.*
+tempCodeRunnerFile.ts
