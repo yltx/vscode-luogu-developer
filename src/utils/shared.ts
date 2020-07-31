@@ -124,3 +124,19 @@ export const contestStyle: string[] = ['',
   'color: rgb(255, 255, 255); background: rgb(255, 193, 22);',// IOI
   'color: rgb(255, 255, 255); background: rgb(255, 193, 22);'// CodeForces (暂不可用)
 ]
+export const contestVisibility: string[] = ['',
+  '官方比赛',
+  '团队公开赛',
+  '团队内部赛',
+  '个人公开赛',
+  '个人邀请赛',
+  '团队邀请赛'
+]
+export const contestVisibilityStyle: string[] = ['',
+  'color: rgb(255, 255, 255); background: rgb(231, 76, 60);',
+  'color: rgb(255, 255, 255); background: rgb(34, 112, 10);',
+  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
+  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
+  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);',
+  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);'
+]
