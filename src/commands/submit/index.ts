@@ -49,11 +49,13 @@ export default new SuperCommand({
     // const langs = Object.keys(Languages).filter(k => typeof Languages[k as any] === 'number');
     const selectedLanguage = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!
     let langs: string[] = [];
+    if (languages.indexOf(selectedLanguage) !== -1) {
+      langs.push(selectedLanguage)
+    }
     for (let item in Languages) {
       if (isNaN(Number(item))) {
-        if (languages.indexOf(item) !== -1) {
+        if (languages.indexOf(item) !== -1 && item != selectedLanguage) {
           langs.push(item)
-          console.log(item)
         }
       }
     }
@@ -61,7 +63,6 @@ export default new SuperCommand({
       if (isNaN(Number(item))) {
         if (item === 'Auto' && languages.indexOf(item) === -1) {
           langs.push(item)
-          console.error(item)
         }
       }
     }
@@ -69,7 +70,6 @@ export default new SuperCommand({
       if (isNaN(Number(item))) {
         if (item !== 'Auto' && languages.indexOf(item) === -1) {
           langs.push(item)
-          console.log(item)
         }
       }
     }
