@@ -66,7 +66,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
     <li>Added user communication group(QQ):1141066631</li>
-    <li>本插件为正版，Luogu On VSCode为盗版</li>
     </ul>
     </h2>
     <h1>本次更新</h1>
@@ -74,13 +73,12 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <ul>
     <li>Fix:
     <ol>
-    <li>深色主题题解配色</li>
+    <li>部分比赛无法查看</li>
     </ol>
     </li>
     <li>Add:
     <ol>
-    <li>查看比赛</li>
-    <li>根据文件后缀名识别提交语言</li>
+    <li></li>
     </ol>
     </li>
     </ul>
