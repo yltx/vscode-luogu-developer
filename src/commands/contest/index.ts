@@ -33,6 +33,10 @@ export default new SuperCommand({
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
       })
+      /*let i = 0
+      for (; i < 4 ;i++) {
+        console.log(ranklist['firstBloodUID'][res['contestProblems'][i]['problem']['pid']] === ranklist['scoreboard']['result'][4]['user']['uid'])
+      }*/
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)
         if (message.type === 'request-ranklist') {
@@ -87,9 +91,14 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' background-color: rgb(217, 240, 199);' }
             html += '">+'
           } else {
-            html += '<th style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + ';font-weight: bold'
-            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' background-color: rgb(217, 240, 199);' }
+            html += '<th style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + '; font-weight: bold;'
+            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
+              // console.log(i)
+              // console.log(j)
+              html += ' background-color: rgb(217, 240, 199);'
+            }
             html += '">'
+            // if (i === 4) { console.log(html) }
           }
           html += ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] < 0) {
@@ -400,7 +409,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             <div data-v-6e56e2aa="" class="header-wrap">
                 <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
                     <span id="RANKLIST">
-                        ${await generateRanklist(res,ranklist,1)}
+                        ${await generateRanklist(res, ranklist, 1)}
                     </span>
                     <div class="post-nav">
                         <div class="post-nav-next post-nav-item">
