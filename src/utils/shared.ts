@@ -108,8 +108,8 @@ export enum resultState {
   'AC' = 12
 }
 export enum colorStyle {
-  'grey' = 'font-weight: bold; color: rgb(243, 156, 17);',
-  'Grey' = 'font-weight: bold; color: rgb(243, 156, 17);',
+  'grey' = 'font-weight: bold; color: rgb(191,191,191);',
+  'Gray' = 'font-weight: bold; color: rgb(191,191,191);',
   'blue' = 'font-weight: bold; color: rgb(52, 152, 219);',
   'Blue' = 'font-weight: bold; color: rgb(52, 152, 219);',
   'green' = 'font-weight: bold; color: rgb(82, 196, 26);',
