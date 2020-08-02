@@ -22,7 +22,7 @@ export function getScoreColor(score: number): string {
   return score < 30 ? 'rgb(231, 76, 60)' : (score < 80 ? 'rgb(243, 156, 17)' : 'rgb(82, 196, 26)');
 }
 
-export function getUsernameStyle(color: string): string {
+export function getUsernameStyle (color: string): string {
   return colorStyle[color];
 }
 

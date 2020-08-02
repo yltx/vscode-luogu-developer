@@ -1,19 +1,97 @@
-<div data-v-6e56e2aa="" class="border table" style="display: none" id="showranklist"> 
-                <div data-v-6e56e2aa="" class="header-wrap"> 
-                    <div data-v-239a177d="" data-v-6e56e2aa="" class="header"> 
-                        <span id="ranklist"> </span> 
-                    </div> 
-                </div> 
-            </div> 
-            <script> 
-            function displayranklist(ranklist) { 
-              var i = 0 
-    "          var ans = '<table>\<tr>\<th>名 
-次</th>\<th>参赛者</th>\<th>总分</th>\"               for (;i < 4; i) { 
-    "            ans = <th>  String.fromCharCode(65  i)  </th>\" 
-              } 
-    "          ans = </tr>\</table>\"   
-              return ans 
-            } 
-            document.getElementById("showranklist").innerHTML = displayranklist([]) 
-            </script>
+<head>
+    <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
+    <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
+    <link rel="stylesheet" href="${getResourceFilePath('solution.css')}">
+    <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
+    <script src="${getResourceFilePath('jquery.min.js')}"></script>
+    <script src="${getResourceFilePath('sweetalert-dev.js')}"></script>
+    <style>
+    pre {
+      margin: .5em 0 !important;
+      padding: .3em .5em !important;
+      border: #ddd solid 1px !important;
+      border-radius: 3px !important;
+      overflow: auto !important;
+      position: relative;
+    }
+    code {
+      font-size: .875em !important;
+      font-family: Courier New !important;
+    }
+    </style>
+    <script>
+    const vscode = acquireVsCodeApi();
+    var pos = 0;
+    var id = ${solutions[0].id};
+    var status = ${solutions[0].currentUserVoteType};
+    const count = ${solutions.length};
+    function load() {
+      $("a.pre-post").click(function() {
+        if (pos == 0) {
+          swal("好像哪里有点问题", "已经是第一篇了", "error");
+          return;
+        }
+        pos--;
+        vscode.postMessage({type: 'request-solution', data: pos });
+      });
+      $("a.next-post").click(function() {
+        if (pos == count - 1) {
+          swal("好像哪里有点问题", "已经是最后一篇了", "error");
+          return;
+        }
+        pos++;
+        vscode.postMessage({type: 'request-solution', data: pos });
+      });
+      $('.button.thumb-up[data-v-6a0aefb0]').click(function () {
+        console.log(status)
+        if (status.toString() === '1') {
+          vscode.postMessage({type: 'vote', data: { id: id, type: 0, pos: pos }});
+        } else {
+          vscode.postMessage({type: 'vote', data: { id: id, type: 1, pos: pos }});
+        }
+      });
+      $('.button.thumb-down[data-v-6a0aefb0]').click(function () {
+        vscode.postMessage({type: 'vote', data: { id: id, type: -1, pos: pos }});
+      });
+    }
+    function scrollToClass (c) {
+      $('html, body').animate({
+        scrollTop: ($(c).offset().top)
+      }, 500);
+    }
+    $(document).ready(function () {
+      window.addEventListener('message', event => {
+        if (event.data.type === 'solution') {
+          const message = event.data.message;
+          $("div.main").html(message.html);
+          id = message.id;
+          status = message.voteStatus;
+          console.log(\`id: \${id}\`)
+          load();
+          scrollToClass('main')
+        } else if (event.data.type === 'vote-result') {
+          if (event.data.id !== id) { return; }
+          const message = event.data.message;
+  
+          console.log(event.data)
+          if (event.data.votetype === 1) {
+            $('.button.thumb-up[data-v-6a0aefb0]').attr('class', 'button thumb-up enable')
+            $('.button.thumb-down[data-v-6a0aefb0]').attr('class', 'button thumb-down')
+          } else if (event.data.votetype === 0) {
+            $('.button.thumb-up[data-v-6a0aefb0]').attr('class', 'button thumb-up')
+          } else {
+            $('.button.thumb-up[data-v-6a0aefb0]').attr('class', 'button thumb-up')
+            $('.button.thumb-down[data-v-6a0aefb0]').attr('class', 'button thumb-down enable')
+          }
+          status = event.data.votetype
+          $('.button.thumb-up[data-v-6a0aefb0]').html(\`<svg data-v-6a0aefb0="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="thumbs-up" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-thumbs-up fa-w-16">
+          <path data-v-6a0aefb0="" fill="currentColor" d="M104 224H24c-13.255 0-24 10.745-24 24v240c0 13.255 10.745 24 24 24h80c13.255 0 24-10.745 24-24V248c0-13.255-10.745-24-24-24zM64 472c-13.255 0-24-10.745-24-24s10.745-24 24-24 24 10.745 24 24-10.745 24-24 24zM384 81.452c0 42.416-25.97 66.208-33.277 94.548h101.723c33.397 0 59.397 27.746 59.553 58.098.084 17.938-7.546 37.249-19.439 49.197l-.11.11c9.836 23.337 8.237 56.037-9.308 79.469 8.681 25.895-.069 57.704-16.382 74.757 4.298 17.598 2.244 32.575-6.148 44.632C440.202 511.587 389.616 512 346.839 512l-2.845-.001c-48.287-.017-87.806-17.598-119.56-31.725-15.957-7.099-36.821-15.887-52.651-16.178-6.54-.12-11.783-5.457-11.783-11.998v-213.77c0-3.2 1.282-6.271 3.558-8.521 39.614-39.144 56.648-80.587 89.117-113.111 14.804-14.832 20.188-37.236 25.393-58.902C282.515 39.293 291.817 0 312 0c24 0 72 8 72 81.452z" class=""></path>
+          </svg>\${message}\`)
+        } else if (event.data.type === 'vote-error') {
+          swal("好像哪里有点问题", event.data.message, "error");
+        }
+      });
+      load();
+    });
+    </script>
+  </head>

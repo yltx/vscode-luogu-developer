@@ -109,12 +109,19 @@ export enum resultState {
 }
 export enum colorStyle {
   'grey' = 'font-weight: bold; color: rgb(243, 156, 17);',
+  'Grey' = 'font-weight: bold; color: rgb(243, 156, 17);',
   'blue' = 'font-weight: bold; color: rgb(52, 152, 219);',
+  'Blue' = 'font-weight: bold; color: rgb(52, 152, 219);',
   'green' = 'font-weight: bold; color: rgb(82, 196, 26);',
+  'Green' = 'font-weight: bold; color: rgb(82, 196, 26);',
   'orange' = 'font-weight: bold; color: rgb(243, 156, 17);',
+  'Orange' = 'font-weight: bold; color: rgb(243, 156, 17);',
   'red' = 'font-weight: bold; color: rgb(254, 76, 97);',
+  'Red' = 'font-weight: bold; color: rgb(254, 76, 97);',
   'purple' = 'font-weight: bold; color: rgb(157, 61, 207);',
-  'cheater' = 'font-weight: bold; color: rgb(173, 139, 0);'
+  'Purple' = 'font-weight: bold; color: rgb(157, 61, 207);',
+  'cheater' = 'font-weight: bold; color: rgb(173, 139, 0);',
+  'Cheater' = 'font-weight: bold; color: rgb(173, 139, 0);'
 }
 export const contestType: string[] = ['', 'OI', 'ACM', '乐多', 'IOI', 'CodeForces (暂不可用)']
 export const contestStyle: string[] = ['',
