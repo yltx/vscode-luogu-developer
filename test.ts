@@ -2,6 +2,7 @@ import _ from 'axios'
 import { Cookie, CookieJar } from 'tough-cookie'
 import axiosCookieJarSupport from 'axios-cookiejar-support'
 import { contestStyle, contestType } from './src/utils/shared'
+// import * as vscode from 'vscode'
 import * as fs from 'fs'
 export const jar = new CookieJar();
 // @ts-ignore
@@ -10,6 +11,25 @@ import MarkdownIt from 'markdown-it';
 import markdownKatex from '@luogu-dev/markdown-it-katex';
 // @ts-ignore
 import markdownItHighlight from 'markdown-it-highlightjs';
+
+
+export const contestVisibility: string[] = ['',
+  '官方比赛',
+  '团队公开赛',
+  '团队内部赛',
+  '个人公开赛',
+  '个人邀请赛',
+  '团队邀请赛'
+]
+export const contestVisibilityStyle: string[] = ['',
+  'color: rgb(255, 255, 255); background: rgb(231, 76, 60);',
+  'color: rgb(255, 255, 255); background: rgb(34, 112, 10);',
+  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
+  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
+  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);',
+  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);'
+]
+
 
 // const md = new MarkdownIt().use(markdownKatex).use(markdownItHighlight);
 
@@ -114,20 +134,6 @@ export const csrfToken = async () =>
       return result ? result[1].trim() : null
     })
 
-const cookie = new Cookie({
-  key: '_uid',
-  value: '39863',
-  path: '/',
-  domain: API.cookieDomain
-})
-const cookie1 = new Cookie({
-  key: '__client_id',
-  value: '5b876923c5f79761f5b38a5468e4002ad11cda52',
-  path: '/',
-  domain: API.cookieDomain
-})
-jar.setCookie(cookie, API.baseURL, (err) => { })
-jar.setCookie(cookie1, API.baseURL, (err) => { })
 export enum colorStyle {
   'grey' = 'font-weight: bold; color: rgb(243, 156, 17);',
   'blue' = 'font-weight: bold; color: rgb(52, 152, 219);',
@@ -137,11 +143,11 @@ export enum colorStyle {
   'purple' = 'font-weight: bold; color: rgb(157, 61, 207);',
   'cheater' = 'font-weight: bold; color: rgb(173, 139, 0);'
 }
-export function getUsernameStyle (color: string): string {
+export function getUsernameStyle(color: string): string {
   return colorStyle[color];
 }
 
-export function getUserSvg (ccfLevel: number): string {
+export function getUserSvg(ccfLevel: number): string {
   if (ccfLevel === 0) {
     return '';
   }
@@ -239,286 +245,304 @@ export const formatTime = (date: Date, fmt: string) => {
   }
   return fmt;
 }
+export const getRanklist = async (cid: string, page: number) => {
+  return axios.get(API.ranklist(cid, page))
+    .then(res => res.data).catch(err => { throw err })
+}
 export const getContest = async (cid: string) =>
   axios.get(API.CONTEST(cid))
     .then(res => res.data.currentData).then(async res => {
       // console.log('a' as number + 1)
-      let html = generateHTML(res)
+      let ranklist = await getRanklist(cid, 1)
+      let html = await generateHTML(res, ranklist)
       // console.log(res)
-      console.log(html)
+      // console.log(html)
+      /*const panel = vscode.window.createWebviewPanel('','',vscode.ViewColumn.Two, {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      })
+      panel.webview.html = html*/
       // conol
     }).catch(err => { throw err })
 
-export const getRanklist = async (cid: string, page: number) => {
-  axios.get(API.ranklist(cid, page))
-    .then(res => res.data).then(async res => {
-      // let html =
-      console.log(generateRanklist(res))
-    }).catch(err => { throw err })
-}
+const generateHTML = async (res: any[], ranklist: any[]) => {
+  const contest = res['contest']
+  // console.log(ranklist)
+  // console.log(res['contestProblems'][0]['problem']['pid'])
+  //   console.log(contest['visibilityType'] > 3 && contest['visibilityType'] < 6)
+  //   return ``
+  let html = `
+    <!DOCTYPE html>
+    <html class="no-js" lang="zh">
 
-const generateRanklist = async (res: any[]) => {
-  return `
-  <!-- 以下为排行榜 -->
-        <div data-v-6e56e2aa="" class="border table" style="display: none" id="showranklist">
-            <div data-v-6e56e2aa="" class="header-wrap">
-                <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
-                    <span id="ranklist"> </span>
-                </div>
+    <head>
+        <meta charset="utf-8">
+        <title>比赛详情 - ${contest['name']}</title>
+    </head>
+
+    <body>
+        <h1 data-v-52820d90="" class="lfe-h1">${contest['name']}</h1>
+        <div data-v-83303c00="" data-v-7c02ef97="" class="stat color-inverse" data-v-52820d90="">
+            <div data-v-83303c00="" class="field">
+                <span data-v-83303c00="" class="key lfe-caption">题目数</span>
+                <span data-v-83303c00="" class="value lfe-caption">${contest['problemCount']}</span>
+            </div>
+            <div data-v-83303c00="" class="field">
+                <span data-v-83303c00="" class="key lfe-caption">报名人数</span>
+                <span data-v-83303c00="" class="value lfe-caption">${contest['totalParticipants']}</span>
             </div>
         </div>
-        <script>
-        function displayranklist(ranklist) {
-          var i = 0
-          var ans = '<table>\\n<tr>\\n<th>名次</th>\\n<th>参赛者</th>\\n<th>总分</th>\\n'
-          for (;i < 4; i++) {
-            ans += '<th>' + String.fromCharCode(65 + i) + '</th>\\n'
-          }
-          ans += '</tr>\\n</table>\\n'
-          return ans
-        }
-        document.getElementById("showranklist").innerHTML = displayranklist(${ JSON.stringify(/*res['scoreboard']['result']*/[])})
-        </script>
-  `
-}
-
-const generateHTML = async (res: any[]) => {
-  const contest = res['contest']
-  return `
-  <!DOCTYPE html>
-<html class="no-js" lang="zh">
-
-<head>
-    <meta charset="utf-8">
-    <title>比赛详情 - ${contest['name']}</title>
-</head>
-
-<body>
-    <h1 data-v-52820d90="" class="lfe-h1">${contest['name']}</h1>
-    <div data-v-83303c00="" data-v-7c02ef97="" class="stat color-inverse" data-v-52820d90="">
-        <div data-v-83303c00="" class="field">
-            <span data-v-83303c00="" class="key lfe-caption">题目数</span>
-            <span data-v-83303c00="" class="value lfe-caption">${contest['problemCount']}</span>
-        </div>
-        <div data-v-83303c00="" class="field">
-            <span data-v-83303c00="" class="key lfe-caption">报名人数</span>
-            <span data-v-83303c00="" class="value lfe-caption">${contest['totalParticipants']}</span>
-        </div>
-    </div>
-    <div data-v-6febb0e8="" data-v-72177bf8="" class="full-container" style="margin-top: 0px;">
-        <section data-v-72177bf8="" data-v-6febb0e8="" class="side">
-            <div data-v-796309f8="" class="card padding-default" data-v-6febb0e8="">
-                <div data-v-3a151854="" class="info-rows" data-v-796309f8="" style="margin-bottom: 1em;">
-                    <div data-v-3a151854="">
-                        <span data-v-3a151854="">
-                            <span data-v-3a151854="">比赛编号</span>
-                        </span>
-                        <span data-v-3a151854="">
-                            <span data-v-3a151854="">${contest['id']}</span>
-                        </span>
-                    </div>
-                    <div data-v-3a151854="">
-                        <span data-v-3a151854="">
-                            <span data-v-3a151854="">举办者</span>
-                        </span>
-                        <span data-v-3a151854="">
+        <div data-v-6febb0e8="" data-v-72177bf8="" class="full-container" style="margin-top: 0px;">
+            <section data-v-72177bf8="" data-v-6febb0e8="" class="side">
+                <div data-v-796309f8="" class="card padding-default" data-v-6febb0e8="">
+                    <div data-v-3a151854="" class="info-rows" data-v-796309f8="" style="margin-bottom: 1em;">
+                        <div data-v-3a151854="">
                             <span data-v-3a151854="">
-                                <span data-v-360481bd="" class="wrapper">
-                                    <span data-v-360481bd="" data-v-303bbf52="" id="hoststyle">
-                                        ${contest['host']['name']}
-                                    </span>
-                                    <span id="host"> </span>
+                                <span data-v-3a151854="">比赛编号</span>
+                            </span>
+                            <span data-v-3a151854="">
+                                <span data-v-3a151854="">${contest['id']}</span>
+                            </span>
+                        </div>
+                        <div data-v-3a151854="">
+                            <span data-v-3a151854="">
+                                <span data-v-3a151854="">举办者</span>
+                            </span>
+                            <span data-v-3a151854="">
+                                <span data-v-3a151854="">`
+  if (contest['visibilityType'] > 3 && contest['visibilityType'] < 6) {
+    html += `
+                                    <span data-v-360481bd="" class="wrapper">
+                                        <span data-v-360481bd="" data-v-303bbf52="" style="${getUsernameStyle(contest['host']['color'].toLowerCase())}">
+                                            ${contest['host']['name']}
+                                        </span>
+                                        ${getUserSvg(contest['host']['ccfLevel'])}
+                                    </span>`
+  } else {
+    html += `
+                                    <span data-v-360481bd="" class="wrapper">
+                                        <span data-v-360481bd="" data-v-303bbf52="" style="color: rgb(52, 152, 219);">
+                                            ${contest['host']['name']}
+                                        </span>
+                                    </span>`
+  }
+  html += `
                                 </span>
                             </span>
-                        </span>
-                        <script>
-                            function Host(visibilityType) {
-                            }
-                            if(false)Host(1)
-                        </script>
-                    </div>
-                    <div data-v-3a151854="">
-                        <span data-v-3a151854="">
-                            <span data-v-3a151854="">比赛类型</span>
-                        </span>
-                        <span data-v-20b7d558 data-v-c0996248 class="lfe-captiontag" style="${contestStyle[contest['ruleType']]}">${contestType[contest['ruleType']]}</span>
-                        <span class="lg-small lg-inline-up">
-                        </span>
-                    </div>
-                    <div>
-                        <span data-v-8d4c9aee="" class="lfe-caption">开始时间：${formatTime(new Date(contest['startTime'] as number * 1000), 'yyyy-MM-dd hh:mm:ss')}</span>
-                    </div>
-                    <div>
-                        <span data-v-8d4c9aee="" class="lfe-caption">结束时间：${formatTime(new Date(contest['endTime'] as number * 1000), 'yyyy-MM-dd hh:mm:ss')}</span>
-                    </div>
-                    <div>
-                        <span data-v-8d4c9aee="" class="lfe-caption">比赛时长：${changeTime(+contest['endTime'] - +contest['startTime'])}</span>
-                    </div>
-                    <div>
-                        <span data-v-8d4c9aee="" class="lfe-caption" id="countdown"> </span>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <main data-v-27cf0bac="" class="wrapped lfe-body" style="background-color: rgb(239, 239, 239);">
-            <div data-v-6febb0e8="" data-v-27cf0bac="" class="full-container" currenttemplate="ContestShow" currenttheme="[object Object]" style="margin-top: 2em;">
-                <div data-v-796309f8="" class="card padding-default" data-v-6febb0e8="">
-                    <div data-v-8feadc5c="" slot="header" data-v-796309f8="">
-                        <div data-v-8feadc5c="" class="category">
-                            <!---->
-                            <table>
-                                <tr>
-                                    <th data-v-8feadc5c="" class=""><!----><input type="button" value="比赛说明" onclick="Description()" style="background-color: rgb(52,152,219); color: rgb(255,255,255)" id="description"></th>
-                                    <th data-v-8feadc5c="" class=""><!----> <input type="button" value="题目列表" onclick="ProblemList()" id="problemlist"></th>
-                                    <th data-v-8feadc5c="" class=""><!----> <input type="button" value="排行榜" onclick="Ranklist()" id="ranklist"></th>
-                                </tr>
-                            </table>
-                            <script>
-                                var last="description"
-                                var lastshow="showdescription"
-                                function Description() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="description"
-                                    lastshow="showdescription"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                                function ProblemList() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="problemlist"
-                                    lastshow="showproblem"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                                function Ranklist() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="ranklist"
-                                    lastshow="showranklist"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                            </script>
+                        </div>
+                        <div data-v-3a151854="">
+                            <span data-v-3a151854="">
+                                <span data-v-3a151854="">比赛类型</span>
+                            </span>
+                            <span data-v-20b7d558 data-v-c0996248 class="lfe-captiontag" style="${contestStyle[contest['ruleType']]}">${contestType[contest['ruleType']]}</span>
+                            <span class="lg-small lg-inline-up">
+                                <span class="lfe-caption tag" style="${contestVisibilityStyle[contest['visibilityType']]}">${contestVisibility[contest['visibilityType']]}</span>
+                            </span>
+                        </div>
+                        <div>
+                            <span data-v-8d4c9aee="" class="lfe-caption">开始时间：${formatTime(new Date(contest['startTime'] as number * 1000), 'yyyy-MM-dd hh:mm:ss')}</span>
+                        </div>
+                        <div>
+                            <span data-v-8d4c9aee="" class="lfe-caption">结束时间：${formatTime(new Date(contest['endTime'] as number * 1000), 'yyyy-MM-dd hh:mm:ss')}</span>
+                        </div>
+                        <div>
+                            <span data-v-8d4c9aee="" class="lfe-caption">比赛时长：${changeTime(+contest['endTime'] - +contest['startTime'])}</span>
+                        </div>
+                        <div>
+                            <span data-v-8d4c9aee="" class="lfe-caption" id="countdown"> </span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-
-        <script>
-            function formatCountDown(begin, end) {
-                var x = 0
-                var now = Math.floor(new Date().getTime() / 1000)
-                var res = ''
-                if (now < begin) {
-                    res = '据比赛开始还有 '
-                    x = begin - now
-                }
-                if (now >= begin && now <= end) {
-                    res = '据比赛结束还有 '
-                    x = end - now
-                }
-                if (now > end) {
-                    return '比赛已经结束了'
-                }
-                res += formatTime(x)
-                return res
-            }
-
-            function formatTime(x) {
-                var res = ''
-                if (x >= 86400) {
-                    res += Math.floor(x / 86400).toString() + ' 天 '
-                    x -= Math.floor(x / 86400) * 86400
-                }
-                if (x >= 3600) {
-                    res += Math.floor(x / 3600).toString() + ' 小时 '
-                    x -= Math.floor(x / 3600) * 3600
-                }
-                if (x >= 60) {
-                    res += Math.floor(x / 60).toString() + ' 分 '
-                    x -= Math.floor(x / 60) * 60
-                }
-                if (x > 0) {
-                    res += x.toString() + ' 秒 '
-                }
-                return res
-            }
-
-            function updateCountDown() {
-                document.getElementById("countdown").innerText = formatCountDown(${ contest['startTime']}, ${contest['endTime']})
-            }
-
-            setInterval(() => {
-                updateCountDown();
-            }, 1000);
-            updateCountDown();
-        </script>
-        <!-- 以下为比赛说明 -->
-
-        <div data-v-17281a3e="" data-v-8d4c9aee="" class="marked" data-v-0776707c="" id="showdescription">
-            <section data-v-72177bf8="" data-v-6febb0e8="" class="main">
-                <section data-v-6febb0e8="">
-                    <div data-v-6febb0e8="">
-                        <div data-v-796309f8="" class="card padding-default">
-                            <div data-v-5a58a989="" class="marked" data-v-796309f8="">
+            </section>
+            <main data-v-27cf0bac="" class="wrapped lfe-body" style="background-color: rgb(239, 239, 239);">
+                <div data-v-6febb0e8="" data-v-27cf0bac="" class="full-container" currenttemplate="ContestShow" currenttheme="[object Object]" style="margin-top: 2em;">
+                    <div data-v-796309f8="" class="card padding-default" data-v-6febb0e8="">
+                        <div data-v-8feadc5c="" slot="header" data-v-796309f8="">
+                            <div data-v-8feadc5c="" class="category">
+                                <!---->
+                                <table>
+                                    <tr>
+                                        <th data-v-8feadc5c="" class=""><!----><input type="button" value="比赛说明" onclick="Description()" style="background-color: rgb(52,152,219); color: rgb(255,255,255)" id="description"></th>
+                                        <th data-v-8feadc5c="" class=""><!----> <input type="button" value="题目列表" onclick="ProblemList()" id="problemlist"></th>
+                                        <th data-v-8feadc5c="" class=""><!----> <input type="button" value="排行榜" onclick="Ranklist()" id="ranklist"></th>
+                                    </tr>
+                                </table>
+                                <script>
+                                    var last="description"
+                                    var lastshow="showdescription"
+                                    function Description() {
+                                        document.getElementById(last).style=""
+                                        document.getElementById(lastshow).style="display: none"
+                                        last="description"
+                                        lastshow="showdescription"
+                                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
+                                        document.getElementById(lastshow).style=""
+                                    }
+                                    function ProblemList() {
+                                        document.getElementById(last).style=""
+                                        document.getElementById(lastshow).style="display: none"
+                                        last="problemlist"
+                                        lastshow="showproblem"
+                                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
+                                        document.getElementById(lastshow).style=""
+                                    }
+                                    function Ranklist() {
+                                        document.getElementById(last).style=""
+                                        document.getElementById(lastshow).style="display: none"
+                                        last="ranklist"
+                                        lastshow="showranklist"
+                                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
+                                        document.getElementById(lastshow).style=""
+                                    }
+                                </script>
                             </div>
                         </div>
                     </div>
-                </section>
-            </section>
-        </div>
-        <!-- 以下为题目列表 -->
-        <div style="display: none" id="showproblem">
-            <span data-v-8d4c9aee="" class="lfe-caption" id="problem"> </span>
-        </div>
-        <script>
-            function showProblem(problem) {
-                var i = 0
-                var ans = '<table>\\n<tr>\\n<th>题号</th>\\n<th>满分</th>\\n<th>题目名称</th>\\n<th></th>\\n</tr>\\n'
-                for (; i < problem.length; i++) {
-                    ans += '<tr>\\n<td align="center">' + String.fromCharCode(65 + i) + '</td>\\n<td align="center">' + problem[i]['score'] + '</td>\\n<td align="center">' + problem[i]['problem']['title']
-                    if (problem[i]['submitted'] === true) {
-                        ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</td>\\n</tr>\\n'
-                    } else {
-                        ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</td>\\n</tr>\\n'
+                </div>
+            </main>
+
+            <script>
+                function formatCountDown(begin, end) {
+                    var x = 0
+                    var now = Math.floor(new Date().getTime() / 1000)
+                    var res = ''
+                    if (now < begin) {
+                        res = '据比赛开始还有 '
+                        x = begin - now
                     }
+                    if (now >= begin && now <= end) {
+                        res = '据比赛结束还有 '
+                        x = end - now
+                    }
+                    if (now > end) {
+                        return '比赛已经结束了'
+                    }
+                    res += formatTime(x)
+                    return res
                 }
-                ans += '</tr>\\n</table>\\n'
-                return ans
-            }
-            document.getElementById("problem").innerHTML = showProblem(${ JSON.stringify(res['contestProblems'])})
-        </script>
-        <!-- 以下为排行榜 -->
-        <div data-v-6e56e2aa="" class="border table" style="display: none" id="showranklist">
-            <div data-v-6e56e2aa="" class="header-wrap">
-                <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
-                    <span id="ranklist"> </span>
+
+                function formatTime(x) {
+                    var res = ''
+                    if (x >= 86400) {
+                        res += Math.floor(x / 86400).toString() + ' 天 '
+                        x -= Math.floor(x / 86400) * 86400
+                    }
+                    if (x >= 3600) {
+                        res += Math.floor(x / 3600).toString() + ' 小时 '
+                        x -= Math.floor(x / 3600) * 3600
+                    }
+                    if (x >= 60) {
+                        res += Math.floor(x / 60).toString() + ' 分 '
+                        x -= Math.floor(x / 60) * 60
+                    }
+                    if (x > 0) {
+                        res += x.toString() + ' 秒 '
+                    }
+                    return res
+                }
+
+                function updateCountDown() {
+                    document.getElementById("countdown").innerText = formatCountDown(${ contest['startTime']}, ${contest['endTime']})
+                }
+
+                setInterval(() => {
+                    updateCountDown();
+                }, 1000);
+                updateCountDown();
+            </script>
+            <!-- 以下为比赛说明 -->
+
+            <div data-v-17281a3e="" data-v-8d4c9aee="" class="marked" data-v-0776707c="" id="showdescription">
+                <section data-v-72177bf8="" data-v-6febb0e8="" class="main">
+                    <section data-v-6febb0e8="">
+                        <div data-v-6febb0e8="">
+                            <div data-v-796309f8="" class="card padding-default">
+                                <div data-v-5a58a989="" class="marked" data-v-796309f8="">
+                                    <p></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+            </div>
+            <!-- 以下为题目列表 -->
+            <div style="display: none" id="showproblem">
+                <span data-v-8d4c9aee="" class="lfe-caption" id="problem"> </span>
+            </div>
+            <script>
+                function showProblem(problem) {
+                    var i = 0
+                    var ans = '<table>\\n<tr>\\n<th>题号</th>\\n<th>满分</th>\\n<th>题目名称</th>\\n<th></th>\\n</tr>\\n'
+                    for (; i < problem.length; i++) {
+                        ans += '<tr>\\n<td align="center">' + String.fromCharCode(65 + i) + '</td>\\n<td align="center">' + problem[i]['score'] + '</td>\\n<td align="center">' + problem[i]['problem']['title']
+                        if (problem[i]['submitted'] === true) {
+                            ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</td>\\n</tr>\\n'
+                        } else {
+                            ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</td>\\n</tr>\\n'
+                        }
+                    }
+                    ans += '</tr>\\n</table>\\n'
+                    return ans
+                }
+                document.getElementById("problem").innerHTML = showProblem(${ JSON.stringify(res['contestProblems'])})
+            </script>
+            <!-- 以下为排行榜 -->
+            <div data-v-6e56e2aa="" class="border table" style="display: none" id="showranklist">
+                <div data-v-6e56e2aa="" class="header-wrap">
+                    <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
+                        <span id="ranklist">
+                            <table>
+                                <tr>
+                                    <th>名次</th>
+                                    <th>参赛者</th>
+                                    <th>总分</th>
+                                    `
+  let i = 0
+  for (; i < contest['problemCount']; i++) {
+    html += '<th>' + String.fromCharCode(65 + i) + '</th>\\n'
+  }
+  console.log(contest)
+  html += '</tr>\n'
+  for (i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count']); i++) {
+    html += '<tr>\n<th>#' + (i + 1).toString() + '</th><th ' + 'style="' + getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color']) + '">' + ranklist['scoreboard']['result'][i]['user']['name'] + getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel']) + '</th>\n<th>' + ranklist['scoreboard']['result'][i]['score'] + '\n<br data-v-239a177d data-v-6e56e2aa>\n<span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">(' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24).toString() + ':' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60).toString() + ')</span>\n</th>\n'
+    // console.log()
+    let j = 0
+    for (; j < contest['problemCount']; j++) {
+      console.log(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'])
+      // console.log(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']])
+    }
+  }
+  html += `                     </tr>
+                            <table>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
-        <script>
-        function displayranklist(ranklist) {
-          var i = 0
-          var ans = '<table>\\n<tr>\\n<th>名次</th>\\n<th>参赛者</th>\\n<th>总分</th>\\n'
-          for (;i < ${contest['problemCount']}; i++) {
-            ans += '<th>' + String.fromCharCode(65 + i) + '</th>\\n'
-          }
-          ans += '</tr>\\n</table>\\n'
-          return ans
-        }
-        </script>
-    </div>
-</body>
-</html>
-  `
+    </body>
+    </html>
+    `
+  return html
 }
 
+const cookie = new Cookie({
+  key: '_uid',
+  value: '39863',
+  path: '/',
+  domain: API.cookieDomain
+})
+const cookie1 = new Cookie({
+  key: '__client_id',
+  value: 'be23fb885e6965b69a7a3cdad107f0f61c490591',
+  path: '/',
+  domain: API.cookieDomain
+})
+jar.setCookie(cookie, API.baseURL, (err) => { })
+jar.setCookie(cookie1, API.baseURL, (err) => { })
 // tslint:disable-next-line: no-floating-promises
-// getRanklist('6724', 1)
+getContest('31672')
 // getRanklist('31672', 1)
-console.log(Math.min(1,2))
+// console.log(Math.min(1,2))
 
 console.log(new Date().getTime())
