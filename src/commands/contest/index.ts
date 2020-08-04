@@ -75,41 +75,38 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
   }
   html += '</tr>\n'
   for (i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count']); i++) {
-    html += '<tr>\n<th>#' + (i + 50 * (nowpage - 1) + 1).toString() + '</th><th ' + 'style="' + getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color']) + '">' + ranklist['scoreboard']['result'][i]['user']['name'] + getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel']) + '</th>\n<th>' + ranklist['scoreboard']['result'][i]['score'] + '\n<br data-v-239a177d data-v-6e56e2aa>\n<span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">'
+    html += '<tr>\n<td align="center">#' + (i + 50 * (nowpage - 1) + 1).toString() + '</td><td align="center" ' + 'style="' + getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color']) + '">' + ranklist['scoreboard']['result'][i]['user']['name'] + getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel']) + '</td>\n<td align="center">' + ranklist['scoreboard']['result'][i]['score'] + '\n<br data-v-239a177d data-v-6e56e2aa>\n<span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">'
     if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
       html += '(' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24).toString() + ':' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60).toString() + ')'
     } else {
       html += ranklist['scoreboard']['result'][i]['runningTime'] + 'ms'
     }
-    html += '</span>\n</th>\n'
+    html += '</span>\n</td>\n'
     let j = 0
     for (; j < contest['problemCount']; j++) {
       if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']] != null) {
         if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] > 0) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
-            html += '<th style="font-weight: bold; color: rgb(82, 196, 26);'
+            html += '<td align="center" style="font-weight: bold; color: rgb(82, 196, 26);'
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' background-color: rgb(217, 240, 199);' }
             html += '">+'
           } else {
-            html += '<th style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + '; font-weight: bold;'
+            html += '<td align="center" style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + '; font-weight: bold;'
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
-              // console.log(i)
-              // console.log(j)
               html += ' background-color: rgb(217, 240, 199);'
             }
             html += '">'
-            // if (i === 4) { console.log(html) }
           }
           html += ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] < 0) {
-          html += '<th style="font-weight: bold; color: rgb(231, 76, 60);">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
+          html += '<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] === 0) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
-            html += '<th'
+            html += '<td align="center"'
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' style="background-color: rgb(217, 240, 199);"' }
             html += '><span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>'
           } else {
-            html += '<th style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + ';font-weight: bold">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
+            html += '<td align="center" style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + ';font-weight: bold">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
           }
         }
         if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] != null) {
@@ -121,9 +118,9 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
           }
           html += '</span>\n'
         }
-        html += '</th>\n'
+        html += '</td>\n'
       } else {
-        html += '<th></th>\n'
+        html += '<td align="center"></td>\n'
       }
     }
   }
@@ -280,9 +277,9 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                             <!---->
                             <table>
                                 <tr>
-                                    <th data-v-8feadc5c="" class=""><!----><input type="button" value="比赛说明" onclick="Description()" style="background-color: rgb(52,152,219); color: rgb(255,255,255)" id="description"></th>
-                                    <th data-v-8feadc5c="" class=""><!----> <input type="button" value="题目列表" onclick="ProblemList()" id="problemlist"></th>
-                                    <th data-v-8feadc5c="" class=""><!----> <input type="button" value="排行榜" onclick="Ranklist()" id="ranklist"></th>
+                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----><input type="button" value="比赛说明" onclick="Description()" style="background-color: rgb(52,152,219); color: rgb(255,255,255)" id="description"></td>
+                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----> <input type="button" value="题目列表" onclick="ProblemList()" id="problemlist"></td>
+                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----> <input type="button" value="排行榜" onclick="Ranklist()" id="ranklist"></td>
                                 </tr>
                             </table>
                             <script>
@@ -390,11 +387,11 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         <script>
             function showProblem(problem) {
                 var i = 0
-                var ans = '<table>\\n<tr>\\n<th>题号</th>\\n<th>满分</th>\\n<th>题目名称</th>\\n<th></th>\\n</tr>\\n'
+                var ans = '<table>\\n<tr>\\n<td align="center">题号</td>\\n<td align="center">满分</td>\\n<td align="center">题目名称</td>\\n<td align="center"></td>\\n</tr>\\n'
                 for (; i < problem.length; i++) {
-                    ans += '<tr>\\n<td align="center">' + String.fromCharCode(65 + i) + '</td>\\n<td align="center">' + problem[i]['score'] + '</td>\\n<td align="center">' + problem[i]['problem']['title']
+                    ans += '<tr>\\n<td align="center">' + String.fromCharCode(65 + i) + '</td>\\n<td align="center" align="center">' + problem[i]['score'] + '</td>\\n<td align="center" align="center">' + problem[i]['problem']['title']
                     if (problem[i]['submitted'] === true) {
-                        ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</td>\\n</tr>\\n'
+                        ans += '</td>\\n<td align="center" align="center" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</td>\\n</tr>\\n'
                     } else {
                         ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</td>\\n</tr>\\n'
                     }
