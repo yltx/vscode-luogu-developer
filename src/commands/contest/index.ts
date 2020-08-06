@@ -2,7 +2,7 @@ import SuperCommand from '../SuperCommand'
 import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, getRanklist } from '@/utils/api'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
-import { UserStatus, contestStyle, contestType, contestVisibility, contestVisibilityStyle } from '@/utils/shared'
+import { UserStatus, contestStyle, contestType, contestVisibility, contestVisibilityStyle, contestRated } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg, getScoreColor } from '@/utils/workspaceUtils'
 
 export default new SuperCommand({
@@ -253,6 +253,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                         </span>
                         <span data-v-20b7d558 data-v-c0996248 class="lfe-captiontag" style="${contestStyle[contest['ruleType']]}">${contestType[contest['ruleType']]}</span>
                         <span data-v-20b7d558 data-v-c0996248  class="lfe-caption tag" style="${contestVisibilityStyle[contest['visibilityType']]}">${contestVisibility[contest['visibilityType']]}</span>
+                        <span data-v-20b7d558 data-v-c0996248 class="lfe-caption tag" style="${contestRated[contest['rated']]}">Rated</span>
                     </div>
                     <div>
                         <span data-v-8d4c9aee="" class="lfe-caption">开始时间：${formatTime(new Date(contest['startTime'] as number * 1000), 'yyyy-MM-dd hh:mm:ss')}</span>
@@ -412,9 +413,23 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                         <div class="post-nav-next post-nav-item">
                             <a class="pre-post" rel="next" title="上一页">上一页</a>
                         </div>
-                        <span class="post-nav-divider"></span>
                         <div class="post-nav-prev post-nav-item">
                             <a class="next-post" rel="prev" title="下一页">下一页</a>
+                        </div>
+                        <span class="post-nav-divider"></span>
+                        <div>
+                            <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="pagenumber">
+                            <input type="button" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
+                            <script>
+                            const vscode = acquireVsCodeApi();
+                            function gotokthpage() {
+                                var pos = document.getElementById(pagenumber) as number;
+                                if (pos > Math.ceil(${ranklist['scoreboard']['count']} / 50)||pos<1) {
+                                    swal("好像哪里有点问题", "不合法的页码", "error");
+                                    return;
+                                }
+                                vscode.postMessage({type: 'request-ranklist', data: pos });
+                            }
                         </div>
                     </div>
                 </div>
