@@ -131,6 +131,10 @@ export const contestStyle: string[] = ['',
   'color: rgb(255, 255, 255); background: rgb(255, 193, 22);',// IOI
   'color: rgb(255, 255, 255); background: rgb(255, 193, 22);'// CodeForces (暂不可用)
 ]
+export enum contestRated {
+  'false' = 'display: none',
+  'true' = 'color: rgb(255, 255, 255); background: rgb(82, 196, 26);'
+}
 export const contestVisibility: string[] = ['',
   '官方比赛',
   '团队公开赛',
