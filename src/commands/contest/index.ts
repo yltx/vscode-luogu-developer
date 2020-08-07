@@ -69,29 +69,29 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
     <th>参赛者</th>
     <th>总分</th>
     `
-  let i = 0
-  for (; i < contest['problemCount']; i++) {
-    html += '<th>' + String.fromCharCode(65 + i) + '</th>\n'
+  for (let i = 0; i < contest['problemCount']; i++) {
+    html += `<th>${String.fromCharCode(65 + i)}</th>`
   }
-  html += '</tr>\n'
-  for (i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count']); i++) {
-    html += '<tr>\n<td align="center">#' + (i + 50 * (nowpage - 1) + 1).toString() + '</td><td align="center" ' + 'style="' + getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color']) + '">' + ranklist['scoreboard']['result'][i]['user']['name'] + getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel']) + '</td>\n<td align="center">' + ranklist['scoreboard']['result'][i]['score'] + '\n<br data-v-239a177d data-v-6e56e2aa>\n<span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">'
+  html += '</tr>'
+  for (let i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count']); i++) {
+    html += `<tr><td align="center">#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="${getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color'])}">${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center">${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
     if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
-      html += '(' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24).toString() + ':' + Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60).toString() + ')'
+      html += `(${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24)}:${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60)})`
     } else {
-      html += ranklist['scoreboard']['result'][i]['runningTime'] + 'ms'
+      html += `${ranklist['scoreboard']['result'][i]['runningTime']}ms`
     }
-    html += '</span>\n</td>\n'
-    let j = 0
-    for (; j < contest['problemCount']; j++) {
+    html += '</span></td>'
+    for (let j = 0; j < contest['problemCount']; j++) {
       if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']] != null) {
         if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] > 0) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
             html += '<td align="center" style="font-weight: bold; color: rgb(82, 196, 26);'
-            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' background-color: rgb(217, 240, 199);' }
+            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
+              html += ' background-color: rgb(217, 240, 199);'
+            }
             html += '">+'
           } else {
-            html += '<td align="center" style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + '; font-weight: bold;'
+            html += `<td align="center" style="color: ${getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'])}; font-weight: bold;`
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
               html += ' background-color: rgb(217, 240, 199);'
             }
@@ -99,32 +99,35 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
           }
           html += ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] < 0) {
-          html += '<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
+          html += `<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);">${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] === 0) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
             html += '<td align="center"'
-            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) { html += ' style="background-color: rgb(217, 240, 199);"' }
+            if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
+              html += ' style="background-color: rgb(217, 240, 199);"'
+            }
             html += '><span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>'
           } else {
-            html += '<td align="center" style="color: ' + getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']) + ';font-weight: bold">' + ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
+            html += `<td align="center" style="color: ${getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'])};font-weight: bold">${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
           }
         }
         if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] != null) {
-          html += '\n<br data-v-239a177d data-v-6e56e2aa>\n<span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">'
+          html += '<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">'
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
-            html += '(' + Math.floor((ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] / 3600) % 24).toString() + ':' + Math.floor((ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] % 3600) / 60).toString() + ')'
+            html += `(${Math.floor((ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] / 3600) % 24)}:${Math.floor((ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] % 3600) / 60)})`
           } else {
-            html += ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] + 'ms'
+            html += `${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime']}ms`
           }
-          html += '</span>\n'
+          html += '</span>'
         }
-        html += '</td>\n'
+        html += '</td>'
       } else {
-        html += '<td align="center"></td>\n'
+        html += '<td align="center"></td>'
       }
     }
   }
-  return html + '</table>'
+  html += '</table>'
+  return html
 }
 
 const generateHTML = async (res: any[], ranklist: any[]) => {
@@ -340,19 +343,23 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             function formatTime(x) {
                 var res = ''
                 if (x >= 86400) {
-                    res += Math.floor(x / 86400).toString() + ' 天 '
+                    res += \`\${Math.floor(x / 86400)} 天 \`
+                    // res += Math.floor(x / 86400).toString() + ' 天 '
                     x -= Math.floor(x / 86400) * 86400
                 }
                 if (x >= 3600) {
-                    res += Math.floor(x / 3600).toString() + ' 小时 '
+                    // res += Math.floor(x / 3600).toString() + ' 小时 '
+                    res += \`\${Math.floor(x / 3600)} 小时 \`
                     x -= Math.floor(x / 3600) * 3600
                 }
                 if (x >= 60) {
-                    res += Math.floor(x / 60).toString() + ' 分 '
+                    // res += Math.floor(x / 60).toString() + ' 分 '
+                    res += \`\${Math.floor(x / 60)} 分 \`
                     x -= Math.floor(x / 60) * 60
                 }
                 if (x > 0) {
-                    res += x.toString() + ' 秒 '
+                    // res += x.toString() + ' 秒 '
+                    res += \`\${x} 秒 \`
                 }
                 return res
             }
@@ -400,7 +407,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                 ans += '</tr>\\n</table>\\n'
                 return ans
             }
-            document.getElementById("problem").innerHTML = showProblem(${ JSON.stringify(res['contestProblems'])})
+            document.getElementById("problem").innerHTML = showProblem(${JSON.stringify(res['contestProblems'])})
         </script>
         <!-- 以下为排行榜 -->
         <div data-v-6e56e2aa=""  class="card padding-default" style="display: none" id="showranklist">
