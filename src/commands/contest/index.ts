@@ -410,16 +410,12 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                         ${await generateRanklist(res, ranklist, 1)}
                     </span>
                     <div class="post-nav">
-                        <div class="post-nav-next post-nav-item">
-                            <a class="pre-post" rel="next" title="上一页">上一页</a>
-                        </div>
-                        <div class="post-nav-prev post-nav-item">
-                            <a class="next-post" rel="prev" title="下一页">下一页</a>
-                        </div>
+                        <a class="pre-post" rel="next" title="上一页">上一页</a>
+                        <a class="next-post" rel="prev" title="下一页">下一页</a>
                         <span class="post-nav-divider"></span>
                         <div>
                             <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="pagenumber">
-                            <input type="button" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
+                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
                             <script>
                             const vscode = acquireVsCodeApi();
                             function gotokthpage() {
