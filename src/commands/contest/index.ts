@@ -426,13 +426,15 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                             <script>
                             const vscode = acquireVsCodeApi();
                             function gotokthpage() {
-                                var pos = document.getElementById(pagenumber) as number;
+                                var p = document.getElementById(pagenumber).value;
+                                var pos = parseInt(p);
                                 if (pos > Math.ceil(${ranklist['scoreboard']['count']} / 50)||pos<1) {
                                     swal("好像哪里有点问题", "不合法的页码", "error");
                                     return;
                                 }
                                 vscode.postMessage({type: 'request-ranklist', data: pos });
                             }
+                            </script>
                         </div>
                     </div>
                 </div>

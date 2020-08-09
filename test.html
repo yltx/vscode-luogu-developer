@@ -1,9 +1,11 @@
-<table>
-    <tr>
-        <th>10000000000000000</th>
-        <th>2</th>
-    </tr>
-    <tr>
-        <td align="center">1</td>
-    </tr>
-</table>
+<div>
+    <span id="a">2</span>
+    <input type="text" id="pos" placeholder="1" class="am-form-field">
+    <input type="button" onmouseout="this.style.backgroundColor='white';"
+        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
+    <script>
+        function gotokthpage() {
+            var pos = document.getElementById("pos").value;
+            document.getElementById("a").innerText = parseInt(pos) + 1;
+        }
+    </script>
