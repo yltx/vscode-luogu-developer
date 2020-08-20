@@ -4,6 +4,7 @@ import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType, contestVisibility, contestVisibilityStyle, contestRated } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg, getScoreColor } from '@/utils/workspaceUtils'
+import { debug } from '@/utils/debug.ts'
 
 export default new SuperCommand({
   onCommand: 'contest',
@@ -50,7 +51,7 @@ export default new SuperCommand({
       })
       //   const html = await generateHTML(res, ranklist)
       const html = await generateHTML(res, ranklist)
-      console.log(html)
+      debug(html)
       panel.webview.html = html
     } catch (err) {
       vscode.window.showErrorMessage('查看失败')
@@ -73,7 +74,7 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
     html += `<th>${String.fromCharCode(65 + i)}</th>`
   }
   html += '</tr>'
-  for (let i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count']); i++) {
+  for (let i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count'] - 50 * (nowpage - 1)); i++) {
     html += `<tr><td align="center">#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="${getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color'])}">${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center">${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
     if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
       html += `(${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24)}:${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60)})`
@@ -133,16 +134,15 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
 const generateHTML = async (res: any[], ranklist: any[]) => {
   const contest = res['contest']
   console.log(ranklist)
-  //   console.log(contest['visibilityType'] > 3 && contest['visibilityType'] < 6)
-  //   return ``
   let html = `
     <!DOCTYPE html>
-    <html class="no-js" lang="zh">
+    <html lang="zh">
 
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
         <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
+        <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
         <link rel="stylesheet" href="${getResourceFilePath('solution.css')}">
         <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
         <script src="${getResourceFilePath('jquery.min.js')}"></script>
@@ -163,25 +163,6 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         </style>
         <script>
         const vscode = acquireVsCodeApi();
-        var pos = 1;
-        function load() {
-          $("a.pre-post").click(function() {
-            if (pos == 1) {
-              swal("好像哪里有点问题", "已经是第一页了", "error");
-              return;
-            }
-            pos--;
-            vscode.postMessage({type: 'request-ranklist', data: pos });
-          });
-          $("a.next-post").click(function() {
-            if (pos == Math.ceil(${ranklist['scoreboard']['count']} / 50)) {
-              swal("好像哪里有点问题", "已经是最后一页了", "error");
-              return;
-            }
-            pos++;
-            vscode.postMessage({type: 'request-ranklist', data: pos });
-          });
-        }
         function scrollToClass (c) {
           $('html, body').animate({
             scrollTop: ($(c).offset().top)
@@ -365,7 +346,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             }
 
             function updateCountDown() {
-                document.getElementById("countdown").innerText = formatCountDown(${ contest['startTime']}, ${contest['endTime']})
+                document.getElementById("countdown").innerText = formatCountDown(${contest['startTime']}, ${contest['endTime']})
             }
 
             setInterval(() => {
@@ -410,33 +391,60 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             document.getElementById("problem").innerHTML = showProblem(${JSON.stringify(res['contestProblems'])})
         </script>
         <!-- 以下为排行榜 -->
-        <div data-v-6e56e2aa=""  class="card padding-default" style="display: none" id="showranklist">
+        <script>
+        var pos = 1;
+        function prepost() {
+            if(pos === 1){
+                swal("好像哪里有点问题", "已经是第一页了", "error");
+                return;
+            }
+            pos--;
+            // document.getElementById("RANKLIST").innerText = pos;
+            vscode.postMessage({ type: 'request-ranklist', data: pos });
+            scrollToClass('main')
+        };
+        function nxtpost() {
+            if (pos === Math.ceil(${ranklist['scoreboard']['count']} / 50.0)) {
+                swal("好像哪里有点问题", "已经是最后一页了", "error");
+                return;
+            }
+            pos++;
+            // document.getElementById("RANKLIST").innerText = pos;
+            vscode.postMessage({ type: 'request-ranklist', data: pos });
+            scrollToClass('main')
+        };
+        function gotokthpage() {
+            var p = document.getElementById("KTHPAGE").value;
+            var tmp = parseInt(p);
+            if (tmp < 1 || tmp > Math.ceil(${ranklist['scoreboard']['count']} / 50.0)) {
+                swal("好像哪里有点问题", "不合法的页数", "error");
+                return;
+            }
+            pos = tmp;
+            vscode.postMessage({ type: 'request-ranklist', data: pos });
+            scrollToClass('main')
+        }
+        </script>
+        <div data-v-6e56e2aa="" class="card padding-default" style="display: none" id="showranklist">
             <div data-v-6e56e2aa="" class="header-wrap">
                 <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
                     <span id="RANKLIST">
-                        ${await generateRanklist(res, ranklist, 1)}
+                    ${await generateRanklist(res, ranklist, 1)}
                     </span>
                     <div class="post-nav">
-                        <a class="pre-post" rel="next" title="上一页">上一页</a>
-                        <a class="next-post" rel="prev" title="下一页">下一页</a>
+                        <div class="post-nav-prev post-nav-item">
+                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';"  class="pre-post" onclick="prepost()" value="上一页">
+                        </div>
                         <span class="post-nav-divider"></span>
                         <div>
-                            <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="pagenumber">
-                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
-                            <script>
-                            const vscode = acquireVsCodeApi();
-                            function gotokthpage() {
-                                var p = document.getElementById(pagenumber).value;
-                                var pos = parseInt(p);
-                                if (pos > Math.ceil(${ranklist['scoreboard']['count']} / 50)||pos<1) {
-                                    swal("好像哪里有点问题", "不合法的页码", "error");
-                                    return;
-                                }
-                                vscode.postMessage({type: 'request-ranklist', data: pos });
-                            }
-                            </script>
+                            <span><input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE">
+                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()" id="KTHPAGE"></span>
                         </div>
-                    </div>
+                        <span class="post-nav-divider"></span>
+                        <div class="post-nav-next post-nav-item">
+                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';"  class="nxt-post" onclick="nxtpost()" value="下一页">
+                        </div>
+                    <div>
                 </div>
             </div>
         </div>

@@ -1,0 +1,51 @@
+<!-- function prepost() { -->
+<!-- if (pos === 1) { -->
+<!-- swal("好像哪里有点问题", "已经是第一页了", "error"); -->
+<!-- return; -->
+<!-- } -->
+<!-- pos--; -->
+<!-- vscode.postMessage({type: 'request-ranklist', data: pos }); -->
+<!-- }; -->
+<!-- function nxtpost() { -->
+<!-- if (pos === Math.ceil(${ranklist['scoreboard']['count']} / 50)) { -->
+<!-- swal("好像哪里有点问题", "已经是最后一页了", "error"); -->
+<!-- return; -->
+<!-- } -->
+<!-- pos++; -->
+<!-- vscode.postMessage({type: 'request-ranklist', data: pos }); -->
+<!-- }; -->
+<script>
+    var pos = 1;
+    function prepost() {
+        if (pos === 1) {
+            return;
+        }
+        pos--;
+        document.getElementById("RANKLIST").innerText = pos;
+    };
+    function nxtpost() {
+        if (pos === 41) {
+            return;
+        }
+        pos++;
+        document.getElementById("RANKLIST").innerText = pos;
+    };
+</script>
+<div data-v-6e56e2aa="" class="card padding-default" id="showranklist">
+    <div data-v-6e56e2aa="" class="header-wrap">
+        <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
+            <span id="RANKLIST">
+                ${await generateRanklist(res, ranklist, 1)}
+            </span>
+            <div class="post-nav">
+                <div class="post-nav-prev post-nav-item">
+                    <a class="pre-post" href="javascript:prepost()" title="上一页">上一页</a>
+                </div>
+                <span class="post-nav-divider"></span>
+                <div class="post-nav-next post-nav-item">
+                    <a class="nxt-post" href="javascript:nxtpost()" title="下一页">下一页</a>
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
