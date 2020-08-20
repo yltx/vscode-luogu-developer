@@ -1,11 +1,59 @@
-<div>
-    <span id="a">2</span>
-    <input type="text" id="pos" placeholder="1" class="am-form-field">
-    <input type="button" onmouseout="this.style.backgroundColor='white';"
-        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()">
-    <script>
-        function gotokthpage() {
-            var pos = document.getElementById("pos").value;
-            document.getElementById("a").innerText = parseInt(pos) + 1;
+<script>
+    var pos = 1;
+    function prepost() {
+        if (pos === 1) {
+            // swal("好像哪里有点问题", "已经是第一页了", "error");
+            return;
         }
-    </script>
+        pos--;
+        document.getElementById("RANKLIST").innerText = pos;
+        // vscode.postMessage({ type: 'request-ranklist', data: pos });
+        // scrollToClass('main')
+    };
+    function nxtpost() {
+        if (pos === 41) {
+            // swal("好像哪里有点问题", "已经是最后一页了", "error");
+            return;
+        }
+        pos++;
+        document.getElementById("RANKLIST").innerText = pos;
+        // vscode.postMessage({ type: 'request-ranklist', data: pos });
+        // scrollToClass('main')
+    };
+    function gotokthpage() {
+        var p = document.getElementById("KTHPAGE").value;
+        var pos = parseInt(p);
+        document.getElementById("RANKLIST").innerText = pos;
+        // vscode.postMessage({ type: 'request-ranklist', data: pos });
+        // scrollToClass('main')
+    }
+</script>
+<div data-v-6e56e2aa="" class="card padding-default" id="showranklist">
+    <div data-v-6e56e2aa="" class="header-wrap">
+        <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
+            <span id="RANKLIST">
+                ${await generateRanklist(res, ranklist, 1)}
+            </span>
+            <div class="post-nav">
+                <div class="post-nav-prev post-nav-item">
+                    <input type="button" onmouseout="this.style.backgroundColor='white';"
+                        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" class="pre-post" onclick="prepost()"
+                        value="上一页">
+                </div>
+                <span class="post-nav-divider"></span>
+                <div>
+                    <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE">
+                    <input type="button" onmouseout="this.style.backgroundColor='white';"
+                        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()"
+                        id="KTHPAGE">
+                </div>
+                <span class="post-nav-divider"></span>
+                <div class="post-nav-next post-nav-item">
+                    <input type="button" onmouseout="this.style.backgroundColor='white';"
+                        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" class="nxt-post" onclick="nxtpost()"
+                        value="下一页">
+                </div>
+                <div>
+                </div>
+            </div>
+        </div>
