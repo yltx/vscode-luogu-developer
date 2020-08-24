@@ -1,3 +1,4 @@
+// 'use-script'
 import * as vscode from 'vscode'
 import debug from '@/utils/debug'
 

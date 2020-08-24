@@ -433,16 +433,16 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                     </span>
                     <div class="post-nav">
                         <div class="post-nav-prev post-nav-item">
-                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';"  class="pre-post" onclick="prepost()" value="上一页">
+                            <p align="left"><a href="javascript:void(0)" title="上一页" onclick="prepost()">上一页</a></p>
                         </div>
                         <span class="post-nav-divider"></span>
                         <div>
-                            <span><input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE">
-                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()" id="KTHPAGE"></span>
+                            <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE" style="float:left; display:none;">
+                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()" id="KTHPAGE" style="float:left;">
                         </div>
                         <span class="post-nav-divider"></span>
                         <div class="post-nav-next post-nav-item">
-                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';"  class="nxt-post" onclick="nxtpost()" value="下一页">
+                            <p align="right"><a href="javascript:void(0)" title="下一页" onclick="nxtpost()">下一页</a></p>
                         </div>
                     <div>
                 </div>
