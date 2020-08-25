@@ -49,9 +49,9 @@ export default new SuperCommand({
           })
         }
       })
-      //   const html = await generateHTML(res, ranklist)
       const html = await generateHTML(res, ranklist)
-      debug(html)
+      // debug(html)
+      console.log(await generateRanklist(res, ranklist, 1))
       panel.webview.html = html
     } catch (err) {
       vscode.window.showErrorMessage('查看失败')
@@ -64,18 +64,18 @@ export default new SuperCommand({
 const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) => {
   console.log(ranklist)
   const contest = res['contest']
-  let html = `<table>
+  let html = `<table width="100%">
     <tr>
-    <th>名次</th>
-    <th>参赛者</th>
-    <th>总分</th>
+    <th width="30px" nowrap>名次</th>
+    <th nowrap>参赛者</th>
+    <th width="35px" nowrap>总分</th>
     `
   for (let i = 0; i < contest['problemCount']; i++) {
-    html += `<th>${String.fromCharCode(65 + i)}</th>`
+    html += `<th width="35px" nowrap>${String.fromCharCode(65 + i)}</th>`
   }
   html += '</tr>'
   for (let i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count'] - 50 * (nowpage - 1)); i++) {
-    html += `<tr><td align="center">#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="${getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color'])}">${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center">${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
+    html += `<tr><td align="center" width="30px" nowrap>#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="${getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color'])}" nowrap>${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center" width="35px" nowrap>${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
     if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
       html += `(${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24)}:${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60)})`
     } else {
@@ -90,26 +90,26 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
               html += ' background-color: rgb(217, 240, 199);'
             }
-            html += '">+'
+            html += '" width="35px" nowrap>+'
           } else {
             html += `<td align="center" style="color: ${getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'])}; font-weight: bold;`
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
               html += ' background-color: rgb(217, 240, 199);'
             }
-            html += '">'
+            html += '" width="35px" nowrap>'
           }
           html += ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] < 0) {
-          html += `<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);">${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
+          html += `<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);" width="35px" nowrap>${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
         } else if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'] === 0) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
             html += '<td align="center"'
             if (ranklist['scoreboard']['result'][i]['user']['uid'] === ranklist['firstBloodUID'][res['contestProblems'][j]['problem']['pid']]) {
               html += ' style="background-color: rgb(217, 240, 199);"'
             }
-            html += '><span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>'
+            html += ' width="35px" nowrap><span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>'
           } else {
-            html += `<td align="center" style="color: ${getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'])};font-weight: bold">${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
+            html += `<td align="center" style="color: ${getScoreColor(ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score'])};font-weight: bold" width="35px" nowrap>${ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['score']}`
           }
         }
         if (ranklist['scoreboard']['result'][i]['details'][res['contestProblems'][j]['problem']['pid']]['runningTime'] != null) {
@@ -123,7 +123,7 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
         }
         html += '</td>'
       } else {
-        html += '<td align="center"></td>'
+        html += '<td align="center" width="35px" nowrap></td>'
       }
     }
   }
@@ -160,6 +160,20 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             font-size: .875em !important;
             font-family: Courier New !important;
         }
+        form {
+            display: inline-block;
+            /* 2. display flex to the rescue */
+            flex-direction: row;
+            text-align: center;
+        }
+        input,label {
+            display: inline-block;
+            /* 1. oh noes, my inputs are styled as block... */
+        }
+        li {
+            float: left;
+            list-style: none
+        }
         </style>
         <script>
         const vscode = acquireVsCodeApi();
@@ -184,7 +198,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         <title>比赛详情 - ${contest['name']}</title>
     </head>
 
-    <body>
+    <body style="background-color: rgb(239, 239, 239);">
         <h1 data-v-52820d90="" class="lfe-h1">${contest['name']}</h1>
         <div data-v-6febb0e8="" data-v-72177bf8=""  class="card padding-default" style="margin-bottom: 1em;">
             <div data-v-83303c00="" class="field">
@@ -235,7 +249,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                         <span data-v-3a151854="">
                             <span data-v-3a151854="">比赛类型</span>
                         </span>
-                        <span data-v-20b7d558 data-v-c0996248 class="lfe-captiontag" style="${contestStyle[contest['ruleType']]}">${contestType[contest['ruleType']]}</span>
+                        <span data-v-20b7d558 data-v-c0996248 class="lfe-caption tag" style="${contestStyle[contest['ruleType']]}">${contestType[contest['ruleType']]}</span>
                         <span data-v-20b7d558 data-v-c0996248  class="lfe-caption tag" style="${contestVisibilityStyle[contest['visibilityType']]}">${contestVisibility[contest['visibilityType']]}</span>
                         <span data-v-20b7d558 data-v-c0996248 class="lfe-caption tag" style="${contestRated[contest['rated']]}">Rated</span>
                     </div>
@@ -254,53 +268,59 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                 </div>
             </div>
         </div>
-        <main data-v-27cf0bac="" class="wrapped lfe-body" style="background-color: rgb(239, 239, 239);">
-            <div data-v-6febb0e8="" data-v-27cf0bac="" class="full-container" currenttemplate="ContestShow" currenttheme="[object Object]" style="margin-top: 2em;">
-                <div data-v-796309f8="" class="card padding-default" data-v-6febb0e8="">
-                    <div data-v-8feadc5c="" slot="header" data-v-796309f8="">
-                        <div data-v-8feadc5c="" class="category">
-                            <!---->
-                            <table>
-                                <tr>
-                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----><input type="button" value="比赛说明" onclick="Description()" style="background-color: rgb(52,152,219); color: rgb(255,255,255)" id="description"></td>
-                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----> <input type="button" value="题目列表" onclick="ProblemList()" id="problemlist"></td>
-                                    <td align="center" align="center" data-v-8feadc5c="" class=""><!----> <input type="button" value="排行榜" onclick="Ranklist()" id="ranklist"></td>
-                                </tr>
-                            </table>
-                            <script>
-                                var last="description"
-                                var lastshow="showdescription"
-                                function Description() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="description"
-                                    lastshow="showdescription"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                                function ProblemList() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="problemlist"
-                                    lastshow="showproblem"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                                function Ranklist() {
-                                    document.getElementById(last).style=""
-                                    document.getElementById(lastshow).style="display: none"
-                                    last="ranklist"
-                                    lastshow="showranklist"
-                                    document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                                    document.getElementById(lastshow).style=""
-                                }
-                            </script>
-                        </div>
-                    </div>
-                </div>
+        <main>
+            <div>
+                <ul>
+                    <li>
+                        <span class="lfe-caption" id="description" style="background-color: rgb(52,152,219);" data-v-20b7d558><a style="color: rgb(255,255,255); font-size: large;" title="比赛说明" href="javascript:void(0)" onclick="Description()" id="des">比赛说明</a>&nbsp;</span>
+                    </li>
+                    <li>
+                        <span class="lfe-caption" id="problemlist" data-v-20b7d558>&nbsp;<a style="color: rgb(0,0,0); font-size: large;" title="题目列表" href="javascript:void(0)" onclick="ProblemList()" id="pro">题目列表</a>&nbsp;</span>
+                    </li>
+                    <li>
+                        <span class="lfe-caption" id="ranklist" data-v-20b7d558>&nbsp;<a style="color: rgb(0,0,0); font-size: large;" title="排行榜" href="javascript:void(0)" onclick="Ranklist()" id="ran">排行榜</a></span>
+                    </li>
+                </ul>
+                <script>
+                    var last="description"
+                    var lastshow="showdescription"
+                    var lasta="des"
+                    function Description() {
+                        document.getElementById(last).style=""
+                        document.getElementById(lastshow).style="display: none"
+                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
+                        last="description"
+                        lastshow="showdescription"
+                        lasta="des"
+                        document.getElementById(last).style="background-color: rgb(52,152,219);"
+                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lastshow).style=""
+                    }
+                    function ProblemList() {
+                        document.getElementById(last).style=""
+                        document.getElementById(lastshow).style="display: none"
+                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
+                        last="problemlist"
+                        lastshow="showproblem"
+                        lasta="pro"
+                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
+                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lastshow).style=""
+                    }
+                    function Ranklist() {
+                        document.getElementById(last).style=""
+                        document.getElementById(lastshow).style="display: none"
+                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
+                        last="ranklist"
+                        lastshow="showranklist"
+                        lasta="ran"
+                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
+                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lastshow).style=""
+                    }
+                </script>
             </div>
         </main>
-
         <script>
             function formatCountDown(begin, end) {
                 var x = 0
@@ -320,7 +340,6 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                 res += formatTime(x)
                 return res
             }
-
             function formatTime(x) {
                 var res = ''
                 if (x >= 86400) {
@@ -344,45 +363,34 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                 }
                 return res
             }
-
             function updateCountDown() {
                 document.getElementById("countdown").innerText = formatCountDown(${contest['startTime']}, ${contest['endTime']})
             }
-
             setInterval(() => {
                 updateCountDown();
             }, 1000);
             updateCountDown();
         </script>
         <!-- 以下为比赛说明 -->
-
-        <div data-v-17281a3e="" data-v-8d4c9aee="" class="marked" data-v-0776707c="" id="showdescription" class="card padding-default">
-            <section data-v-72177bf8="" data-v-6febb0e8="" class="main">
-                <section data-v-6febb0e8="">
-                    <div data-v-6febb0e8="">
-                        <div data-v-796309f8="" class="card padding-default">
-                            <div data-v-5a58a989="" class="marked" data-v-796309f8="">
-                                <p>${md.render(contest['description'])}</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </section>
+        <div class="marked" id="showdescription">
+            <div class="card padding-default">
+                <p>${md.render(contest['description'])}</p>
+            </div>
         </div>
         <!-- 以下为题目列表 -->
         <div class="card padding-default" style="display: none" id="showproblem">
-            <span data-v-8d4c9aee="" class="lfe-caption" id="problem"> </span>
+            <span id="problem"> </span>
         </div>
         <script>
             function showProblem(problem) {
                 var i = 0
-                var ans = '<table>\\n<tr>\\n<td align="center">题号</td>\\n<td align="center">满分</td>\\n<td align="center">题目名称</td>\\n<td align="center"></td>\\n</tr>\\n'
+                var ans = '<table width="100%">\\n<tr>\\n<td align="center" width="8%" nowrap>题号</td>\\n<td align="center" width="8%" nowrap>满分</td>\\n<td align="left" width="70%" nowrap>题目名称</td>\\n<td align="center" width="14%" nowrap></td>\\n</tr>\\n'
                 for (; i < problem.length; i++) {
-                    ans += '<tr>\\n<td align="center">' + String.fromCharCode(65 + i) + '</td>\\n<td align="center" align="center">' + problem[i]['score'] + '</td>\\n<td align="center" align="center">' + problem[i]['problem']['title']
+                    ans += '<tr>\\n<td align="center" width="8%" nowrap>' + String.fromCharCode(65 + i) + '</td>\\n<td align="center" width="8%" nowrap>' + problem[i]['score'] + '</td>\\n<td align="left" width="70%" nowrap>' + problem[i]['problem']['title']
                     if (problem[i]['submitted'] === true) {
-                        ans += '</td>\\n<td align="center" align="center" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</td>\\n</tr>\\n'
+                        ans += '</td>\\n<td align="center" width="14%" nowrap><span data-v-20b7d558="" data-v-7178e78a="" class="lfe-caption" data-v-6e56e2aa="" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</span></td>\\n</tr>\\n'
                     } else {
-                        ans += '</td>\\n<td align="center" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</td>\\n</tr>\\n'
+                        ans += '</td>\\n<td align="center" width="50px" nowrap><span data-v-20b7d558="" data-v-7178e78a="" class="lfe-caption" data-v-6e56e2aa="" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</span></td>\\n</tr>\\n'
                     }
                 }
                 ans += '</tr>\\n</table>\\n'
@@ -416,7 +424,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         function gotokthpage() {
             var p = document.getElementById("KTHPAGE").value;
             var tmp = parseInt(p);
-            if (tmp < 1 || tmp > Math.ceil(${ranklist['scoreboard']['count']} / 50.0)) {
+            if (p === "" || tmp < 1 || tmp > Math.ceil(${ranklist['scoreboard']['count']} / 50.0)) {
                 swal("好像哪里有点问题", "不合法的页数", "error");
                 return;
             }
@@ -425,27 +433,27 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             scrollToClass('main')
         }
         </script>
-        <div data-v-6e56e2aa="" class="card padding-default" style="display: none" id="showranklist">
-            <div data-v-6e56e2aa="" class="header-wrap">
-                <div data-v-239a177d="" data-v-6e56e2aa="" class="header">
-                    <span id="RANKLIST">
-                    ${await generateRanklist(res, ranklist, 1)}
-                    </span>
-                    <div class="post-nav">
-                        <div class="post-nav-prev post-nav-item">
-                            <p align="left"><a href="javascript:void(0)" title="上一页" onclick="prepost()">上一页</a></p>
-                        </div>
-                        <span class="post-nav-divider"></span>
-                        <div>
-                            <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE" style="float:left; display:none;">
-                            <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()" id="KTHPAGE" style="float:left;">
-                        </div>
-                        <span class="post-nav-divider"></span>
-                        <div class="post-nav-next post-nav-item">
-                            <p align="right"><a href="javascript:void(0)" title="下一页" onclick="nxtpost()">下一页</a></p>
-                        </div>
-                    <div>
-                </div>
+        <div class="card padding-default" style="display: none" id="showranklist">
+            <span id="RANKLIST">
+            ${await generateRanklist(res, ranklist, 1)}
+            </span>
+            <div class="post-nav">
+                <table width="100%">
+                    <tr>
+                        <td align="left" width="30%" nowrap>
+                            <p align="left" class="post-nav-prev post-nav-item"><a href="javascript:void(0)" title="上一页" onclick="prepost()">上一页</a></p>
+                        </td>
+                        <td align="center" width="40%" nowrap>
+                            <form>
+                                <input type="text" placeholder="输入要跳转到的页码" id="KTHPAGE">
+                                <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthpage()">跳转</button>
+                            </form>
+                        </td>
+                        <td align="right" width="30%" nowrap>
+                            <p align="right" class="post-nav-next post-nav-item"><a href="javascript:void(0)" title="下一页" onclick="nxtpost()">下一页</a></p>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </body>
