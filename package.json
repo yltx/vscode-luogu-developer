@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.5.0",
+  "version": "4.5.1",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -323,7 +323,7 @@
     "ts-loader": "^5.3.3",
     "tslint": "^5.11.0",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.2.2",
+    "typescript": "^4.0.2",
     "typescript-eslint-parser": "^21.0.2",
     "vscode-test": "^1.1.29"
   },

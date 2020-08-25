@@ -135,20 +135,20 @@ const generateRecordHTML = async (data: any) => {
   <body>
     <h2>R${ data.record.id} 记录详情</h2>
     <br />
-    <div data-v-796309f8="" data-v-327ef1ce="" class="card padding-default" style="color: #000000">
-      题目：<a data-v-303bbf52="" data-v-5ccef6e7="" href="https://www.luogu.com.cn/problem/${data.record.problem.pid}${data.record.contest ? `?contestId=${data.record.contest.id}` : ''}" class="link color-default"><span data-v-5ccef6e7="" class="pid">${data.record.problem.pid}</span> ${data.record.problem.title} </a>
+    <div data-v-796309f8="" data-v-327ef1ce="" class="card padding-default">
+      <p class="info-card__desc-title">题目：<a data-v-303bbf52="" data-v-5ccef6e7="" href="https://www.luogu.com.cn/problem/${data.record.problem.pid}${data.record.contest ? `?contestId=${data.record.contest.id}` : ''}" class="link color-default"><span data-v-5ccef6e7="" class="pid">${data.record.problem.pid}</span> ${data.record.problem.title} </a></p>
       <br />
       ${data.record.contest ? `比赛：<a data-v-303bbf52="" data-v-d5eaec0a="" href="https://www.luogu.com.cn/contest/${data.record.contest.id}" class="color-default">${data.record.contest.name}</a><br />` : ''}
-      状态：<a style="color: ${ getStatusColor(data.record.status)};">${getStatusText(data.record.status)}</a>
+      <p class="info-card__desc-title">状态：<a style="color: ${ getStatusColor(data.record.status)};">${getStatusText(data.record.status)}</a></p>
       <br />
-      ${data.record.score !== undefined ? `分数：<a style="color: ${getScoreColor(data.record.score)}; font-weight: bold">${data.record.score}</a><br />` : ''}
-      编程语言：${ Languages[data.record.language]} ${data.record.enableO2 ? ` O2` : ``}
+      <p class="info-card__desc-title">${data.record.score !== undefined ? `分数：<a style="color: ${getScoreColor(data.record.score)}; font-weight: bold">${data.record.score}</a><br />` : ''}</p>
+      <p class="info-card__desc-title" style="margin-top: 1.2em;">编程语言：${ Languages[data.record.language]} ${data.record.enableO2 ? ` O2` : ``}</p>
       <br />
-      代码长度：${ data.record.sourceCodeLength < 1000 ? data.record.sourceCodeLength.toString() + `B` : (data.record.sourceCodeLength / 1000).toString() + `KB`}
+      <p class="info-card__desc-title">代码长度：${ data.record.sourceCodeLength < 1000 ? data.record.sourceCodeLength.toString() + `B` : (data.record.sourceCodeLength / 1000).toString() + `KB`}</p>
       <br />
-      用时：${ data.record.time < 1000 ? data.record.time.toString() + `ms` : (data.record.time < 60000 ? (data.record.time / 1000).toString() + `s` : (data.record.time / 60000).toString() + `min`)}
+      <p class="info-card__desc-title">用时：${ data.record.time < 1000 ? data.record.time.toString() + `ms` : (data.record.time < 60000 ? (data.record.time / 1000).toString() + `s` : (data.record.time / 60000).toString() + `min`)}</p>
       <br />
-      内存：${ data.record.memory < 1000 ? data.record.memory.toString() + `KB` : (data.record.memory / 1000).toString() + `MB`}
+      <p class="info-card__desc-title">内存：${ data.record.memory < 1000 ? data.record.memory.toString() + `KB` : (data.record.memory / 1000).toString() + `MB`}</p>
       <br />
     </div>
     ${ html}

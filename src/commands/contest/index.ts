@@ -4,7 +4,7 @@ import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType, contestVisibility, contestVisibilityStyle, contestRated } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg, getScoreColor } from '@/utils/workspaceUtils'
-import { debug } from '@/utils/debug.ts'
+import { showProblem } from '../../utils/showProblem'
 
 export default new SuperCommand({
   onCommand: 'contest',
@@ -47,11 +47,13 @@ export default new SuperCommand({
               html: await generateRanklist(res, await getRanklist(cid, message.data as number), message.data as number)
             }
           })
+        } else if (message.type === 'request-problem') {
+          await showProblem(message.data + '?contestId=' + exports.cid)
         }
       })
       const html = await generateHTML(res, ranklist)
       // debug(html)
-      console.log(await generateRanklist(res, ranklist, 1))
+      console.log(html)
       panel.webview.html = html
     } catch (err) {
       vscode.window.showErrorMessage('查看失败')
@@ -382,11 +384,14 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
             <span id="problem"> </span>
         </div>
         <script>
+            function openProblem(pid) {
+              vscode.postMessage({ type: 'request-problem', data: pid });
+            }
             function showProblem(problem) {
                 var i = 0
                 var ans = '<table width="100%">\\n<tr>\\n<td align="center" width="8%" nowrap>题号</td>\\n<td align="center" width="8%" nowrap>满分</td>\\n<td align="left" width="70%" nowrap>题目名称</td>\\n<td align="center" width="14%" nowrap></td>\\n</tr>\\n'
                 for (; i < problem.length; i++) {
-                    ans += '<tr>\\n<td align="center" width="8%" nowrap>' + String.fromCharCode(65 + i) + '</td>\\n<td align="center" width="8%" nowrap>' + problem[i]['score'] + '</td>\\n<td align="left" width="70%" nowrap>' + problem[i]['problem']['title']
+                    ans += '<tr>\\n<td align="center" width="8%" nowrap>' + String.fromCharCode(65 + i) + '</td>\\n<td align="center" width="8%" nowrap>' + problem[i]['score'] + '</td>\\n<td align="left" width="70%" nowrap><a href="javascript:void(0)" onclick="openProblem(\\'' + problem[i]['problem']['pid'] + '\\')">' + problem[i]['problem']['title'] + '</a>'
                     if (problem[i]['submitted'] === true) {
                         ans += '</td>\\n<td align="center" width="14%" nowrap><span data-v-20b7d558="" data-v-7178e78a="" class="lfe-caption" data-v-6e56e2aa="" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</span></td>\\n</tr>\\n'
                     } else {
