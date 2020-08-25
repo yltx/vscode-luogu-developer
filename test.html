@@ -1,4 +1,75 @@
-<div>
-    <input type="text" class="am-form-field" placeholder="输入要跳转到的页码" id="KTHPAGE" style="float:left;">
-    <input type="button" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" value="跳转" onclick="gotokthpage()" id="KTHPAGE">
+<style>
+    li {
+        float: left;
+        list-style: none
+    }
+
+    pre {
+        margin: .5em 0 !important;
+        padding: .3em .5em !important;
+        border: #ddd solid 1px !important;
+        border-radius: 3px !important;
+        overflow: auto !important;
+        position: relative;
+    }
+
+    code {
+        font-size: .875em !important;
+        font-family: Courier New !important;
+    }
+
+    form {
+        display: inline-block;
+        /* 2. display flex to the rescue */
+        flex-direction: row;
+        text-align: center;
+    }
+
+    input,
+    label {
+        display: inline-block;
+        /* 1. oh noes, my inputs are styled as block... */
+    }
+</style>
+<script>
+    var pos = 1;
+    function prepost() {
+        if (pos === 1) {document.getElementById("RANKLIST").innerText = "Error";return ;}
+        pos--;
+        document.getElementById("RANKLIST").innerText = pos;
+    };
+    function nxtpost() {
+        if (pos === 41) {document.getElementById("RANKLIST").innerText = "Error";return ;}
+        pos++;
+        document.getElementById("RANKLIST").innerText = pos;
+    };
+    function gotokthpage() {
+        var p = document.getElementById("KTHPAGE").value;
+        // var tmp = parseInt(p);
+        // pos = tmp;
+        if(p === ""){document.getElementById("RANKLIST").innerText = "Error";}
+    }
+</script>
+<span id="RANKLIST">
+</span>
+<div class="post-nav">
+    <table width="100%">
+        <tr>
+            <td align="left" width="30%" nowrap>
+                <p align="left" class="post-nav-prev post-nav-item"><a href="javascript:void(0)" title="上一页"
+                        onclick="prepost()">上一页</a></p>
+            </td>
+            <td align="center" width="40%" nowrap>
+                <form>
+                    <input type="text" placeholder="输入要跳转到的页码" id="KTHPAGE">
+                    <button onmouseout="this.style.backgroundColor='white';"
+                        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthpage()">跳转</button>
+                </form>
+            </td>
+            <td align="right" width="30%" nowrap>
+                <p align="right" class="post-nav-next post-nav-item"><a href="javascript:void(0)" title="下一页"
+                        onclick="nxtpost()">下一页</a></p>
+            </td>
+        </tr>
+    </table>
 </div>
