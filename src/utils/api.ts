@@ -19,6 +19,7 @@ export namespace API {
   export const cookieDomain = 'luogu.com.cn'
   // export const SEARCH_PROBLEM = (pid: string) => `${apiURL}/problem/detail/${pid}`
   export const SEARCH_PROBLEM = (pid: string) => `/problem/${pid}?_contentOnly=1`
+  export const SEARCH_CONTESTPROBLEM = (pid: string,cid: string) => `/problem/${pid}?contestId=${cid}&_contentOnly=1`
   export const SEARCH_SOLUTION = (pid: string, page: number) => `/problem/solution/${pid}?page=${page}&_contentOnly=1`
   export const CAPTCHA_IMAGE = `${apiURL}/verify/captcha`
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`
@@ -154,6 +155,23 @@ export const searchProblem = async (pid: string) =>
         throw Error('请求超时，请重试')
       } else {
         throw err;
+      }
+    })
+
+export const searchContestProblem = async (pid: string,cid: string) =>
+  axios.get(API.SEARCH_CONTESTPROBLEM(pid,cid)).then(res => res.data)
+    .then(res => {
+      if (res.code !== 200) {
+        throw Error(res.currentData.errorMessage)
+      }
+      return res.currentData.problem
+    }).catch(err => {
+      if (err.response) {
+        throw err.response.data
+      } else if (err.request) {
+        throw Error('请求超时，请重试')
+      } else {
+        throw err
       }
     })
 

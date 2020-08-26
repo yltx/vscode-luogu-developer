@@ -7,3 +7,4 @@ package-lock.json
 *.vsix
 .idea
 .DS_Store
+test.*

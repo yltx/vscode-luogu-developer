@@ -1,22 +1,41 @@
 import * as vscode from 'vscode'
-import { searchProblem, getResourceFilePath } from '@/utils/api'
+import { searchProblem, getResourceFilePath, searchContestProblem } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
 
-export const showProblem = async (pid: string) => {
-  try {
-    const problem = await searchProblem(pid).then(res => new Problem(res))
-    const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
-    })
-    let html = generateProblemHTML(problem)
-    console.log(html)
-    panel.webview.html = html
-  } catch (err) {
-    vscode.window.showErrorMessage(err.message)
-    throw err
+export const showProblem = async (pid: string,cid: string) => {
+  if (cid === '') {
+    try {
+      const problem = await searchProblem(pid).then(res => new Problem(res))
+      const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      })
+      problem.contestID = ''
+      let html = generateProblemHTML(problem)
+      console.log(html)
+      panel.webview.html = html
+    } catch (err) {
+      vscode.window.showErrorMessage(err.message)
+      throw err
+    }
+  } else {
+    try {
+      const problem = await searchContestProblem(pid,cid).then(res => new Problem(res))
+      const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      })
+      problem.contestID = '?_contestId=' + cid
+      let html = generateProblemHTML(problem)
+      console.log(html)
+      panel.webview.html = html
+    } catch (err) {
+      vscode.window.showErrorMessage(err.message)
+      throw err
+    }
   }
 }
 

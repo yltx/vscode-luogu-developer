@@ -34,10 +34,6 @@ export default new SuperCommand({
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
       })
-      /*let i = 0
-      for (; i < 4 ;i++) {
-        console.log(ranklist['firstBloodUID'][res['contestProblems'][i]['problem']['pid']] === ranklist['scoreboard']['result'][4]['user']['uid'])
-      }*/
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)
         if (message.type === 'request-ranklist') {
@@ -48,7 +44,8 @@ export default new SuperCommand({
             }
           })
         } else if (message.type === 'request-problem') {
-          await showProblem(message.data + '?contestId=' + exports.cid)
+          await showProblem(message.data,exports.cid)
+          console.log(message.data)
         }
       })
       const html = await generateHTML(res, ranklist)
@@ -385,7 +382,8 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         </div>
         <script>
             function openProblem(pid) {
-              vscode.postMessage({ type: 'request-problem', data: pid });
+                vscode.postMessage({ type: 'request-problem', data: pid });
+                // document.getElementById("problemlist").innerText=pid;
             }
             function showProblem(problem) {
                 var i = 0
