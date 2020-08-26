@@ -1,75 +1,30 @@
-<style>
-    li {
-        float: left;
-        list-style: none
-    }
-
-    pre {
-        margin: .5em 0 !important;
-        padding: .3em .5em !important;
-        border: #ddd solid 1px !important;
-        border-radius: 3px !important;
-        overflow: auto !important;
-        position: relative;
-    }
-
-    code {
-        font-size: .875em !important;
-        font-family: Courier New !important;
-    }
-
-    form {
-        display: inline-block;
-        /* 2. display flex to the rescue */
-        flex-direction: row;
-        text-align: center;
-    }
-
-    input,
-    label {
-        display: inline-block;
-        /* 1. oh noes, my inputs are styled as block... */
-    }
-</style>
-<script>
-    var pos = 1;
-    function prepost() {
-        if (pos === 1) {document.getElementById("RANKLIST").innerText = "Error";return ;}
-        pos--;
-        document.getElementById("RANKLIST").innerText = pos;
-    };
-    function nxtpost() {
-        if (pos === 41) {document.getElementById("RANKLIST").innerText = "Error";return ;}
-        pos++;
-        document.getElementById("RANKLIST").innerText = pos;
-    };
-    function gotokthpage() {
-        var p = document.getElementById("KTHPAGE").value;
-        // var tmp = parseInt(p);
-        // pos = tmp;
-        if(p === ""){document.getElementById("RANKLIST").innerText = "Error";}
-    }
-</script>
-<span id="RANKLIST">
-</span>
-<div class="post-nav">
-    <table width="100%">
-        <tr>
-            <td align="left" width="30%" nowrap>
-                <p align="left" class="post-nav-prev post-nav-item"><a href="javascript:void(0)" title="上一页"
-                        onclick="prepost()">上一页</a></p>
-            </td>
-            <td align="center" width="40%" nowrap>
-                <form>
-                    <input type="text" placeholder="输入要跳转到的页码" id="KTHPAGE">
-                    <button onmouseout="this.style.backgroundColor='white';"
-                        onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthpage()">跳转</button>
-                </form>
-            </td>
-            <td align="right" width="30%" nowrap>
-                <p align="right" class="post-nav-next post-nav-item"><a href="javascript:void(0)" title="下一页"
-                        onclick="nxtpost()">下一页</a></p>
-            </td>
-        </tr>
-    </table>
+<!DOCTYPE html>
+<html lang="zh">
+<!-- 以下为题目列表 -->
+<span id="a">z</span>
+<div class="card padding-default" id="showproblem">
+    <span id="problem"> </span>
 </div>
+<script>
+    function openProblem(pid) {
+        document.getElementById("a").innerText = pid;
+    }
+    function showProblem(problem) {
+        var i = 0
+        var ans = '<table width="100%">\n<tr>\n<td align="center" width="8%" nowrap>题号</td>\n<td align="center" width="8%" nowrap>满分</td>\n<td align="left" width="70%" nowrap>题目名称</td>\n<td align="center" width="14%" nowrap></td>\n</tr>\n'
+        for (; i < problem.length; i++) {
+            ans += '<tr>\n<td align="center" width="8%" nowrap>' + String.fromCharCode(65 + i) + '</td>\n<td align="center" width="8%" nowrap>' + problem[i]['score'] + '</td>\n<td align="left" width="70%" nowrap><a href="javascript:void(0)" onclick="openProblem(\'' + problem[i]['problem']['pid'] + '\') ">' + problem[i]['problem']['title'] + '</a>'
+            if (problem[i]['submitted'] === true) {
+                ans += '</td>\n<td align="center" width="14%" nowrap><span data-v-20b7d558="" data-v-7178e78a="" class="lfe-caption" data-v-6e56e2aa="" style="color: rgb(255, 255, 255); background: rgb(82, 196, 26);">已提交</span></td>\n</tr>\n'
+            } else {
+                ans += '</td>\n<td align="center" width="50px" nowrap><span data-v-20b7d558="" data-v-7178e78a="" class="lfe-caption" data-v-6e56e2aa="" style="color: rgb(255, 255, 255); background: rgb(231, 76, 60);">未提交</span></td>\n</tr>\n'
+            }
+        }
+        ans += '</tr>\n</table>\n'
+        return ans
+    }
+    document.getElementById("problem").innerHTML = showProblem([{ "score": 150, "problem": { "pid": "U21688", "title": "查找数", "difficulty": 0, "fullScore": 120, "type": "U" }, "submitted": true }, { "score": 100, "problem": { "pid": "U21689", "title": "蛇形填数", "difficulty": 0, "fullScore": 100, "type": "U" }, "submitted": true }, { "score": 100, "problem": { "pid": "U22611", "title": "小奔的几何", "difficulty": 0, "fullScore": 100, "type": "U" }, "submitted": false }, { "score": 100, "problem": { "pid": "U78938", "title": "yltx的路", "difficulty": 0, "fullScore": 100, "type": "U" }, "submitted": false }])
+</script>
+</body>
+
+</html>

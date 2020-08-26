@@ -7,3 +7,5 @@ package-lock.json
 *.vsix
 .idea
 .DS_Store
+test.*
+1.html

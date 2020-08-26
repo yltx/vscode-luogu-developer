@@ -31,6 +31,6 @@ export default new SuperCommand({
       return
     }
     exports.pid = pid;
-    await showProblem(pid)
+    await showProblem(pid,'')
   }
 })

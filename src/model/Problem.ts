@@ -60,6 +60,7 @@ export class Tag {
 
 export class Problem {
   public stringPID = ''
+  public contestID = ''
   public tags: Tag[] = []
   public type = 0
   public sample: [string[]] = [[]]
@@ -79,6 +80,7 @@ export class Problem {
       return
     }
     this.stringPID = fields.pid
+    this.contestID = fields.contestid
     this.tags = fields.tags
     this.type = fields.type
     this.sample = fields.samples
@@ -139,7 +141,7 @@ export class Problem {
       sample += `输入${index + 1} : \n \`\`\` \n ${array[0][array[0].length - 1] === '\n' ? array[0] : array[0] + '\n'} \n \`\`\` \n 输出${index + 1} : \n \`\`\` \n ${array[1][array[1].length - 1] === '\n' ? array[1] : array[1] + '\n'} \n \`\`\` \n`
     })
     // return ` # ${this.name}| [${this.stringPID}](https://www.luogu.org/problem/${this.stringPID}) \n \n ${this.translation || ''} \n \n ## 题目描述 \n \n ${this.background} \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n $$<textarea id="copy">${sample}</textarea><button type="button" onclick="copyData()" class="btn btn-small">复制</button> \n \n ## 说明 \n \n ${this.hint} \n`
-    return ` # ${this.name}| [${this.stringPID}](https://www.luogu.org/problem/${this.stringPID}) \n \n ${this.translation ? '## 题意翻译 \n \n ' + this.translation : ''} \n \n ${this.background ? '## 题目背景 \n \n ' + this.background + ' \n \n ' : ''} ## 题目描述 \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${this.hint} \n`
+    return ` # ${this.name}| [${this.stringPID}](https://www.luogu.org/problem/${this.stringPID}${this.contestID}) \n \n ${this.translation ? '## 题意翻译 \n \n ' + this.translation : ''} \n \n ${this.background ? '## 题目背景 \n \n ' + this.background + ' \n \n ' : ''} ## 题目描述 \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${this.hint} \n`
 
   }
 }
