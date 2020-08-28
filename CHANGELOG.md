@@ -3,7 +3,11 @@
 ## 4.5.0
 
 - Fix:
-  1. 调整排行榜底部间距
+  1. 排行榜底部问题
+  2. 美化contest页面
+- Add:
+  1. Dark version for most pages
+  2. 比赛页面中点击题目跳转
 
 ## 4.4.9
 

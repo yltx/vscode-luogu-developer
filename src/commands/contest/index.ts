@@ -448,7 +448,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
                         </td>
                         <td align="center" width="40%" nowrap>
                             <form>
-                                <input type="text" placeholder="输入要跳转到的页码" id="KTHPAGE">
+                                <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" placeholder="输入要跳转到的页码" id="KTHPAGE">
                                 <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthpage()">跳转</button>
                             </form>
                         </td>

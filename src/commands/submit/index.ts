@@ -54,7 +54,7 @@ export default new SuperCommand({
     }
     for (let item in Languages) {
       if (isNaN(Number(item))) {
-        if (languages.indexOf(item) !== -1 && item != selectedLanguage) {
+        if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
           langs.push(item)
         }
       }
