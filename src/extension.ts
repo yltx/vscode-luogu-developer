@@ -13,7 +13,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.4.9'
+const version = '4.5.0'
 exports.luoguPath = path.join(os.homedir(), '.luogu')
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName)
 exports.luoguCsrfTokenPath = path.join(exports.luoguPath, luoguCsrfToken)
@@ -72,9 +72,18 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h1>本次更新</h1>
     <h2>
     <ul>
+    <li>Fix:
+    <ol>
+    <li>排行榜底部问题</li>
+    <li>美化contest页面</li>
+    </ol>
+    </li>
+    </ul>
+    <ul>
     <li>Add:
     <ol>
-    <li>查看排行榜</li>
+    <li>Dark version for most pages</li>
+    <li>比赛页面中点击题目跳转</li>
     </ol>
     </li>
     </ul>

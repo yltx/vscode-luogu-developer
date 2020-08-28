@@ -1,41 +1,131 @@
 import * as vscode from 'vscode'
-import { searchProblem, getResourceFilePath, searchContestProblem } from '@/utils/api'
+import { searchProblem, getResourceFilePath, getStatus, searchContestProblem } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
+import { UserStatus, Languages } from '@/utils/shared'
+import * as os from 'os'
+import * as path from 'path'
+import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils';
+import { submitSolution } from '@/utils/submitSolution'
+import showRecord from '@/utils/showRecord'
+const luoguJSONName = 'luogu.json';
+exports.luoguPath = path.join(os.homedir(), '.luogu');
+exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
-export const showProblem = async (pid: string,cid: string) => {
-  if (cid === '') {
-    try {
-      const problem = await searchProblem(pid).then(res => new Problem(res))
-      const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
-      })
-      problem.contestID = ''
-      let html = generateProblemHTML(problem)
-      console.log(html)
-      panel.webview.html = html
-    } catch (err) {
-      vscode.window.showErrorMessage(err.message)
-      throw err
-    }
-  } else {
-    try {
-      const problem = await searchContestProblem(pid,cid).then(res => new Problem(res))
-      const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
-      })
-      problem.contestID = '?_contestId=' + cid
-      let html = generateProblemHTML(problem)
-      console.log(html)
-      panel.webview.html = html
-    } catch (err) {
-      vscode.window.showErrorMessage(err.message)
-      throw err
-    }
+export const showProblem = async (pid: string, cid: string) => {
+  try {
+    let problem: Problem
+    if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid,cid).then(res => new Problem(res)) }
+    const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+    })
+    if (cid === '') { problem.contestID = '' } else { problem.contestID = `?contestId=${cid}` }
+    let html = generateProblemHTML(problem)
+    console.log(html)
+    panel.webview.html = html
+    panel.webview.onDidReceiveMessage(async message => {
+      console.log(`Got ${message.type} request: message = `, message.data)
+      if (message.type === 'submit') {
+        const edtior = vscode.window.activeTextEditor;
+        if (!edtior) {
+          vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试');
+          return;
+        }
+        try {
+          if (await getStatus() === UserStatus.SignedOut.toString()) {
+            vscode.window.showErrorMessage('您没有登录，请先登录');
+            return;
+          }
+        } catch (err) {
+          console.error(err)
+          vscode.window.showErrorMessage(err.toString());
+          return;
+        }
+        let text = edtior.document.getText();
+        const filePath = edtior.document.fileName;
+        const fileFName = path.parse(filePath).base;
+        const fileExt = path.parse(filePath).ext.slice(1);
+        console.log(fileExt)
+        const languages: string[] = getLanauageFromExt(fileExt);
+
+        console.log(languages)
+
+        const O2 = await vscode.window.showQuickPick(['否', '是'], {
+          placeHolder: '是否开启O2优化 (非 C/C++/Pascal 切勿开启)'
+        }).then(ans => ans === undefined ? undefined : ans === '是');
+        if (O2 === undefined) {
+          return
+        }
+        // tslint:disable-next-line: strict-type-predicates
+        // const langs = Object.keys(Languages).filter(k => typeof Languages[k as any] === 'number');
+        const selectedLanguage = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!
+        let langs: string[] = [];
+        if (languages.indexOf(selectedLanguage) !== -1) {
+          langs.push(selectedLanguage)
+        }
+        for (let item in Languages) {
+          if (isNaN(Number(item))) {
+            if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
+              langs.push(item)
+            }
+          }
+        }
+        for (let item in Languages) {
+          if (isNaN(Number(item))) {
+            if (item === 'Auto' && languages.indexOf(item) === -1) {
+              langs.push(item)
+            }
+          }
+        }
+        for (let item in Languages) {
+          if (isNaN(Number(item))) {
+            if (item !== 'Auto' && languages.indexOf(item) === -1) {
+              langs.push(item)
+            }
+          }
+        }
+        const selected = vscode.workspace.getConfiguration('luogu').get<boolean>('showSelectLanguageHint') ? (await vscode.window.showQuickPick(langs).then((value) => {
+          if (value === undefined) {
+            return undefined
+          }
+          const v = getSelectedLanguage(value);
+          return (v === -1 || !v) ? 0 : v;
+        })) : getSelectedLanguage(selectedLanguage);
+        if (selected === undefined) {
+          return
+        }
+        let id = message.data
+        if (!id) {
+          return;
+        }
+        let success = false;
+        let rid: any = 0;
+        try {
+          vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
+          if (cid !== '') { id += `?contestId=${cid}` }
+          rid = await submitSolution(id, text, selected, O2);
+          if (rid !== undefined) {
+            success = true;
+          }
+        } catch (err) {
+          vscode.window.showInformationMessage('提交失败')
+          if (err.errorMessage) {
+            vscode.window.showErrorMessage(err.errorMessage)
+          }
+          console.error(err);
+        } finally {
+          if (success) {
+            // vscode.window.showInformationMessage('提交成功');
+            await showRecord(rid as number)
+          }
+        }
+      }
+    })
+  } catch (err) {
+    vscode.window.showErrorMessage(err.message)
+    throw err
   }
 }
 
@@ -125,6 +215,13 @@ export const generateProblemHTML = (problem: Problem) => `
   </script>
 </head>
 <body>
+<script>
+    const vscode = acquireVsCodeApi();
+    function submit(pid) {
+        vscode.postMessage({ type: 'submit', data: pid });
+    }
+</script>
+<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="submit(\'${problem.stringPID}\')">提交</button>
 ${md.render(problem.toMarkDown())}
 </body>
 </html>`
