@@ -335,7 +335,7 @@
   },
   "dependencies": {
     "@luogu-dev/markdown-it-katex": "0.0.1",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "axios-cookiejar-support": "^0.5.1",
     "fs-extra": "^7.0.0",
     "lodash": "^4.17.19",
