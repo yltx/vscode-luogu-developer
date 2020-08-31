@@ -5,7 +5,7 @@ import md from '@/utils/markdown'
 import { UserStatus, Languages } from '@/utils/shared'
 import * as os from 'os'
 import * as path from 'path'
-import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils';
+import { getSelectedLanguage, getLanauageFromExt, sleep } from '@/utils/workspaceUtils';
 import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
 const luoguJSONName = 'luogu.json';
@@ -15,7 +15,7 @@ exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 export const showProblem = async (pid: string, cid: string) => {
   try {
     let problem: Problem
-    if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid,cid).then(res => new Problem(res)) }
+    if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid, cid).then(res => new Problem(res)) }
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
@@ -28,9 +28,11 @@ export const showProblem = async (pid: string, cid: string) => {
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = `, message.data)
       if (message.type === 'submit') {
+        const waitingtime = +vscode.workspace.getConfiguration('luogu').get<'integer'>('defaultWaitingTime')!
+        await sleep(waitingtime)
         const edtior = vscode.window.activeTextEditor;
         if (!edtior) {
-          vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试');
+          vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试')
           return;
         }
         try {
@@ -160,8 +162,8 @@ export const generateProblemHTML = (problem: Problem) => `
       outline: 0;
       border: none;
       vertical-align: baseline;
-      background: #e0e1e2 none;
-      color: rgba(0,0,0,.6);
+      background: transparent;
+      color: rgb(52,152,219);
       font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
       margin: 0 .25em 0 0;
       padding: .78571429em 1.5em .78571429em;

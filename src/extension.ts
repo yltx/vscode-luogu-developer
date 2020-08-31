@@ -21,8 +21,9 @@ exports.luoguUidPath = path.join(exports.luoguPath, luoguUIDName)
 exports.islogged = false
 exports.init = false
 exports.pid = ''
+exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate (context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
   RegisterCommands(context)
   RegisterViews(context)
@@ -147,8 +148,40 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   }
   exports.init = true
   console.log(exports.rootPath)
+  if (!fs.existsSync(exports.luoguProblemPath)) {
+    try {
+      fs.mkdirSync(exports.luoguProblemPath)
+    } catch (err) {
+      vscode.window.showErrorMessage('创建题目保存路径失败')
+      vscode.window.showErrorMessage(err)
+      console.error(err)
+      return
+    }
+  }
+  const effectiveDuration = +vscode.workspace.getConfiguration('luogu').get<'integer'>('effectiveDuration')!
+  if (effectiveDuration !== -1) {
+    let files = fs.readdirSync(exports.luoguProblemPath);
+    console.log(files)
+    files.forEach(function (item: any) {
+      const html = fs.readFileSync(exports.luoguProblemPath + '\\' + item).toString()
+      const savetime = +html.match(/<!-- SaveTime:(.*) -->/)![1]
+      console.log(savetime)
+      if ((+new Date() - savetime) / 1000 / 60 / 60 / 24 > effectiveDuration) {
+        const pid = html.match(/<!-- ProblemName:(.*) -->/)![1]
+        try {
+          fs.unlinkSync(exports.luoguProblemPath + '\\' + item)
+          vscode.window.showInformationMessage(`删除过期题目：${pid} 成功`)
+          debug(`Delete expired problem exists in ${exports.luoguProblemPath + '\\' + item} successfully.`)
+        } catch (err) {
+          vscode.window.showErrorMessage('删除过期题目失败')
+          vscode.window.showErrorMessage(err)
+          console.log(err)
+        }
+      }
+    })
+  }
 }
 
-export function deactivate(): void {
+export function deactivate (): void {
   // Do nothing.
 }
