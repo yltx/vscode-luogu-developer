@@ -23,7 +23,7 @@ exports.init = false
 exports.pid = ''
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
-export async function activate (context: vscode.ExtensionContext): Promise<void> {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
   RegisterCommands(context)
   RegisterViews(context)
@@ -85,6 +85,8 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <ol>
     <li>Dark version for most pages</li>
     <li>比赛页面中点击题目跳转</li>
+    <li>题目可以通过提交按钮点击提交</li>
+    <li>保存在本地的题目经过设定的时间后自动删除</li>
     </ol>
     </li>
     </ul>
@@ -182,6 +184,6 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
   }
 }
 
-export function deactivate (): void {
+export function deactivate(): void {
   // Do nothing.
 }
