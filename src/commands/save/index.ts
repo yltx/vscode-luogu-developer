@@ -23,14 +23,14 @@ export default new SuperCommand({
     }
     exports.pid = pid;
     const problem = await searchProblem(pid).then(res => new Problem(res))
-    const html = generateProblemHTML(problem)
+    const html = generateProblemHTML(problem) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
     const filename = pid + '.html'
     exports.luoguProblems = path.join(exports.luoguProblemPath, filename)
     if (!fs.existsSync(exports.luoguProblemPath)) {
       try {
         fs.mkdirSync(exports.luoguProblemPath)
       } catch (err) {
-        vscode.window.showErrorMessage('创建路径失败')
+        vscode.window.showErrorMessage('创建题目保存路径失败')
         vscode.window.showErrorMessage(err)
         console.error(err)
         return

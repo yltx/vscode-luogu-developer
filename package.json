@@ -281,9 +281,15 @@
           },
           "luogu.effectiveDuration": {
             "type": "integer",
-            "default": "1",
+            "default": "3",
             "scope": "window",
-            "description": "Effective duration for problem show. (days)"
+            "description": "Effective duration for problem show. (days,set it as -1 to store forever)."
+          },
+          "luogu.defaultWaitingTime": {
+            "type": "integer",
+            "default": "3000",
+            "scope": "window",
+            "description": "Default waiting time for selecting the file after clicking the submit button(ms)."
           }
         }
       }
