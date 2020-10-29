@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getStatus, setClientID, setUID, searchUser } from '@/utils/api'
+import { getStatus, setClientID, setUID, searchUser,parseUID } from '@/utils/api'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
@@ -17,19 +17,24 @@ export default new SuperCommand({
     while (!exports.init) { continue; }
     while (true) {
       const keyword = await vscode.window.showInputBox({
-        placeHolder: '输入用户名/uid',
+        placeHolder: '输入用户名/uid（中文用户名有bug）',
         ignoreFocusOut: true
       })
       if (!keyword) {
         return
       }
-      const uid = (await searchUser(keyword))['users'][0]['uid']
-      if (!uid) {
-        const res = await promptForOpenOutputChannelWithResult('用户不存在', DialogType.error)
-        if (res?.title === '重试') {
-          continue;
-        } else {
-          break;
+      let uid = await parseUID(keyword)
+      console.log(uid)
+      if (uid.length !== keyword.length) {
+        uid = (await searchUser(keyword))['users'][0]['uid']
+        console.log(uid)
+        if (!uid) {
+          const res = await promptForOpenOutputChannelWithResult('用户不存在', DialogType.error)
+          if (res?.title === '重试') {
+            continue;
+          } else {
+            break;
+          }
         }
       }
       const clientID = await vscode.window.showInputBox({

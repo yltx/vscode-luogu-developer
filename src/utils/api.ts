@@ -343,7 +343,7 @@ export const fetchRecords = async () =>
     })
 
 export const searchUser = async (keyword: string) =>
-  axios.get(`/fe/api/user/search?keyword=${keyword}`)
+  axios.get(`/api/user/search?keyword=${keyword}`)
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -431,6 +431,17 @@ export const parseProblemID = async (name: string) => {
       m.forEach((match) => { ret = match; });
       if (ret !== '') { return ret; }
     }
+  }
+  return '';
+}
+
+export const parseUID = async (name: string) => {
+  const regex = /([0-9]{1,7})/i
+  const m = regex.exec(name);
+  if (m !== null) {
+    let ret = '';
+    m.forEach((match) => { ret = match; });
+    if (ret !== '') { return ret; }
   }
   return '';
 }

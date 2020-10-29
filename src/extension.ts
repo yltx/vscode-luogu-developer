@@ -13,7 +13,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.0'
+const version = '4.5.2'
 exports.luoguPath = path.join(os.homedir(), '.luogu')
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName)
 exports.luoguCsrfTokenPath = path.join(exports.luoguPath, luoguCsrfToken)
@@ -23,7 +23,7 @@ exports.init = false
 exports.pid = ''
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
-export async function activate(context: vscode.ExtensionContext): Promise<void> {
+export async function activate (context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
   RegisterCommands(context)
   RegisterViews(context)
@@ -68,6 +68,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
     <li>Added user communication group(QQ):1141066631</li>
+    <li>紧急提醒！由于你谷更新登录API，原“登录”功能暂不可用，请代以cookieslogin功能！</li>
     </ul>
     </h2>
     <h1>本次更新</h1>
@@ -75,20 +76,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <ul>
     <li>Fix:
     <ol>
-    <li>排行榜底部问题</li>
-    <li>美化contest页面</li>
+    <li>cookieslogin相关问题</li>
     </ol>
     </li>
     </ul>
     <ul>
-    <li>Add:
-    <ol>
-    <li>Dark version for most pages</li>
-    <li>比赛页面中点击题目跳转</li>
-    <li>题目可以通过提交按钮点击提交</li>
-    <li>保存在本地的题目经过设定的时间后自动删除</li>
-    </ol>
-    </li>
     </ul>
     </h2>
   </div>
@@ -182,8 +174,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       }
     })
   }
+  /*if (fs.existsSync(exports.luoguJSONPath)) {
+
+  }*/
 }
 
-export function deactivate(): void {
+export function deactivate (): void {
   // Do nothing.
 }

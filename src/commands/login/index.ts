@@ -16,6 +16,8 @@ exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 export default new SuperCommand({
   onCommand: 'signin',
   handle: async () => {
+    vscode.window.showErrorMessage(`因你谷登录API更新，暂不可用！`)
+    return
     while (!exports.init) { continue; }
     const data = await fetchHomepage()
     if (data.currentUser !== undefined) {
@@ -58,7 +60,8 @@ export default new SuperCommand({
         debug(`Get captcha: ${captcha}`)
         try {
           exports.init = false
-          await login(username, password, captcha)
+          let resp = await login(username, password, captcha)
+          console.log(resp)
           exports.init = true
           vscode.window.showInformationMessage('登录成功');
           exports.islogged = true;
@@ -72,6 +75,7 @@ export default new SuperCommand({
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           break;
         } catch (err) {
+          console.log(err)
           exports.init = true
           if (err.response) {
             if (err.response.data.errorMessage === '验证码错误') {
