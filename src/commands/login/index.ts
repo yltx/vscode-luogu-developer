@@ -16,8 +16,8 @@ exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 export default new SuperCommand({
   onCommand: 'signin',
   handle: async () => {
-    vscode.window.showErrorMessage(`因你谷登录API更新，暂不可用！`)
-    return
+    // vscode.window.showErrorMessage(`因你谷登录API更新，暂不可用！`)
+    // return
     while (!exports.init) { continue; }
     const data = await fetchHomepage()
     if (data.currentUser !== undefined) {
@@ -25,11 +25,12 @@ export default new SuperCommand({
       if (result?.title === '否') {
         return
       } else {
-        await setUID('')
-        await setClientID('')
         exports.islogged = false;
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
       }
+    } else {
+      await setUID('')
+      await setClientID('')
     }
     let continued = true
     while (continued) {

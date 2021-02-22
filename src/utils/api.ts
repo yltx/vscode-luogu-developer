@@ -7,6 +7,7 @@ import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
+const setCookie = require('set-cookie-parser');
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -24,6 +25,7 @@ export namespace API {
   export const CAPTCHA_IMAGE = `${apiURL}/verify/captcha`
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`
   export const LOGIN_ENDPOINT = `${apiURL}/auth/userPassLogin`
+  export const SYNCLOGIN_ENDPOINT = `${apiURL}/auth/syncLogin`
   export const LOGIN_REFERER = `${baseURL}/auth/login`
   export const LOGOUT = `${apiURL}/auth/logout`;
   export const FATE = `/index/ajax_punch`;
@@ -61,7 +63,7 @@ export const axios = (() => {
   return axios
 })()
 
-export const setClientID = async (value: string) => new Promise((resolve, reject) => {
+export const setClientID = async (value: string) => new Promise<void>((resolve, reject) => {
   const cookie = new Cookie({
     key: '__client_id',
     value,
@@ -78,7 +80,7 @@ export const setClientID = async (value: string) => new Promise((resolve, reject
   })
 })
 
-export const setUID = async (value: string) => new Promise((resolve, reject) => {
+export const setUID = async (value: string) => new Promise<void>((resolve, reject) => {
   const cookie = new Cookie({
     key: '_uid',
     value,
@@ -244,25 +246,71 @@ export const searchSolution = async (pid: string) =>
  * @param {string} password 密码
  * @param {string} captcha 验证码
  */
-export const login = async (username: string, password: string, captcha: string) =>
-  axios.post(API.LOGIN_ENDPOINT, {
-    username,
-    password,
-    captcha
+export const login = async (Username: string, Password: string, Captcha: string) => {
+  let syncToken = ''
+  let uid = '0'
+  let clientid = ''
+  await axios.options(API.SYNCLOGIN_ENDPOINT,{
+    headers: {
+      'Referer': API.baseURL,
+      'Origin': API.baseURL
+    }
+  }).then(res => {
+    const regex = /([^=]+)=([^;]+);?\s*/g
+    const m = regex.exec(res.config.headers['Cookie'])
+    if (m !== null){
+      m.forEach((match) => {clientid = match})
+      console.log(clientid)
+    }
+  })
+  setClientID(clientid)
+  setUID(uid)
+  await axios.post(API.LOGIN_ENDPOINT, {
+    username: Username,
+    password: Password,
+    captcha: Captcha
   }, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.LOGIN_REFERER
+      'referer': API.LOGIN_REFERER,
+      'origin': API.baseURL,
+      'x-requested-with': 'XMLHttpRequest'
     }
-  }).then(res => res.data || null).catch(err => {
+  }).then(async res => {
+    syncToken = res.data.syncToken
+    console.log('post successfully.')
+    console.log(res)
+    console.log(syncToken)
+    /*await axios.post(API.SYNCLOGIN_ENDPOINT, {
+      syncToken
+    }, {
+      headers: {
+        'X-CSRF-Token': await csrfToken(),
+        'Referer': API.LOGIN_REFERER
+      }
+    }).then(res => {
+      uid = setCookie.parse(res.headers['set-cookie'], { decodeValues: true, map: true })['_uid']
+      console.log('Get uid:', uid)
+    }).catch(err => {
+      if (err.response) {
+        throw err.response.data
+      } else if (err.request) {
+        throw Error('请求超时，请重试')
+      } else {
+        throw err
+      }
+    })
+    await setUID(uid)*/
+  }).catch(err => {
     if (err.response) {
-      throw err.response.data;
+      throw err.response.data
     } else if (err.request) {
       throw Error('请求超时，请重试')
     } else {
-      throw err;
+      throw err
     }
   })
+}
 
 export default axios
 
