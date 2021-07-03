@@ -45,7 +45,7 @@ export default new SuperCommand({
     let pannel = vscode.window.createWebviewPanel(`犇犇 - ${mode}`, `犇犇 - ${mode}`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     });
     pannel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = ${message.data}`)

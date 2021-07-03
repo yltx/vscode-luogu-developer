@@ -11,7 +11,7 @@ export const showRecord = async (rid: number) => {
   let pannel = vscode.window.createWebviewPanel(`${rid}`, `R${rid} 记录详情`, vscode.ViewColumn.Two, {
     enableScripts: true,
     retainContextWhenHidden: true,
-    localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+    localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
   });
   let pannelClosed = false;
   let retryTimes = 0;

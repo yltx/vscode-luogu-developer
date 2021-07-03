@@ -39,7 +39,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(pid, problemname, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
       })
       panel.webview.html = html
     } catch (err) {

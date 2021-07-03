@@ -35,7 +35,7 @@ export async function getUserCaptcha () {
       preserveFocus: true
     }, {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
     panel.webview.html = generateHTML(image.toString('base64'))
     captchaText = await vscode.window.showInputBox({

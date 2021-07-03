@@ -19,7 +19,7 @@ export const showProblem = async (pid: string, cid: string) => {
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
     if (cid === '') { problem.contestID = '' } else { problem.contestID = `?contestId=${cid}` }
     let html = generateProblemHTML(problem)

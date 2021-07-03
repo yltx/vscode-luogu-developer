@@ -32,7 +32,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.contest.name}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath)]
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
       })
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)

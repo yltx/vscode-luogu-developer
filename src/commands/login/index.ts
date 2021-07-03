@@ -1,14 +1,15 @@
+import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID } from '@/utils/api'
 import SuperCommand from '../SuperCommand'
-import { login, getClientID, getUID, fetchHomepage, setUID, setClientID } from '@/utils/api'
-import * as vscode from 'vscode'
-import { promptForOpenOutputChannel, promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
-import { debug } from '@/utils/debug'
-import { getUserCaptcha } from '@/utils/captcha'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
+import { getUserCaptcha } from '@/utils/captcha'
+import { debug } from '@/utils/debug'
+import * as vscode from 'vscode'
+import { DialogType, promptForOpenOutputChannelWithResult } from '@/utils/uiUtils'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
+
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -16,8 +17,6 @@ exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 export default new SuperCommand({
   onCommand: 'signin',
   handle: async () => {
-    // vscode.window.showErrorMessage(`因你谷登录API更新，暂不可用！`)
-    // return
     while (!exports.init) { continue; }
     const data = await fetchHomepage()
     if (data.currentUser !== undefined) {
@@ -56,23 +55,33 @@ export default new SuperCommand({
           debug('No captcha text')
           return;
         }
-        let clientID: string | null;
-        console.log(`Get client id: ${clientID = await getClientID()}`)
-        debug(`Get captcha: ${captcha}`)
-        try {
-          exports.init = false
-          let resp = await login(username, password, captcha)
+        let clientID:string | null
+        try{
+          const r1 = await login(username, password, captcha)
+          let resp:string | null
+          if (r1.locked) {
+            const code = await vscode.window.showInputBox({
+              placeHolder: '输入2FA验证码',
+              ignoreFocusOut: true
+            })
+            if (!code) {
+              return
+            }
+            const r2 = await unlock(code)
+            resp = r2
+          } else {
+            resp = r1
+          }
           console.log(resp)
           exports.init = true
           vscode.window.showInformationMessage('登录成功');
           exports.islogged = true;
           try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID }))
+            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
           } catch (error) {
             vscode.window.showErrorMessage('写入文件时出现错误')
             vscode.window.showErrorMessage(error)
           }
-          // console.log('done');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           break;
         } catch (err) {

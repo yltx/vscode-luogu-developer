@@ -27,11 +27,12 @@ export namespace API {
   export const LOGIN_ENDPOINT = `${apiURL}/auth/userPassLogin`
   export const SYNCLOGIN_ENDPOINT = `${apiURL}/auth/syncLogin`
   export const LOGIN_REFERER = `${baseURL}/auth/login`
-  export const LOGOUT = `${apiURL}/auth/logout`;
-  export const FATE = `/index/ajax_punch`;
-  export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`;
-  export const BENBEN_POST = `${apiURL}/feed/postBenben`;
-  export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`;
+  export const LOGOUT = `${apiURL}/auth/logout`
+  export const FATE = `/index/ajax_punch`
+  export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`
+  export const BENBEN_POST = `${apiURL}/feed/postBenben`
+  export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`
+  export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
   export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
 }
 
@@ -246,70 +247,32 @@ export const searchSolution = async (pid: string) =>
  * @param {string} password 密码
  * @param {string} captcha 验证码
  */
-export const login = async (Username: string, Password: string, Captcha: string) => {
-  let syncToken = ''
-  let uid = '0'
-  let clientid = ''
-  await axios.options(API.SYNCLOGIN_ENDPOINT,{
-    headers: {
-      'Referer': API.baseURL,
-      'Origin': API.baseURL
-    }
-  }).then(res => {
-    const regex = /([^=]+)=([^;]+);?\s*/g
-    const m = regex.exec(res.config.headers['Cookie'])
-    if (m !== null){
-      m.forEach((match) => {clientid = match})
-      console.log(clientid)
-    }
-  })
-  setClientID(clientid)
-  setUID(uid)
-  await axios.post(API.LOGIN_ENDPOINT, {
-    username: Username,
-    password: Password,
-    captcha: Captcha
+ export const login = async (username, password, captcha) => {
+  const csrf = await csrfToken()
+
+  return axios.post(API.LOGIN_ENDPOINT, {
+    username,
+    password,
+    captcha,
   }, {
     headers: {
-      'X-CSRF-Token': await csrfToken(),
-      'referer': API.LOGIN_REFERER,
-      'origin': API.baseURL,
-      'x-requested-with': 'XMLHttpRequest'
+      'Referer': API.LOGIN_REFERER,
+      'X-CSRF-Token': csrf
     }
-  }).then(async res => {
-    syncToken = res.data.syncToken
-    console.log('post successfully.')
-    console.log(res)
-    console.log(syncToken)
-    /*await axios.post(API.SYNCLOGIN_ENDPOINT, {
-      syncToken
-    }, {
-      headers: {
-        'X-CSRF-Token': await csrfToken(),
-        'Referer': API.LOGIN_REFERER
-      }
-    }).then(res => {
-      uid = setCookie.parse(res.headers['set-cookie'], { decodeValues: true, map: true })['_uid']
-      console.log('Get uid:', uid)
-    }).catch(err => {
-      if (err.response) {
-        throw err.response.data
-      } else if (err.request) {
-        throw Error('请求超时，请重试')
-      } else {
-        throw err
-      }
-    })
-    await setUID(uid)*/
-  }).catch(err => {
-    if (err.response) {
-      throw err.response.data
-    } else if (err.request) {
-      throw Error('请求超时，请重试')
-    } else {
-      throw err
+  }).then((resp) => resp.data)
+}
+
+export const unlock = async (code) => {
+  const csrf = await csrfToken()
+
+  return axios.post(API.UNLOCK_ENDPOINT, {
+    code,
+  }, {
+    headers: {
+      'Referer': API.LOGIN_REFERER,
+      'X-CSRF-Token': csrf
     }
-  })
+  }).then((resp) => resp.data)
 }
 
 export default axios
@@ -543,7 +506,7 @@ export const prettyTime = (time: number) => {
 }
 
 export const getResourceFilePath = (relativePath: string) => {
-  const diskPath = vscode.Uri.file(path.join(exports.resourcesPath, relativePath));
+  const diskPath = vscode.Uri.file(path.join(exports.resourcesPath.value, relativePath));
   return diskPath.with({ scheme: 'vscode-resource' }).toString();
 }
 
