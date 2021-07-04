@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.3'
+const version = '4.5.4'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -76,11 +76,17 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <ul>
     <li>Fix:
     <ol>
-    <li>登录相关问题</li>
+    <li>增加了对B开头题目的支持</li>
     </ol>
     </li>
     </ul>
     <ul>
+    <li>Fix:
+    <ol>
+    <li>修复了标题中空格显示异常的问题</li>
+    <li>修复了对UVA题目的显示</li>
+    </ol>
+    </li>
     </ul>
     </h2>
   </div>
