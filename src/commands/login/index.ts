@@ -74,7 +74,7 @@ export default new SuperCommand({
           }
           console.log(resp)
           exports.init = true
-          vscode.window.showInformationMessage('登录成功');
+          // vscode.window.showInformationMessage('登录成功');
           exports.islogged = true;
           try {
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID }))
