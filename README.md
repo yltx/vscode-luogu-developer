@@ -55,13 +55,9 @@ Follow [MIT](LICENSE) LICENSE.
 ## 开发者
 
 - Himself65
-
 - 引领天下
-
 - YanWQmonad
-
 - FangZeLi
-
 - andyli
-
 - 蒟蒻水儿
+- [宝硕](https://baoshuo.ren)
