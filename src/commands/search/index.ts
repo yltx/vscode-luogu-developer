@@ -25,7 +25,7 @@ export default new SuperCommand({
     if (!pid) {
       return
     }
-    const regex = /(AT[0-9]{1,4}|CF[0-9]{1,4}[A-Z][0-9]{0,1}|SP[0-9]{1,5}|P[0-9]{4}|UVa[0-9]{1,5}|U[0-9]{1,6}|T[0-9]{1,6})/
+    const regex = /(AT[0-9]{1,4}|CF[0-9]{1,4}[A-Z][0-9]{0,1}|SP[0-9]{1,5}|P[0-9]{4}|UVA[0-9]{1,5}|U[0-9]{1,6}|T[0-9]{1,6})/
     if (!regex.test(pid)) {
       vscode.window.showErrorMessage('题目不存在')
       return
