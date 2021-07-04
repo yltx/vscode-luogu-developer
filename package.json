@@ -34,7 +34,7 @@
     "*"
   ],
   "main": "./dist/extension.js",
-  "extensionKind": "ui",
+  "extensionKind": ["ui"],
   "contributes": {
     "commands": [
       {
