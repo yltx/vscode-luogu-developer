@@ -55,7 +55,7 @@ export default new SuperCommand({
           debug('No captcha text')
           return;
         }
-        let clientID = getClientID()
+        let clientID:string | null
         try{
           const r1 = await login(username, password, captcha)
           let resp:string | null
@@ -77,7 +77,7 @@ export default new SuperCommand({
           // vscode.window.showInformationMessage('登录成功');
           exports.islogged = true;
           try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID }))
+            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
           } catch (error) {
             vscode.window.showErrorMessage('写入文件时出现错误')
             vscode.window.showErrorMessage(error)
