@@ -434,7 +434,7 @@ export const postVote = async (id: number, type: number) =>
     })
 
 export const parseProblemID = async (name: string) => {
-  const regexs = new Array(/(AT[0-9]{1,4})/i, /(CF[0-9]{1,4}[A-Z][0-9]{0,1})/i, /(SP[0-9]{1,5})/i, /(P[0-9]{4})/i, /(UVa[0-9]{1,5})/i, /(U[0-9]{1,6})/i, /(T[0-9]{1,6})/i, /(B[0-9]{1,6})/i);
+  const regexs = new Array(/(AT[0-9]{1,4})/i, /(CF[0-9]{1,4}[A-Z][0-9]{0,1})/i, /(SP[0-9]{1,5})/i, /(P[0-9]{4})/i, /(UVa[0-9]{1,5})/i, /(U[0-9]{1,6})/i, /(T[0-9]{1,6})/i, /(B[0-9]{4})/i);
   for (const regex of regexs) {
     const m = regex.exec(name);
     if (m !== null) {

@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.4'
+const version = '4.5.5'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -68,23 +68,23 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>置顶说明</h1>
     <h2>
     <ul>
-    <li>Added user communication group(QQ):1141066631</li>
+    <li>用户交流群：1141066631</li>
+    <li>建议添加，QQ上反馈速度更快且在有小bug时会采取在群里重发vsix的方式进行更新。</li>
     </ul>
     </h2>
     <h1>本次更新</h1>
     <h2>
     <ul>
-    <li>Add:
+    <li>
     <ol>
-    <li>增加了对B开头题目的支持</li>
+    <li></li>
     </ol>
     </li>
     </ul>
     <ul>
     <li>Fix:
     <ol>
-    <li>修复了标题中空格显示异常的问题</li>
-    <li>修复了对UVA题目的显示</li>
+    <li>修复了command not found的问题</li>
     </ol>
     </li>
     </ul>
