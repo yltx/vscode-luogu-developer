@@ -1,5 +1,10 @@
 # Change Log
 
+## 4.5.5
+
+- Fix:
+  1. 修复了 `command not found` 的问题
+
 ## 4.5.4
 
 - Add:
