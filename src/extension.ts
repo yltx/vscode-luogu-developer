@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.5'
+const version = '4.5.6'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -74,9 +74,9 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>本次更新</h1>
     <h2>
     <ul>
-    <li>Fix:
+    <li>Add:
     <ol>
-    <li>修复了 command not found 的问题</li>
+    <li>增加了根据题目难度和来源随机跳题的功能</li>
     </ol>
     </li>
     </ul>
