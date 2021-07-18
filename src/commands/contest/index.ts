@@ -197,7 +197,7 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         <title>比赛详情 - ${contest['name']}</title>
     </head>
 
-    <body style="background-color: rgb(239, 239, 239);">
+    <body>
         <h1 data-v-52820d90="" class="lfe-h1">${contest['name']}</h1>
         <div data-v-6febb0e8="" data-v-72177bf8=""  class="card padding-default" style="margin-bottom: 1em;">
             <div data-v-83303c00="" class="field">

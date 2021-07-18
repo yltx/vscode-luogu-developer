@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.5'
+const version = '4.5.6'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -68,23 +68,15 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>置顶说明</h1>
     <h2>
     <ul>
-    <li>用户交流群：1141066631</li>
-    <li>建议添加，QQ上反馈速度更快且在有小bug时会采取在群里重发vsix的方式进行更新。</li>
+    <li>Added user communication group(QQ):1141066631</li>
     </ul>
     </h2>
     <h1>本次更新</h1>
     <h2>
     <ul>
-    <li>
+    <li>Add:
     <ol>
-    <li></li>
-    </ol>
-    </li>
-    </ul>
-    <ul>
-    <li>Fix:
-    <ol>
-    <li>修复了command not found的问题</li>
+    <li>增加了根据题目难度和来源随机跳题的功能</li>
     </ol>
     </li>
     </ul>

@@ -1,9 +1,14 @@
 # Change Log
 
+## 4.5.6
+
+- Add:
+  1. 增加了根据题目来源和难度随机跳题的功能
+
 ## 4.5.5
 
 - Fix:
-  1. 修复了command not found的问题
+  1. 修复了 `command not found` 的问题
 
 ## 4.5.4
 

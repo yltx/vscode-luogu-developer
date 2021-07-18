@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.5.5",
+  "version": "4.5.6",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -34,7 +34,9 @@
     "*"
   ],
   "main": "./dist/extension.js",
-  "extensionKind": ["ui"],
+  "extensionKind": [
+    "ui"
+  ],
   "contributes": {
     "commands": [
       {
@@ -127,6 +129,11 @@
         "command": "luogu.contest",
         "title": "查看比赛",
         "category": "Luogu"
+      },
+      {
+        "command": "luogu.random",
+        "title": "根据题目难度和来源随机跳题",
+        "category": "Luogu"
       }
     ],
     "keybindings": [
@@ -175,16 +182,16 @@
         "key": "Ctrl+Alt+G O"
       },
       {
-        "command": "luogu.lastRecord",
-        "key": "Ctrl+Alt+G R"
-      },
-      {
         "command": "luogu.cookieslogin",
         "key": "Ctrl+Alt+G Ctrl+Alt+C"
       },
       {
         "command": "luogu.contest",
         "key": "Ctrl+Alt+G C"
+      },
+      {
+        "command": "luogu.random",
+        "key": "Ctrl+Alt+G R"
       }
     ],
     "viewsContainers": {
@@ -291,6 +298,46 @@
             "default": "3000",
             "scope": "window",
             "description": "Default waiting time for selecting the file after clicking the submit button(ms)."
+          },
+          "luogu.defaultProblemSet": {
+            "type": "string",
+            "enum": [
+              "洛谷题库",
+              "入门与面试",
+              "Codeforces",
+              "APOJ",
+              "AtCoder",
+              "UVA"
+            ],
+            "scope": "window",
+            "description": "Default problemset for random choose problem."
+          },
+          "luogu.defaultDifficulty": {
+            "type": "string",
+            "enum": [
+              "暂无评定",
+              "入门",
+              "普及-",
+              "普及/提高-",
+              "普及+/提高",
+              "提高+/省选-",
+              "省选/NOI-",
+              "NOI/NOI+/CTSC"
+            ],
+            "scope": "window",
+            "description": "Default difficulty for random choose problem."
+          },
+          "luogu.showSelectProblemsetHint": {
+            "type": "boolean",
+            "default": "true",
+            "scope": "window",
+            "description": "Show select problemset hint when randomize."
+          },
+          "luogu.showSelectDifficultyHint": {
+            "type": "boolean",
+            "default": "true",
+            "scope": "window",
+            "description": "Show select difficulty hint when randomize."
           }
         }
       }
@@ -345,6 +392,7 @@
     "marked": "^2.0.0",
     "redux": "^4.0.1",
     "set-cookie-parser": "^2.4.7",
+    "start": "^5.1.0",
     "ws": "^6.0.0"
   },
   "__npminstall_done": false

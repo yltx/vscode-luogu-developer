@@ -151,3 +151,23 @@ export const contestVisibilityStyle: string[] = ['',
   'color: rgb(255, 255, 255); background: rgb(41, 73, 180);',
   'color: rgb(255, 255, 255); background: rgb(41, 73, 180);'
 ]
+
+export enum difficluty {
+  '暂无评定' = 0,
+  '入门' = 1,
+  '普及-' = 2,
+  '普及/提高-' = 3,
+  '普及+/提高' = 4,
+  '提高+/省选-' = 5,
+  '省选/NOI-' = 6,
+  'NOI/NOI+/CTSC' = 7
+}
+
+export enum problemset {
+  '洛谷题库' = 'P',
+  '入门与面试' = 'B',
+  'CodeForces' = 'CF',
+  'SPOJ' = 'SP',
+  'AtCoder' = 'AT',
+  'UVA' = 'UVA'
+}
