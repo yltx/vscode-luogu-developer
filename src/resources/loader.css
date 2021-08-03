@@ -2425,4 +2425,7 @@
   .header-layout.high[data-v-ab19d642] {
     height: 33.2em;
   }
+body {
+    --vscode-font-size: 15px;
+}
   
