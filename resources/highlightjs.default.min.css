@@ -1,0 +1,245 @@
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote .vs-light {
+  color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion .vs-light {
+  color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link .vs-light {
+  color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute .vs-light {
+  color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition .vs-light {
+  color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section .vs-light {
+  color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag .vs-light {
+  color: #8959a8;
+}
+
+.hljs .vs-light {
+  display: block;
+  overflow-x: auto;
+  background: white;
+  color: #4d4d4c;
+  padding: 0.5em;
+}
+
+.hljs-emphasis .vs-light {
+  font-style: italic;
+}
+
+.hljs-strong .vs-light {
+  font-weight: bold;
+}
+.hljs .vs-dark {
+	display: block;
+	overflow-x: auto;
+	padding: .5em;
+	background: #011627;
+	color: #d6deeb
+}
+
+.hljs-keyword .vs-dark {
+	color: #c792ea;
+	font-style: italic
+}
+
+.hljs-built_in .vs-dark {
+	color: #addb67;
+	font-style: italic
+}
+
+.hljs-type .vs-dark {
+	color: #82aaff
+}
+
+.hljs-literal .vs-dark {
+	color: #ff5874
+}
+
+.hljs-number .vs-dark {
+	color: #f78c6c
+}
+
+.hljs-regexp .vs-dark {
+	color: #5ca7e4
+}
+
+.hljs-string .vs-dark {
+	color: #ecc48d
+}
+
+.hljs-subst .vs-dark {
+	color: #d3423e
+}
+
+.hljs-symbol .vs-dark {
+	color: #82aaff
+}
+
+.hljs-class .vs-dark {
+	color: #ffcb8b
+}
+
+.hljs-function .vs-dark {
+	color: #82aaff
+}
+
+.hljs-title .vs-dark {
+	color: #dcdcaa;
+	font-style: italic
+}
+
+.hljs-params .vs-dark {
+	color: #7fdbca
+}
+
+.hljs-comment .vs-dark {
+	color: #637777;
+	font-style: italic
+}
+
+.hljs-doctag .vs-dark {
+	color: #7fdbca
+}
+
+.hljs-meta .vs-dark {
+	color: #82aaff
+}
+
+.hljs-meta-keyword .vs-dark {
+	color: #82aaff
+}
+
+.hljs-meta-string .vs-dark {
+	color: #ecc48d
+}
+
+.hljs-section .vs-dark {
+	color: #82b1ff
+}
+
+.hljs-builtin-name,
+.hljs-name,
+.hljs-tag .vs-dark {
+	color: #7fdbca
+}
+
+.hljs-attr .vs-dark {
+	color: #7fdbca
+}
+
+.hljs-attribute .vs-dark {
+	color: #80cbc4
+}
+
+.hljs-variable .vs-dark {
+	color: #addb67
+}
+
+.hljs-bullet .vs-dark {
+	color: #d9f5dd
+}
+
+.hljs-code .vs-dark {
+	color: #80cbc4
+}
+
+.hljs-emphasis .vs-dark {
+	color: #c792ea;
+	font-style: italic
+}
+
+.hljs-strong .vs-dark {
+	color: #addb67;
+	font-weight: 700
+}
+
+.hljs-formula .vs-dark {
+	color: #c792ea
+}
+
+.hljs-link .vs-dark {
+	color: #ff869a
+}
+
+.hljs-quote .vs-dark {
+	color: #697098;
+	font-style: italic
+}
+
+.hljs-selector-tag .vs-dark {
+	color: #ff6363
+}
+
+.hljs-selector-id .vs-dark {
+	color: #fad430
+}
+
+.hljs-selector-class .vs-dark {
+	color: #addb67;
+	font-style: italic
+}
+
+.hljs-selector-attr,
+.hljs-selector-pseudo .vs-dark {
+	color: #c792ea;
+	font-style: italic
+}
+
+.hljs-template-tag .vs-dark {
+	color: #c792ea
+}
+
+.hljs-template-variable .vs-dark {
+	color: #addb67
+}
+
+.hljs-addition .vs-dark {
+	color: #addb67ff;
+	font-style: italic
+}
+
+.hljs-deletion .vs-dark {
+	color: #ef535090;
+	font-style: italic
+}
