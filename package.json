@@ -393,7 +393,7 @@
     "redux": "^4.0.1",
     "set-cookie-parser": "^2.4.7",
     "start": "^5.1.0",
-    "ws": "^6.0.0"
+    "ws": "^6.2.2"
   },
   "__npminstall_done": false
 }
