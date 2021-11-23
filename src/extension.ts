@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.7'
+const version = '4.5.8'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -76,11 +76,9 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>本次更新</h1>
     <h2>
     <ul>
-    <li>Fix:
     <ol>
-    <li>修复了CF记录无法正常显示全部测试点的问题</li>
+    <li>add postCaptcha to api</li>
     </ol>
-    </li>
     </ul>
     </h2>
   </div>
