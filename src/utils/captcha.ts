@@ -24,8 +24,9 @@ const generateHTML = (imageEncoded: string) => `
 
 export async function getUserCaptcha () {
   let captchaText: string | null = null;
+  let image: Buffer | null = null;
   while (captchaText === null) {
-    const image = await captcha()
+    image = await captcha()
     if (!image) {
       await promptForOpenOutputChannel('Failed to request captcha image', DialogType.error)
       return null
@@ -44,5 +45,5 @@ export async function getUserCaptcha () {
     }).then(res => res ? res : null)
     panel.dispose()
   }
-  return captchaText
+  return { captchaText: captchaText, image: image?.toString('base64') }
 }

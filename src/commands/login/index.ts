@@ -1,4 +1,4 @@
-import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID } from '@/utils/api'
+import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID, postCaptcha } from '@/utils/api'
 import SuperCommand from '../SuperCommand'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
@@ -55,10 +55,10 @@ export default new SuperCommand({
           debug('No captcha text')
           return;
         }
-        let clientID:string | null
-        try{
-          const r1 = await login(username, password, captcha)
-          let resp:string | null
+        let clientID: string | null
+        try {
+          const r1 = await login(username, password, captcha.captchaText)
+          let resp: string | null
           if (r1.locked) {
             const code = await vscode.window.showInputBox({
               placeHolder: '输入2FA验证码',
@@ -74,7 +74,7 @@ export default new SuperCommand({
           }
           console.log(resp)
           exports.init = true
-          // vscode.window.showInformationMessage('登录成功');
+          await postCaptcha(captcha)
           exports.islogged = true;
           try {
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))

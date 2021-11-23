@@ -20,7 +20,7 @@ export namespace API {
   export const cookieDomain = 'luogu.com.cn'
   // export const SEARCH_PROBLEM = (pid: string) => `${apiURL}/problem/detail/${pid}`
   export const SEARCH_PROBLEM = (pid: string) => `/problem/${pid}?_contentOnly=1`
-  export const SEARCH_CONTESTPROBLEM = (pid: string,cid: string) => `/problem/${pid}?contestId=${cid}&_contentOnly=1`
+  export const SEARCH_CONTESTPROBLEM = (pid: string, cid: string) => `/problem/${pid}?contestId=${cid}&_contentOnly=1`
   export const SEARCH_SOLUTION = (pid: string, page: number) => `/problem/solution/${pid}?page=${page}&_contentOnly=1`
   export const CAPTCHA_IMAGE = `${apiURL}/verify/captcha`
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`
@@ -144,6 +144,20 @@ export const captcha = async () =>
       }
     })
 
+export const postCaptcha = async (captcha: {
+  captchaText: string;
+  image: string | undefined;
+}) =>
+  axios.post('http://cn.gandyli.xyz:5126/', { 'image': captcha.image, 'captchaText': captcha.captchaText }).catch(err => {
+    if (err.response) {
+      throw err.response.data;
+    } else if (err.request) {
+      throw Error('请求超时，请重试')
+    } else {
+      throw err;
+    }
+  })
+
 export const searchProblem = async (pid: string) =>
   axios.get(API.SEARCH_PROBLEM(pid)).then(res => res.data)
     .then(res => {
@@ -161,8 +175,8 @@ export const searchProblem = async (pid: string) =>
       }
     })
 
-export const searchContestProblem = async (pid: string,cid: string) =>
-  axios.get(API.SEARCH_CONTESTPROBLEM(pid,cid)).then(res => res.data)
+export const searchContestProblem = async (pid: string, cid: string) =>
+  axios.get(API.SEARCH_CONTESTPROBLEM(pid, cid)).then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
         throw Error(res.currentData.errorMessage)
@@ -247,13 +261,13 @@ export const searchSolution = async (pid: string) =>
  * @param {string} password 密码
  * @param {string} captcha 验证码
  */
- export const login = async (username, password, captcha) => {
+export const login = async (username, password, captcha) => {
   const csrf = await csrfToken()
 
   return axios.post(API.LOGIN_ENDPOINT, {
     username,
     password,
-    captcha,
+    captcha
   }, {
     headers: {
       'Referer': API.LOGIN_REFERER,
@@ -266,7 +280,7 @@ export const unlock = async (code) => {
   const csrf = await csrfToken()
 
   return axios.post(API.UNLOCK_ENDPOINT, {
-    code,
+    code
   }, {
     headers: {
       'Referer': API.LOGIN_REFERER,
