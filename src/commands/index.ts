@@ -20,7 +20,7 @@ import random from './random'
 const commands = [About, Login, Search, Submit, Logout, userInfo, Fate, selectLanguage, Save, Open, BenBen, lastRecord, cookielogin, solution, contest, random]
 export { commands }
 
-export function registerCommands(context: vscode.ExtensionContext) {
+export function registerCommands (context: vscode.ExtensionContext) {
   for (const idx in commands) {
     const command = commands[idx]
     debug(`register command: ${command.onCommand}.`)
