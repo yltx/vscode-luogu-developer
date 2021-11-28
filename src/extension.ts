@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.8'
+const version = '4.5.9'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -68,16 +68,16 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>置顶说明</h1>
     <h2>
     <ul>
-    <li>用户跤流群(QQ):1141066631</li>
-    <li>由于vscode的扩展不支持用一个版本号重复发布，所以如果在刚发布后就发现问题可能会以发布.vsix的形式在群中更新。所以建议添加群。</li>
-    <li>以及，在群里直接反馈bug效率会较在github上发布issue效率更高。</li>
+    <li>用户跤流群(QQ)： 1141066631</li>
+    <li>由于 vscode 的扩展不支持用一个版本号重复发布，所以如果在刚发布后就发现问题可能会以发布 .vsix 的形式在群中更新。所以建议添加群。</li>
+    <li>以及，在群里直接反馈 bug 效率会较在 github 上发布 issue 效率更高。</li>
     </ul>
     </h2>
     <h1>本次更新</h1>
     <h2>
     <ul>
     <ol>
-    <li>add postCaptcha to api</li>
+    <li>更新支持的语言</li>
     </ol>
     </ul>
     </h2>
