@@ -9,6 +9,7 @@ export enum Languages {
   'Auto' = 0,
   'Pascal' = 1,
   'C' = 2,
+  'C++14 (GCC 9)' = 28,
   'C++98' = 3,
   'C++11' = 4,
   'C++14' = 11,
@@ -81,7 +82,7 @@ export const fileExtention = {
 export const languageList = {
   'pascal': ['Pascal'],
   'c': ['C'],
-  'cpp': ['C++98', 'C++11', 'C++14', 'C++17', 'C++20'],
+  'cpp': ['C++14 (GCC 9)', 'C++98', 'C++11', 'C++14', 'C++17', 'C++20'],
   'python': ['Python 2', 'Python 3', 'PyPy2', 'PyPy3'],
   'java': ['Java 8'],
   'nodejs': 'Node.js LTS',
