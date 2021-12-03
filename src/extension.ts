@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.9'
+const version = '4.5.10'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,7 +77,8 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h2>
     <ul>
     <ol>
-    <li>更新支持的语言</li>
+    <li>修复无法显示子任务的问题</li>
+    <li>添加语言 C++14 (GCC 9)</li>
     </ol>
     </ul>
     </h2>
