@@ -88,7 +88,7 @@ const generateRecordHTML = async (data: any) => {
               Subtask #${subtasksID[currentSubtask]}
             </h5>`
       }
-      html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length !== null ? subtasks[currentSubtask].testCases.length : 0, testCaseGroup[currentSubtask].length), beg)
+      html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), beg)
       html += `</div>`
       beg += Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length)
     }
