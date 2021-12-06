@@ -9,32 +9,34 @@ export default new SuperCommand({
 
 const generategeneralHTML = async () => {
   return `
-  <div>
-    <script>
-    var channel=0;
-    function search() {
-      var keyword=document.getElementById("search").value;
-      
-    }
-    function changechannel() {
-      if(channel){
-        document.getElementById("select").style="display:none";
-        document.getElementById("user").style="color: rgb(0,0,0);font-size: large;";
-        document.getElementById("User").style="";
-        document.getElementById("official").style="";
-        document.getElementById("office").style="color: rgb(255,255,255);font-size: large;";
-        document.getElementById("Office").style="background-color: rgb(52,152,219);";
-      } else {
-        document.getElementById("official").style="display:none";
-        document.getElementById("office").style="color: rgb(0,0,0);font-size: large;";
-        document.getElementById("Office").style="";
-        document.getElementById("select").style="";
-        document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
-        document.getElementById("User").style="background-color: rgb(52,152,219);"
+  <html>
+    <head>
+      <script>
+      var channel=0;
+      function search() {
+        var keyword=document.getElementById("search").value;
+
       }
-      channel=1-channel;
-    }
-    </script>
+      function changechannel() {
+        if(channel){
+          // document.getElementById("select").style="display:none";
+          document.getElementById("user").style="color: rgb(0,0,0);font-size: large;";
+          document.getElementById("User").style="";
+          // document.getElementById("official").style="";
+          document.getElementById("office").style="color: rgb(255,255,255);font-size: large;";
+          document.getElementById("Office").style="background-color: rgb(52,152,219);";
+        } else {
+          // document.getElementById("official").style="display:none";
+          document.getElementById("office").style="color: rgb(0,0,0);font-size: large;";
+          document.getElementById("Office").style="";
+          // document.getElementById("select").style="";
+          document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
+          document.getElementById("User").style="background-color: rgb(52,152,219);"
+        }
+        channel=1-channel;
+      }
+      </script>
+    </head>
     <section>
       <table width="100%">
         <tr>
@@ -50,13 +52,13 @@ const generategeneralHTML = async () => {
         </tr>
       </table>
       <span style="background-color: rgb(52,152,219);" id="Office">
-        <a style="color: rgb(255,255,255); font-size: large;" title="官方精选" href="javascript:void(0)" onclick="changechannel()" id="office">官方精选</a>
+        <a style="color: rgb(255,255,255); font-size: large;" title="官方精选" href="javascript:changechannel()" id="office">官方精选</a>
       </span>
       &nbsp;&nbsp;&nbsp;
-      <span>
-        <a style="color: rgb(0,0,0);font-size: large;" title="用户分享" href="javascript:void(0)" onclick="changechannel()" id="user">用户分享</a>
+      <span id="User">
+        <a style="color: rgb(0,0,0);font-size: large;" title="用户分享" href="javascript:changechannel()" id="user">用户分享</a>
       </span>
     </section>
-  </div>
+  </html>
   `
 }
