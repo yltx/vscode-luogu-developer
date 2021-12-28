@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.5.10",
+  "version": "4.5.11",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -357,7 +357,7 @@
     "@types/lodash": "^4.14.115",
     "@types/markdown-it": "0.0.4",
     "@types/marked": "^0.6.1",
-    "@types/node": "^7.0.43",
+    "@types/node": "^7.10.14",
     "@types/request": "^2.48.4",
     "@types/tough-cookie": "^4.0.0",
     "@types/vscode": "^1.25.0",

@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.5.10'
+const version = '4.6.1'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,11 +77,12 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h2>
     <ul>
     <ol>
-    <li>修复无法显示子任务的问题</li>
-    <li>添加语言 C++14 (GCC 9)</li>
+    <li>添加了显示冬日绘板的功能。</li>
     </ol>
     </ul>
     </h2>
+    <h2>为了能在冬日绘板上抢到一块地方维护vscode-luogu的宣传图标（还在制作中，可以洛谷私信/qq私聊引领天下了解详细信息），现向所有vscode-luogu用户征集token。由于我们沿袭去年传统，今年仍和 犇犇犇犇 合作，所以token请提交至https://www.luogu.com.cn/blog/12cow/paintBoard，并注明来源：vscode-luogu。如果您觉得vscode-luogu的体验还彳亍，确实为您在一定程度上提高了做题效率，还请提供一些token帮助我们宣传。</h2>
+    <h2>您的支持是我们开发的最大动力。</h2>
   </div>
   </html>
   `
@@ -123,7 +124,7 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
         }
       } catch (err) {
         vscode.window.showErrorMessage('获取登录信息失败')
-        vscode.window.showErrorMessage(err)
+        vscode.window.showErrorMessage(`${err}`)
         // vscode.window.showErrorMessage('未登录')
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
         exports.islogged = false
@@ -146,7 +147,7 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
       fs.mkdirSync(exports.luoguProblemPath)
     } catch (err) {
       vscode.window.showErrorMessage('创建题目保存路径失败')
-      vscode.window.showErrorMessage(err)
+      vscode.window.showErrorMessage(`${err}`)
       console.error(err)
       return
     }
@@ -167,7 +168,7 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
           debug(`Delete expired problem exists in ${exports.luoguProblemPath + '\\' + item} successfully.`)
         } catch (err) {
           vscode.window.showErrorMessage('删除过期题目失败')
-          vscode.window.showErrorMessage(err)
+          vscode.window.showErrorMessage(`${err}`)
           console.log(err)
         }
       }
