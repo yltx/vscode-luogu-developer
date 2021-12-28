@@ -12,3 +12,4 @@ tests/**/*
 *.zip
 test.*
 tempCodeRunnerFile.ts
+.vs
