@@ -134,6 +134,11 @@
         "command": "luogu.random",
         "title": "根据题目难度和来源随机跳题",
         "category": "Luogu"
+      },
+      {
+        "command": "luogu.paintboard",
+        "title": "查看冬日绘板",
+        "category": "Luogu"
       }
     ],
     "keybindings": [

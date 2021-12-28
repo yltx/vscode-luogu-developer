@@ -17,7 +17,8 @@ import cookielogin from './cookieslogin'
 import solution from './solution'
 import contest from './contest'
 import random from './random'
-const commands = [About, Login, Search, Submit, Logout, userInfo, Fate, selectLanguage, Save, Open, BenBen, lastRecord, cookielogin, solution, contest, random]
+import paintboard from './paintboard'
+const commands = [About, Login, Search, Submit, Logout, userInfo, Fate, selectLanguage, Save, Open, BenBen, lastRecord, cookielogin, solution, contest, random, paintboard]
 export { commands }
 
 export function registerCommands (context: vscode.ExtensionContext) {
