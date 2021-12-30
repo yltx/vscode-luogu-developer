@@ -31,7 +31,7 @@ export default new SuperCommand({
         fs.mkdirSync(exports.luoguProblemPath)
       } catch (err) {
         vscode.window.showErrorMessage('创建题目保存路径失败')
-        vscode.window.showErrorMessage(err)
+        vscode.window.showErrorMessage(`${err}`)
         console.error(err)
         return
       }
@@ -40,7 +40,7 @@ export default new SuperCommand({
       fs.writeFileSync(exports.luoguProblems, html)
     } catch (err) {
       vscode.window.showErrorMessage('保存失败')
-      vscode.window.showErrorMessage(err)
+      vscode.window.showErrorMessage(`${err}`)
       console.error(err)
       return
     }

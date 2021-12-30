@@ -1,5 +1,6 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
+import axios from '@/utils/api'
 
 export default new SuperCommand({
   onCommand: 'paintboard',
@@ -9,6 +10,14 @@ export default new SuperCommand({
       retainContextWhenHidden: true,
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
+	panel.webview.onDidReceiveMessage(async message =>{
+		console.log(`Got ${message.type} request.`)
+		const paintboard = await axios.get("https://www.luogu.com.cn/paintboard/board").then(data => data?.data)
+		panel.webview.postMessage({
+			type: 'init',
+			board: paintboard
+		})
+	})
     panel.webview.html = `
     <!doctype html>
 	<html class="no-js">
@@ -92,11 +101,11 @@ export default new SuperCommand({
 	</canvas>
 	</div>
 	<div class="am-u-lg-5" id='zoom-tool'>
-	<button type="button" class="am-btn am-btn-primary am-radius" zoom=1>全部显示</button>
-	<button type="button" class="am-btn am-btn-secondary am-radius" zoom=5>放大5x</button>
-	<button type="button" class="am-btn am-btn-success am-radius" zoom=10>放大10x</button>
 	<p style="">
-	还剩 <span id='timeleft' class="am-badge am-badge-secondary"></span>
+	<span id='timeleft' class="am-badge am-badge-secondary" align="left"></span>
+	<button type="button" class="am-btn am-btn-primary am-radius" align="right" zoom=1>全部显示</button>
+	<button type="button" class="am-btn am-btn-secondary am-radius" align="right" zoom=5>放大5x</button>
+	<button type="button" class="am-btn am-btn-success am-radius" align="right" zoom=10>放大10x</button>
 	</p>
 	</div>
 	</div>
@@ -113,6 +122,8 @@ export default new SuperCommand({
 	<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
 	<![endif]-->
 	<script>
+		const vscode = acquireVsCodeApi();
+
 	    String.prototype.padStart = function padStart(maxLength, fillString) {
 	        var str = String(this);
 	        var fillStr = fillString === undefined ? ' ' : String(fillString);
@@ -253,14 +264,7 @@ export default new SuperCommand({
         }
       
         function initialPaint() {
-            $.get("/paintboard/board", function(resp) {
-                resp.split('\n').map(function(colorStr, x) {
-                    colorStr.split("").map(function(color, y) {
-                        //if(color !== '2') console.log(x, y, color);
-                        update(y, x, colorlist[parseInt(color, 32)]);
-                    });
-                });
-            });
+            vscode.postMessage({type: 'request-paintboard',data: 0});
         }
       
         var ws = null;
@@ -287,6 +291,7 @@ export default new SuperCommand({
                     update(data.y, data.x, colorlist[data.color]);
                 } else if(data.type === "result") {
                     initialPaint()
+					console.log('Init.')
                 }
             };
         }
@@ -297,24 +302,31 @@ export default new SuperCommand({
             $('#activity-time-start').html(getDateTime(activityStartTime, false));
             $('#activity-time-end').html(getDateTime(activityEndTime, true));
             var countBeforeStart = activityStartTime > (new Date().getTime() / 1000);
-            var $$ = $('#activity-reminder');
+            var $$ = $('#timeleft');
             var clock = setInterval(function () {
                 var time = Math.floor(new Date().getTime() / 1000);
                 if (countBeforeStart && (time > activityStartTime)) {
                     clearInterval(clock);
                     window.location.reload();
                 } else if (time <= activityStartTime) {
-                    $$.html('(' + getFormattedTime(activityStartTime - time) + '后开始)');
+                    $$.html(getFormattedTime(activityStartTime - time) + '后开始');
                 } else if (time <= activityEndTime) {
-                    $$.html('(' + getFormattedTime(activityEndTime - time) + '后结束)');
+                    $$.html(getFormattedTime(activityEndTime - time) + '后结束');
                 } else {
-                    $$.html('(活动已结束)');
+                    $$.html('活动已结束');
                 }
             }, 1000);
         })();
-    </script>
-    <script>
-        $("#timeleft").html('活动未开始');
+
+		$(document).ready(function () {
+			console.log('Initing...');
+			window.addEventListener('message', event => {
+		  		if (event.data.type === 'init') {
+					for (var i = 0; i < H; i++)
+					for (var j = 0; j < W; j++)update(i,j,colorlist[parseInt(event.data.board[j*(H+1)+i], 32)])
+		  		}
+			});
+		});
     </script>
     </body>
     </html>
