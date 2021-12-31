@@ -102,11 +102,11 @@ export default new SuperCommand({
 	</div>
 	<div class="am-u-lg-5" id='zoom-tool'>
 	<p style="">
-	<span id='timeleft' class="am-badge am-badge-secondary" align="left"></span>
-	<button type="button" class="am-btn am-btn-primary am-radius" align="right" zoom=1>全部显示</button>
-	<button type="button" class="am-btn am-btn-secondary am-radius" align="right" zoom=5>放大5x</button>
-	<button type="button" class="am-btn am-btn-success am-radius" align="right" zoom=10>放大10x</button>
+	<span id='timeleft' class="am-badge am-badge-secondary"></span>
 	</p>
+	<button type="button" class="am-btn am-btn-primary am-radius" zoom=1>全部显示</button>
+	<button type="button" class="am-btn am-btn-secondary am-radius" zoom=5>放大5x</button>
+	<button type="button" class="am-btn am-btn-success am-radius" zoom=10>放大10x</button>
 	</div>
 	</div>
 	</div>
