@@ -1,6 +1,7 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
 import { searchTrainingdetail } from '@/utils/api'
+import { showTrainDetails } from '@/utils/showTrainDetails'
 
 export default new SuperCommand({
   onCommand: 'traindetails',
@@ -15,8 +16,19 @@ export default new SuperCommand({
       return
     }
     exports.tid = tid
-    const data=await searchTrainingdetail(tid)
-    console.log(data)
-    return ``
+    try{
+      const data = await searchTrainingdetail(tid)
+      console.log(data)
+      const panel = vscode.window.createWebviewPanel('题单详情',`${1}`,vscode.ViewColumn.Two,{
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+      })
+      panel.webview.html = await showTrainDetails(tid)
+    } catch(err) {
+        vscode.window.showErrorMessage('打开失败')
+        vscode.window.showErrorMessage(`${err}`)
+        throw(err)
+    }
   }
 })

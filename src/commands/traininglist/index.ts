@@ -1,6 +1,7 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getResourceFilePath, searchTrainingdetail, searchTraininglist } from '@/utils/api'
+import { getResourceFilePath, searchTraininglist } from '@/utils/api'
+import { showTrainDetails } from '@/utils/showTrainDetails'
 
 export default new SuperCommand({
   onCommand: 'traininglist',
@@ -18,7 +19,7 @@ export default new SuperCommand({
           retainContextWhenHidden: true,
           localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
         })
-        panel2.webview.html=await generateTrainingDetailsHTML(message.data)
+        panel2.webview.html=await showTrainDetails(message.data)
       }
       else if(message.type=='official'){
         panel.webview.postMessage({

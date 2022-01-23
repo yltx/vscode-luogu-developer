@@ -1,5 +1,7 @@
-import * as vscode from 'vscode'
-export const showTrainDetails = (id:any) => {
-  
-  const panel = vscode.window.createWebviewPanel('题单详情',)
+import { searchTrainingdetail } from './api'
+import md from './markdown'
+export const showTrainDetails = async (id:any) => {
+  const data = await searchTrainingdetail(id)
+  console.log(data)
+  return ``
 }
