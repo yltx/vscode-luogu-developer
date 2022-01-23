@@ -34,8 +34,8 @@ export namespace API {
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
   export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
-  export const TRAINLIST = (type: string, page: number) => `${baseURL}/training/list?type=${type}&page=${page}&_contentOnly=1`
   export const TRAINLISTDETAIL = (id: any) => `${baseURL}/training/${id}?_contentOnly=1`
+  export const SEARCHTRAINLIST = (channel: string,keyword: string,page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${keyword}&_contentOnly=1`
 }
 
 export const jar = new CookieJar();
@@ -256,8 +256,8 @@ export const searchSolution = async (pid: string) =>
       }
     })
 
-export const searchTraininglist = async (type: string,page: number) =>
-    axios.get(API.TRAINLIST(type,page))
+export const searchTraininglist = async (type: string,keyword: string,page: number) =>
+    axios.get(API.SEARCHTRAINLIST(type,keyword,page))
       .then(res => res?.data?.currentData).then(async res => {
         // console.log(res)
         if ((res || null) === null) { throw Error('题单不存在') }
