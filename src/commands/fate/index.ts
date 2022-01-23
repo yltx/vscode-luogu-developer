@@ -15,7 +15,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       console.error(err)
-      vscode.window.showErrorMessage(err.toString());
+      vscode.window.showErrorMessage(`${err}`);
       return;
     }
     try {

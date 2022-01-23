@@ -54,7 +54,7 @@ export default new SuperCommand({
       panel.webview.html = html
     } catch (err) {
       vscode.window.showErrorMessage('查看失败')
-      vscode.window.showErrorMessage(err)
+      vscode.window.showErrorMessage(`${err}`)
       console.error(err)
     }
   }

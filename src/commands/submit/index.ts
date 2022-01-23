@@ -27,7 +27,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       console.error(err)
-      vscode.window.showErrorMessage(err.toString());
+      vscode.window.showErrorMessage(`${err}`);
       return;
     }
     let text = edtior.document.getText();
@@ -103,9 +103,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       vscode.window.showInformationMessage('提交失败')
-      if (err.errorMessage) {
-        vscode.window.showErrorMessage(err.errorMessage)
-      }
+      vscode.window.showErrorMessage(`${err}`)
       console.error(err);
     } finally {
       if (success) {

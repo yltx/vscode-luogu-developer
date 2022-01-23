@@ -19,7 +19,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       console.error(err)
-      vscode.window.showErrorMessage(err.toString());
+      vscode.window.showErrorMessage(`${err}`);
       return;
     }
     let defaultID = exports.pid
@@ -90,7 +90,7 @@ export default new SuperCommand({
       console.log(html)
       panel.webview.html = html
     } catch (err) {
-      vscode.window.showErrorMessage(err.message)
+      vscode.window.showErrorMessage(`${err}`)
       console.error(err)
     }
   }

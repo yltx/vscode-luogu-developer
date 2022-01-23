@@ -139,6 +139,11 @@
         "command": "luogu.paintboard",
         "title": "查看冬日绘板",
         "category": "Luogu"
+      },
+      {
+        "command": "luogu.traininglist",
+        "title": "查看题单广场",
+        "category": "Luogu"
       }
     ],
     "keybindings": [
@@ -197,6 +202,10 @@
       {
         "command": "luogu.random",
         "key": "Ctrl+Alt+G R"
+      },
+      {
+        "command": "luogu.traininglist",
+        "key": "Ctrl+Alt+G T"
       }
     ],
     "viewsContainers": {

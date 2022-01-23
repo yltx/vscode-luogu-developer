@@ -18,7 +18,7 @@ export default new SuperCommand({
       vscode.window.showInformationMessage(data.currentUser.name);
     } catch (err) {
       vscode.window.showErrorMessage('获取登录信息失败');
-      vscode.window.showErrorMessage(err.toString());
+      vscode.window.showErrorMessage(`${err}`);
     }
   }
 })

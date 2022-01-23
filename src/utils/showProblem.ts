@@ -42,7 +42,7 @@ export const showProblem = async (pid: string, cid: string) => {
           }
         } catch (err) {
           console.error(err)
-          vscode.window.showErrorMessage(err.toString());
+          vscode.window.showErrorMessage(`${err}`);
           return;
         }
         let text = edtior.document.getText();

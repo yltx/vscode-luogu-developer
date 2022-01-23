@@ -28,7 +28,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       console.error(err)
-      vscode.window.showErrorMessage(err.toString());
+      vscode.window.showErrorMessage(`${err}`);
       return;
     }
     const mode = await vscode.window.showQuickPick(['我发布的', '我关注的', '全网动态'], { ignoreFocusOut: true });
@@ -52,8 +52,10 @@ export default new SuperCommand({
       if (message.type === 'post') {
         // todo: add error handling in webview
         try {
+          console.log(message.data)
           pannel.webview.postMessage({ type: 'post-result', message: await postBenben(message.data) })
         } catch (err) {
+          console.log(err)
           pannel.webview.postMessage({ type: 'postError', message: err.message })
         }
       } else if (message.type === 'delete') {
