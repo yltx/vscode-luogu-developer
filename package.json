@@ -41,7 +41,7 @@
     "commands": [
       {
         "command": "luogu.signin",
-        "title": "登录洛谷账号",
+        "title": "登录洛谷账号(Signin)",
         "category": "Luogu",
         "icon": {
           "dark": "resources/dark/login-dark.png",
@@ -50,17 +50,17 @@
       },
       {
         "command": "luogu.signout",
-        "title": "退出洛谷账号",
+        "title": "退出洛谷账号(Signout)",
         "category": "Luogu"
       },
       {
         "command": "luogu.submitSolution",
-        "title": "提交当前文档代码",
+        "title": "提交当前文档代码(Submit this code)",
         "category": "Luogu"
       },
       {
         "command": "luogu.searchProblem",
-        "title": "查看题目",
+        "title": "查看题目(Search for problem)",
         "category": "Luogu",
         "icon": {
           "dark": "resources/dark/search-dark.png",
@@ -69,7 +69,7 @@
       },
       {
         "command": "luogu.solution",
-        "title": "查看题解",
+        "title": "查看题解(Search for solution)",
         "category": "Luogu",
         "icon": {
           "dark": "resources/dark/search-dark.png",
@@ -78,12 +78,12 @@
       },
       {
         "command": "luogu.fate",
-        "title": "打卡",
+        "title": "打卡(Fate)",
         "category": "Luogu"
       },
       {
         "command": "luogu.benben",
-        "title": "犇犇",
+        "title": "犇犇(Benben)",
         "category": "Luogu",
         "icon": {
           "dark": "resources/dark/refresh-dark.png",
@@ -92,57 +92,62 @@
       },
       {
         "command": "luogu.userInfo",
-        "title": "账户信息",
+        "title": "账户信息(Userinfo)",
         "category": "Luogu"
       },
       {
         "command": "luogu.about",
-        "title": "关于",
+        "title": "关于(About)",
         "category": "Luogu"
       },
       {
         "command": "luogu.selectLanguage",
-        "title": "设置默认语言",
+        "title": "设置默认语言(Select default language)",
         "category": "Luogu"
       },
       {
         "command": "luogu.save",
-        "title": "保存题目至本地",
+        "title": "保存题目至本地(Save problem)",
         "category": "Luogu"
       },
       {
         "command": "luogu.open",
-        "title": "查看本地保存题目",
+        "title": "查看本地保存题目(Show local problem)",
         "category": "Luogu"
       },
       {
         "command": "luogu.lastRecord",
-        "title": "查看最近一次评测",
+        "title": "查看最近一次评测(Show last record)",
         "category": "Luogu"
       },
       {
         "command": "luogu.cookieslogin",
-        "title": "使用cookie登录",
+        "title": "使用cookie登录(Signin by cookies)",
         "category": "Luogu"
       },
       {
         "command": "luogu.contest",
-        "title": "查看比赛",
+        "title": "查看比赛(Show contest)",
         "category": "Luogu"
       },
       {
         "command": "luogu.random",
-        "title": "根据题目难度和来源随机跳题",
+        "title": "根据题目难度和来源随机跳题(Show random problem)",
         "category": "Luogu"
       },
       {
         "command": "luogu.paintboard",
-        "title": "查看冬日绘板",
+        "title": "查看冬日绘板(Show paintboard)",
         "category": "Luogu"
       },
       {
         "command": "luogu.traininglist",
-        "title": "查看题单广场",
+        "title": "查看题单广场(Show training list)",
+        "category": "Luogu"
+      },
+      {
+        "command": "luogu.traindetails",
+        "title": "查看题单详情(Show training details)",
         "category": "Luogu"
       }
     ],

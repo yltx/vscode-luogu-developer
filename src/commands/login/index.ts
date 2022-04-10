@@ -80,9 +80,10 @@ export default new SuperCommand({
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
           } catch (error) {
             vscode.window.showErrorMessage('写入文件时出现错误')
-            vscode.window.showErrorMessage(error)
+            vscode.window.showErrorMessage(`${error}`)
           }
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
+          vscode.window.showInformationMessage('登录成功')
           break;
         } catch (err) {
           console.log(err)

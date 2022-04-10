@@ -14,32 +14,31 @@ export default new SuperCommand({
     })
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got type ${message.type} page ${message.page} request.`)
-      if(message.type=='open'){
-        const data=await searchTrainingdetail(message.data)
+      if (message.type === 'open') {
+        const data = await searchTrainingdetail(message.data)
         const panel2 = vscode.window.createWebviewPanel('题单详情',`${data['training']['title']}`,vscode.ViewColumn.Two, {
           enableScripts: true,
           retainContextWhenHidden: true,
           localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
         })
-        panel2.webview.html=await showTrainDetails(message.data)
-      }else if(message.type=='request'){
+        panel2.webview.html = await showTrainDetails(message.data)
+      } else if (message.type === 'request') {
         panel.webview.postMessage({
           message: {
-            channel:message.channel,
-            html: message.channel=='official'?await generateOfficialListHTML(message.keyword,message.page):await generateSelectedListHTML(message.keyword,message.page)
+            channel: message.channel,
+            html: message.channel === 'official' ? await generateOfficialListHTML(message.keyword,message.page) : await generateSelectedListHTML(message.keyword,message.page)
           }
         })
-      }else if(message.type=='search'){
+      } else if (message.type === 'search') {
         panel.webview.postMessage({
           message: {
-            channel:message.channel,
-            html: message.channel==0?await generateOfficialListHTML(message.keyword,1):await generateSelectedListHTML(message.keyword,1)
+            channel: message.channel,
+            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword,1) : await generateSelectedListHTML(message.keyword,1)
           }
         })
       }
     })
     const html = await generategeneralHTML()
-    console.log(html)
     panel.webview.html = html
   }
 })
@@ -50,6 +49,7 @@ const generategeneralHTML = async () => {
     <head>
       <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
       <script src="${getResourceFilePath('loader.js')}" charset="utf-8" defer></script>
+      <script src="${getResourceFilePath('jquery.min.js')}"></script>
       <script>
         const vscode = acquireVsCodeApi();
         function scrollToClass (c) {
@@ -119,7 +119,7 @@ const generategeneralHTML = async () => {
           document.getElementById("Office").style="";
           document.getElementById("select").style="";
           document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
-          document.getElementById("User").style="background-color: rgb(52,152,219);"
+          document.getElementById("User").style="background-color: rgb(52,152,219);";
         }
         channel=1-channel;
       }
@@ -127,7 +127,7 @@ const generategeneralHTML = async () => {
         vscode.postMessage({type: 'open',data: id});
         console.log(id);
       }
-      </script>
+    </script>
     <div style="margin-top: 2em;">
     <div class="card padding-default" style="background-color: rgb(255,255,255);">
     <section>
@@ -170,32 +170,34 @@ const generategeneralHTML = async () => {
 }
 
 const generateOfficialListHTML = async (keyword: string,page: number) => {
-  const data=await searchTraininglist('official',keyword,page),list=data['trainings']['result'],accepted=data['acceptedCounts']
+  const data = await searchTraininglist('official',keyword,page)
+  const list = data['trainings']['result']
+  const accepted = data['acceptedCounts']
   console.log(data)
   console.log(accepted)
-  let html=''
-  html+='      <table border="0" width="100%">\n'
-  html+='        <tr>\n'
-  html+='          <th align="left" nowrap>编号</th>\n'
-  html+='          <th align="left" nowrap>名称</th>\n'
-  html+='          <th align="left" nowrap>完成度</th>\n'
-  html+='          <th nowrap>题目数</th>\n'
-  html+='          <th nowrap>收藏数</th>\n'
-  html+='        </tr>\n'
-  for(let i=1;i<=list['length'];i++){
-    html+='        <tr>\n'
-    html+=`          <td align="left" nowrap>${list[i-1]['id']}</td>\n`
-    html+=`          <td align="left" nowrap><a href="javascript:void(0)" onclick="open(${list[i-1]['id']})">${list[i-1]['title']}</a></td>\n`
-    html+=`          <td align="left" nowrap>\n
-            <progress value="${accepted[list[i-1]['id']]}" max="${list[i-1]['problemCount']}" style="height: 30px;width: 100px;" title="${accepted[list[i-1]['id']]}/${list[i-1]['problemCount']}"></progress>
+  let html = ''
+  html += '      <table border="0" width="100%">\n'
+  html += '        <tr>\n'
+  html += '          <th align="left" nowrap>编号</th>\n'
+  html += '          <th align="left" nowrap>名称</th>\n'
+  html += '          <th align="left" nowrap>完成度</th>\n'
+  html += '          <th nowrap>题目数</th>\n'
+  html += '          <th nowrap>收藏数</th>\n'
+  html += '        </tr>\n'
+  for (let i = 1;i <= list['length'];i++) {
+    html += '        <tr>\n'
+    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
+    html += `          <td align="left" nowrap><a href="javascript:void(0)" onclick="open(${list[i - 1]['id']})">${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap>\n
+            <progress value="${accepted[list[i - 1]['id']]}" max="${list[i - 1]['problemCount']}" style="height: 30px;width: 100px;" title="${accepted[list[i - 1]['id']]}/${list[i - 1]['problemCount']}"></progress>
                      </td>\n`
     // html+=`          <td width="15px" align="left"></td>`
-    html+=`          <td align="center" nowrap>${list[i-1]['problemCount']}</td>\n`
-    html+=`          <td align="center" nowrap>${list[i-1]['markCount']}</td>\n`
-    html+='        <tr>\n'
+    html += `          <td align="center" nowrap>${list[i - 1]['problemCount']}</td>\n`
+    html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
+    html += '        <tr>\n'
   }
-  html+='      </table>\n'
-  html+=`      <script>
+  html += '      </table>\n'
+  html += `      <script>
       var pageOfficial=1;
       function turnOfficial(towards:number) {
         pageOfficial+=towards;
@@ -241,29 +243,30 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
   return html
 }
 const generateSelectedListHTML = async (keyword: string,page: number) => {
-  const data=await searchTraininglist('select',keyword,page),list=data['trainings']['result']
+  const data = await searchTraininglist('select',keyword,page)
+  const list = data['trainings']['result']
   console.log(data)
-  let html=''
-  html+='      <table border="0" width="100%">\n'
-  html+='        <tr>\n'
-  html+='          <th align="left" nowrap>编号</th>\n'
-  html+='          <th align="left" nowrap>名称</th>\n'
-  html+='          <th nowrap>题目数</th>\n'
-  html+='          <th nowrap>收藏数</th>\n'
-  html+='          <th align="left" nowrap>创建者</th>\n'
-  html+='        </tr>\n'
-  for(let i=1;i<=list['length'];i++){
-    html+='        <tr>\n'
-    html+=`          <td align="left" nowrap>${list[i-1]['id']}</td>\n`
-    html+=`          <td align="left" nowrap><a href="javascript:void(0)" onclick="open(${list[i-1]['id']})">${list[i-1]['title']}</a></td>\n`
-    html+=`          <td align="left" nowrap>${list[i-1]['problemCount']}</td>\n`
+  let html = ''
+  html += '      <table border="0" width="100%">\n'
+  html += '        <tr>\n'
+  html += '          <th align="left" nowrap>编号</th>\n'
+  html += '          <th align="left" nowrap>名称</th>\n'
+  html += '          <th nowrap>题目数</th>\n'
+  html += '          <th nowrap>收藏数</th>\n'
+  html += '          <th nowrap>创建者</th>\n'
+  html += '        </tr>\n'
+  for (let i = 1;i <= list['length'];i++) {
+    html += '        <tr>\n'
+    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
+    html += `          <td align="left" nowrap><a href="javascript:void(0)" onclick="open(${list[i - 1]['id']})">${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap>${list[i - 1]['problemCount']}</td>\n`
     // html+=`          <td width="15px" align="left"></td>`
-    html+=`          <td align="center" nowrap>${list[i-1]['markCount']}</td>\n`
-    html+=`          <td align="center" style="${getUsernameStyle(list[i-1]['provider']['color'])}" nowrap>${list[i-1]['provider']['name']}${getUserSvg(list[i-1]['provider']['ccfLevel'])}</td>\n`
-    html+='        <tr>\n'
+    html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
+    html += `          <td align="center" style="${getUsernameStyle(list[i - 1]['provider']['color'])}" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(list[i - 1]['provider']['ccfLevel'])}</td>\n`
+    html += '        <tr>\n'
   }
-  html+='      </table>\n'
-  html+=`      <script>
+  html += '      </table>\n'
+  html += `      <script>
       var pageSelected=1;
       function turnSelected(towards:number) {
         pageSelected+=towards;

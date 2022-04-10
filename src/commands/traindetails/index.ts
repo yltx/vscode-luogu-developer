@@ -2,6 +2,7 @@ import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
 import { searchTrainingdetail } from '@/utils/api'
 import { showTrainDetails } from '@/utils/showTrainDetails'
+import * as fs from 'fs'
 
 export default new SuperCommand({
   onCommand: 'traindetails',
@@ -16,19 +17,21 @@ export default new SuperCommand({
       return
     }
     exports.tid = tid
-    try{
+    try {
       const data = await searchTrainingdetail(tid)
-      console.log(data)
-      const panel = vscode.window.createWebviewPanel('题单详情',`${1}`,vscode.ViewColumn.Two,{
+      // console.log(data)
+      const panel = vscode.window.createWebviewPanel('题单详情',`${data['training']['title']}`,vscode.ViewColumn.Two,{
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
       })
-      panel.webview.html = await showTrainDetails(tid)
-    } catch(err) {
-        vscode.window.showErrorMessage('打开失败')
-        vscode.window.showErrorMessage(`${err}`)
-        throw(err)
+      const html = await showTrainDetails(tid)
+      panel.webview.html = html
+      // fs.writeFileSync('E:/vscode-luogu-开发/1.html',html)
+    } catch (err) {
+      vscode.window.showErrorMessage('打开失败')
+      vscode.window.showErrorMessage(`${err}`)
+      throw(err)
     }
   }
 })
