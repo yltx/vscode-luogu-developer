@@ -145,21 +145,6 @@ export const captcha = async () =>
         throw err;
       }
     })
-
-export const postCaptcha = async (captcha: {
-  captchaText: string;
-  image: string | undefined;
-}) =>
-  axios.post('http://cn.gandyli.xyz:5126/', { 'image': captcha.image, 'captchaText': captcha.captchaText }).catch(err => {
-    if (err.response) {
-      throw err.response.data;
-    } else if (err.request) {
-      throw Error('请求超时，请重试')
-    } else {
-      throw err;
-    }
-  })
-
 export const searchProblem = async (pid: string) =>
   axios.get(API.SEARCH_PROBLEM(pid)).then(res => res.data)
     .then(res => {
