@@ -74,7 +74,6 @@ export default new SuperCommand({
           }
           console.log(resp)
           exports.init = true
-          await postCaptcha(captcha)
           exports.islogged = true;
           try {
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
