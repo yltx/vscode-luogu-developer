@@ -131,12 +131,11 @@ const generategeneralHTML = async () => {
       <table border="0" width="100%">
         <tr>
           <td align="left" width="100%" nowrap>
-            <form>
-              <span>
-                <h2 style='display: inline-block'>查找题单</h2>
-                <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" id="search">
-                <button id="search_btn" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">搜索</button>
-              </span>
+            <span>
+              <h2 style='display: inline-block'>查找题单</h2>
+              <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" id="search">
+              <button id="search_btn" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">搜索</button>
+            </span>
             </form>
           </td>
         </tr>
