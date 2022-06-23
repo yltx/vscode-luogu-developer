@@ -26,7 +26,7 @@ export default new SuperCommand({
         panel.webview.postMessage({
           message: {
             channel: message.channel,
-            html: message.channel === 'official' ? await generateOfficialListHTML(message.keyword,message.page) : await generateSelectedListHTML(message.keyword,message.page)
+            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword,message.page) : await generateSelectedListHTML(message.keyword,message.page)
           }
         })
       } else if (message.type === 'search') {
@@ -48,7 +48,9 @@ const generategeneralHTML = async () => {
   <html lang="zh">
     <head>
       <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
+      <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
       <script src="${getResourceFilePath('jquery.min.js')}"></script>
+      <script src="${getResourceFilePath('sweetalert-dev.js')}"></script>
       <style>
         pre {
             margin: .5em 0 !important;
@@ -83,7 +85,14 @@ const generategeneralHTML = async () => {
         const vscode = acquireVsCodeApi();
         function load(){
           $("#search_btn").click(function() {
-            search();
+            var keyword=document.getElementById("search").value;
+            console.log("Search func get keyword:",keyword);
+            vscode.postMessage({type: 'search',channel: channel,keyword: keyword});
+          })
+          $(".detail_btn").click(function() {
+            var id=$(this).attr("id");
+            console.log("detail id:",id);
+            vscode.postMessage({type: 'open',data: id});
           })
         }
         $(document).ready(function () {
@@ -97,11 +106,6 @@ const generategeneralHTML = async () => {
           load();
         });
         var channel=0,page=1;
-        function search() {
-          var keyword=document.getElementById("search").value;
-          console.log("Search func get keyword:",keyword);
-          vscode.postMessage({type: 'search',channel: channel,keyword: keyword});
-        }
         function changechannel() {
           if(channel){
             document.getElementById("select").style="display:none";
@@ -120,10 +124,6 @@ const generategeneralHTML = async () => {
           }
           channel=1-channel;
         }
-        function open(id){
-          vscode.postMessage({type: 'open',data: id});
-          console.log(id);
-        }
       </script>
     <div style="margin-top: 2em;">
     <div class="card padding-default" style="background-color: rgb(255,255,255);">
@@ -141,11 +141,11 @@ const generategeneralHTML = async () => {
         </tr>
       </table>
       <span style="background-color: rgb(52,152,219);" id="Office">
-        <a style="color: rgb(255,255,255); font-size: large;" title="官方精选" id="office">官方精选</a>
+        <a style="color: rgb(255,255,255); font-size: large;" title="官方精选" href="javascript:void(0)" onclick="changechannel()" id="office">官方精选</a>
       </span>
       &nbsp;&nbsp;&nbsp;
       <span id="User">
-        <a style="color: rgb(0,0,0);font-size: large;" title="用户分享" id="user">用户分享</a>
+        <a style="color: rgb(0,0,0);font-size: large;" title="用户分享" href="javascript:void(0)" onclick="changechannel()" id="user">用户分享</a>
       </span>
     </section>
     </div>
@@ -183,7 +183,7 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
   for (let i = 1;i <= list['length'];i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a>${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap><a href="#" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
     html += `          <td align="left" nowrap>\n
             <progress value="${accepted[list[i - 1]['id']]}" max="${list[i - 1]['problemCount']}" style="height: 30px;width: 100px;" title="${accepted[list[i - 1]['id']]}/${list[i - 1]['problemCount']}"></progress>
                      </td>\n`
@@ -194,14 +194,15 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
   }
   html += '      </table>\n'
   html += `      <script>
-      var pageOfficial=1;
       function turnOfficial(towards) {
         pageOfficial+=towards;
+        const count=${data['trainings']['count']};
+        console.log("official count:",count);
         if(pageOfficial<1){
           swal("好像哪里有点问题", "已经是第一页了", "error");
           pageOfficial-=towards;
           return;
-        }else if(pageOfficial>Math.ceil(${data['trainings']['count']}/50.0)){
+        }else if(pageOfficial>Math.ceil(count/50.0)){
           swal("好像哪里有点问题", "已经是最后一页了", "error");
           pageOfficial-=towards;
           return;
@@ -209,7 +210,7 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
         vscode.postMessage({type: 'request',channel: 'official',page: page,keyword: ''});
       }
       function gotokthofficial() {
-        const id=document.getElementById('KTHOFFICIAL').value;
+        const id=parseInt(document.getElementById('KTHOFFICIAL').value);
         if(id<1||id>Math.ceil(${data['trainings']['count']}/50.0)){
           swal("好像哪里有点问题", "不合法的页数", "error");
           return;
@@ -222,16 +223,14 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
         <table width="100%">
           <tr>
             <td align="left" width="30%" nowrap>
-              <p align="left" class="post-nav-prev post-nav-item"><a title="上一页">上一页</a></p>
+              <p align="left" class="post-nav-prev post-nav-item"><a href="#" onclick="turnOfficial(-1)" title="上一页">上一页</a></p>
             </td>
             <td align="center" width="40%" nowrap>
-              <form>
-                <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" placeholder="输入要跳转到的页码" id="KTHOFFICIAL">
-                <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">跳转</button>
-              </form>
+              <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" placeholder="输入要跳转到的页码" id="KTHOFFICIAL">
+              <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthofficial()">跳转</button>
             </td>
             <td align="right" width="30%" nowrap>
-              <p align="right" class="post-nav-next post-nav-item"><a title="下一页">下一页</a></p>
+              <p align="right" class="post-nav-next post-nav-item"><a href="#" onclick="turnOfficial(1)" title="下一页">下一页</a></p>
             </td>
           </tr>
         </table>
@@ -254,7 +253,7 @@ const generateSelectedListHTML = async (keyword: string,page: number) => {
   for (let i = 1;i <= list['length'];i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a>${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap><a href="#" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
     html += `          <td align="left" nowrap>${list[i - 1]['problemCount']}</td>\n`
     // html+=`          <td width="15px" align="left"></td>`
     html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
@@ -263,44 +262,43 @@ const generateSelectedListHTML = async (keyword: string,page: number) => {
   }
   html += '      </table>\n'
   html += `      <script>
-      var pageSelected=1;
       function turnSelected(towards) {
-        pageSelected+=towards;
-        if(pageSelected<1){
+        page+=towards;
+        const count=${data['trainings']['count']};
+        console.log("selected count:",count);
+        if(page<1){
           swal("好像哪里有点问题", "已经是第一页了", "error");
-          pageSelected-=towards;
+          page-=towards;
           return;
-        }else if(pageSelected>Math.ceil(${data['trainings']['count']}/50.0)){
+        }else if(page>Math.ceil(count/50.0)){
           swal("好像哪里有点问题", "已经是最后一页了", "error");
-          pageSelected-=towards;
+          page-=towards;
           return;
         }
-        vscode.postMessage({type: 'request',channel: 'select',page: pageSelected,keyword: ''});
+        vscode.postMessage({type: 'request',channel: 'select',page: page,keyword: ''});
       }
       function gotokthselected() {
-        const id=document.getElementById('KTHSELECTED').value;
+        const id=parseInt(document.getElementById('KTHSELECTED').value);
         if(id<1||id>Math.ceil(${data['trainings']['count']}/50.0)){
           swal("好像哪里有点问题", "不合法的页数", "error");
           return;
         }
-        pageSelected=id;
-        vscode.postMessage({type: 'request',channel: 'select',page: pageSelected,keyword: ''});
+        page=id;
+        vscode.postMessage({type: 'request',channel: 'select',page: page,keyword: ''});
       }
       </script>
       <div class="post-nav">
         <table width="100%">
           <tr>
             <td align="left" width="30%" nowrap>
-              <p align="left" class="post-nav-prev post-nav-item"><a title="上一页">上一页</a></p>
+              <p align="left" class="post-nav-prev post-nav-item"><a href="#" onclick="turnSelected(-1)" title="上一页">上一页</a></p>
             </td>
             <td align="center" width="40%" nowrap>
-              <form>
-                <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" placeholder="输入要跳转到的页码" id="KTHSELECTED">
-                <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">跳转</button>
-              </form>
+              <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" placeholder="输入要跳转到的页码" id="KTHSELECTED">
+              <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';" onclick="gotokthselected()">跳转</button>
             </td>
             <td align="right" width="30%" nowrap>
-              <p align="right" class="post-nav-next post-nav-item"><a title="下一页">下一页</a></p>
+              <p align="right" class="post-nav-next post-nav-item"><a href="#" onclick="turnSelected(1)" title="下一页">下一页</a></p>
             </td>
           </tr>
         </table>
