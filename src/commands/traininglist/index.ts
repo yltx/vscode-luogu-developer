@@ -49,48 +49,6 @@ const generategeneralHTML = async () => {
     <head>
       <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
       <script src="${getResourceFilePath('jquery.min.js')}"></script>
-      <script>
-        const vscode = acquireVsCodeApi();
-        function load(){
-          ;
-        }
-        $(document).ready(function () {
-          window.addEventListener('message', event => {
-            const message = event.data.message;
-            if(message.channel==0)document.getElementById("official").innerHTML=message.html;
-            else document.getElementById("select").innerHTML=message.html;
-            load();
-          });
-          load();
-        });
-        var channel=0,page=1;
-        function search() {
-          var keyword=document.getElementById("search").value;
-          vscode.postMessage({type: 'search',channel: channel,keyword: keyword});
-        }
-        function changechannel() {
-          if(channel){
-            document.getElementById("select").style="display:none";
-            document.getElementById("user").style="color: rgb(0,0,0);font-size: large;";
-            document.getElementById("User").style="";
-            document.getElementById("official").style="";
-            document.getElementById("office").style="color: rgb(255,255,255);font-size: large;";
-            document.getElementById("Office").style="background-color: rgb(52,152,219);";
-          } else {
-            document.getElementById("official").style="display:none";
-            document.getElementById("office").style="color: rgb(0,0,0);font-size: large;";
-            document.getElementById("Office").style="";
-            document.getElementById("select").style="";
-            document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
-            document.getElementById("User").style="background-color: rgb(52,152,219);";
-          }
-          channel=1-channel;
-        }
-        function open(id){
-          vscode.postMessage({type: 'open',data: id});
-          console.log(id);
-        }
-      </script>
       <style>
         pre {
             margin: .5em 0 !important;
@@ -120,7 +78,53 @@ const generategeneralHTML = async () => {
         }
       </style>
     </head>
-    <main data-v-90bffe18 class="wrapped lfe-body" style="background-color: rgb(239,239,239);"
+    <main data-v-90bffe18 class="wrapped lfe-body" style="background-color: rgb(239,239,239);">
+    <script>
+        const vscode = acquireVsCodeApi();
+        function load(){
+          $("#search_btn").click(function() {
+            search();
+          })
+        }
+        $(document).ready(function () {
+          window.addEventListener('message', event => {
+            const message = event.data.message;
+            console.log("JS Get message:",event.data.message);
+            if(message.channel==0) $("#official").html(message.html);
+            else $("#select").html(message.html);
+            load();
+          });
+          load();
+        });
+        var channel=0,page=1;
+        function search() {
+          var keyword=document.getElementById("search").value;
+          console.log("Search func get keyword:",keyword);
+          vscode.postMessage({type: 'search',channel: channel,keyword: keyword});
+        }
+        function changechannel() {
+          if(channel){
+            document.getElementById("select").style="display:none";
+            document.getElementById("user").style="color: rgb(0,0,0);font-size: large;";
+            document.getElementById("User").style="";
+            document.getElementById("official").style="";
+            document.getElementById("office").style="color: rgb(255,255,255);font-size: large;";
+            document.getElementById("Office").style="background-color: rgb(52,152,219);";
+          } else {
+            document.getElementById("official").style="display:none";
+            document.getElementById("office").style="color: rgb(0,0,0);font-size: large;";
+            document.getElementById("Office").style="";
+            document.getElementById("select").style="";
+            document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
+            document.getElementById("User").style="background-color: rgb(52,152,219);";
+          }
+          channel=1-channel;
+        }
+        function open(id){
+          vscode.postMessage({type: 'open',data: id});
+          console.log(id);
+        }
+      </script>
     <div style="margin-top: 2em;">
     <div class="card padding-default" style="background-color: rgb(255,255,255);">
     <section>
@@ -131,7 +135,7 @@ const generategeneralHTML = async () => {
               <span>
                 <h2 style='display: inline-block'>查找题单</h2>
                 <input style="border-radius:4px;border:1px solid #000;width:300px; margin:0 auto; box-shadow: 0 4px 6px rgba(50, 50, 93, .08), 0 1px 3px rgba(0, 0, 0, .05); transition: box-shadow .15s ease; padding: .5em;" type="text" id="search">
-                <button onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">搜索</button>
+                <button id="search_btn" onmouseout="this.style.backgroundColor='white';" onmouseover="this.style.backgroundColor='rgb(0,195,255)';">搜索</button>
               </span>
             </form>
           </td>
