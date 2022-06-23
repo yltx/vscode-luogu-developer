@@ -35,7 +35,7 @@ export namespace API {
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
   export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
   export const TRAINLISTDETAIL = (id: any) => `${baseURL}/training/${id}?_contentOnly=1`
-  export const SEARCHTRAINLIST = (channel: string,keyword: string,page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${keyword}&_contentOnly=1`
+  export const SEARCHTRAINLIST = (channel: string,keyword: string,page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(keyword)}&_contentOnly=1`
 }
 
 export const jar = new CookieJar();
