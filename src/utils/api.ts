@@ -363,7 +363,7 @@ export const logout = async () => axios.post(API.LOGOUT, '', {
 })
 
 export const getFate = async () =>
-  axios.get(API.FATE)
+  axios.post(API.FATE)
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
