@@ -182,7 +182,7 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
   for (let i = 1;i <= list['length'];i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a href="#" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
     html += `          <td align="left" nowrap>\n
             <progress value="${accepted[list[i - 1]['id']]}" max="${list[i - 1]['problemCount']}" style="height: 30px;width: 100px;" title="${accepted[list[i - 1]['id']]}/${list[i - 1]['problemCount']}"></progress>
                      </td>\n`
@@ -252,7 +252,7 @@ const generateSelectedListHTML = async (keyword: string,page: number) => {
   for (let i = 1;i <= list['length'];i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a href="#" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
+    html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
     html += `          <td align="left" nowrap>${list[i - 1]['problemCount']}</td>\n`
     // html+=`          <td width="15px" align="left"></td>`
     html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
