@@ -2,6 +2,7 @@ import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
 import { searchTrainingdetail } from '@/utils/api'
 import { showTrainDetails } from '@/utils/showTrainDetails'
+import showProblem from '@/utils/showProblem'
 import * as fs from 'fs'
 
 export default new SuperCommand({
@@ -27,7 +28,12 @@ export default new SuperCommand({
       })
       const html = await showTrainDetails(tid)
       panel.webview.html = html
-      // fs.writeFileSync('E:/vscode-luogu-开发/1.html',html)
+      panel.webview.onDidReceiveMessage(async message => {
+        if(message.type === "open") {
+          console.log("pid:",message.data);
+          await showProblem(message.data,'');
+        }
+      })
     } catch (err) {
       vscode.window.showErrorMessage('打开失败')
       vscode.window.showErrorMessage(`${err}`)
