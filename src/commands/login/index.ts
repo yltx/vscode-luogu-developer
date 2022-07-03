@@ -1,4 +1,4 @@
-import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID, postCaptcha } from '@/utils/api'
+import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID } from '@/utils/api'
 import SuperCommand from '../SuperCommand'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
