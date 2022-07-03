@@ -81,7 +81,7 @@ export class TrainDetals {
       problemlist += `  <tr>
     <td nowrap>${index['problem']['pid']}</td>
     <td style="text-align: center;" nowrap>${getUserScoreStatus(this.userScore ? (this.userScore['status'][index['problem']['pid']] ? this.userScore['score'][index['problem']['pid']] : -1) : -1,index['problem']['fullScore'])}</td>
-    <td align="left" nowrap><a href="javascript:open('${index['problem']['pid']}')">${md.render(index['problem']['title'])}</a></td>
+    <td align="left" nowrap><a href="${index['problem']['pid']}" class="pid" id="${index['problem']['pid']}">${md.render(index['problem']['title'])}</a></td>
     <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
     <td nowrap>${getDifficultyStatus(index['problem']['difficulty'])}</td>
     <td nowrap>
@@ -180,11 +180,14 @@ export const generateTrainDetailsHTML = (train: TrainDetals) => `
 </head>
 <body>
 <script>
-    //const vscode = acquireVsCodeApi();
-    function open(pid) {
-        console.log(pid);
-        //vscode.postMessage({ type: 'open', data: pid });
-    }
+    const vscode = acquireVsCodeApi();
+    $(document).ready(function () {
+      $(".pid").click(function() {
+        var id=$(this).attr("id");
+        console.log("problem id:",id);
+        vscode.postMessage({type: 'open',data: id});
+      })
+    });
     var channel = 0,Channel = ['description','problemlist'],top0 = ['Des','Pro'],top1 = ['des','pro'];
     function changechannel(to) {
         document.getElementById(Channel[channel]).style = "display: none;";
