@@ -80,7 +80,7 @@ const generategeneralHTML = async () => {
         }
       </style>
     </head>
-    <main data-v-90bffe18 class="wrapped lfe-body" style="background-color: rgb(239,239,239);">
+    <body>
     <script>
         const vscode = acquireVsCodeApi();
         function load(){
@@ -125,7 +125,7 @@ const generategeneralHTML = async () => {
         }
       </script>
     <div style="margin-top: 2em;">
-    <div class="card padding-default" style="background-color: rgb(255,255,255);">
+    <div class="card padding-default">
     <section>
       <table border="0" width="100%">
         <tr>
@@ -149,7 +149,7 @@ const generategeneralHTML = async () => {
     </section>
     </div>
     <div class="card padding-default" style="margin-top: 2em;">
-    <section style="background-color: rgb(255,255,255);">
+    <section>
       <div id="official">
       ${await generateOfficialListHTML('',1)}
       </div>
@@ -159,7 +159,7 @@ const generategeneralHTML = async () => {
     </section>
     </div>
     </div>
-    </main>
+    </body>
   </html>
   `
 }
