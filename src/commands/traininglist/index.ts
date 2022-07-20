@@ -80,7 +80,7 @@ const generategeneralHTML = async () => {
         }
       </style>
     </head>
-    <main data-v-90bffe18 class="wrapped lfe-body" style="background-color: rgb(239,239,239);">
+    <body>
     <script>
         const vscode = acquireVsCodeApi();
         function load(){
@@ -108,24 +108,20 @@ const generategeneralHTML = async () => {
         function changechannel() {
           if(channel){
             document.getElementById("select").style="display:none";
-            document.getElementById("user").style="color: rgb(0,0,0);font-size: large;";
-            document.getElementById("User").style="";
             document.getElementById("official").style="";
-            document.getElementById("office").style="color: rgb(255,255,255);font-size: large;";
-            document.getElementById("Office").style="background-color: rgb(52,152,219);";
+            document.getElementById("user").style="cursor:pointer;font-size: large;";
+            document.getElementById("office").style="cursor:pointer;border-bottom: 2px solid var(--vscode-textLink-foreground);color: var(--vscode-textLink-foreground);font-size: large;";
           } else {
             document.getElementById("official").style="display:none";
-            document.getElementById("office").style="color: rgb(0,0,0);font-size: large;";
-            document.getElementById("Office").style="";
             document.getElementById("select").style="";
-            document.getElementById("user").style="color: rgb(255,255,255);font-size: large;";
-            document.getElementById("User").style="background-color: rgb(52,152,219);";
+            document.getElementById("office").style="cursor:pointer;font-size: large;";
+            document.getElementById("user").style="cursor:pointer;border-bottom: 2px solid var(--vscode-textLink-foreground);color: var(--vscode-textLink-foreground);font-size: large;";
           }
           channel=1-channel;
         }
       </script>
     <div style="margin-top: 2em;">
-    <div class="card padding-default" style="background-color: rgb(255,255,255);">
+    <div class="card padding-default">
     <section>
       <table border="0" width="100%">
         <tr>
@@ -139,17 +135,13 @@ const generategeneralHTML = async () => {
           </td>
         </tr>
       </table>
-      <span style="background-color: rgb(52,152,219);" id="Office">
-        <a style="color: rgb(255,255,255); font-size: large;" title="官方精选" href="javascript:void(0)" onclick="changechannel()" id="office">官方精选</a>
-      </span>
+        <span style="cursor:pointer;border-bottom: 2px solid var(--vscode-textLink-foreground);color: var(--vscode-textLink-foreground); font-size: large;" title="官方精选" href="javascript:void(0)" onclick="changechannel()" id="office">官方精选</span>
       &nbsp;&nbsp;&nbsp;
-      <span id="User">
-        <a style="color: rgb(0,0,0);font-size: large;" title="用户分享" href="javascript:void(0)" onclick="changechannel()" id="user">用户分享</a>
-      </span>
+        <span style="cursor:pointer;font-size: large;" title="用户分享" href="javascript:void(0)" onclick="changechannel()" id="user">用户分享</span>
     </section>
     </div>
     <div class="card padding-default" style="margin-top: 2em;">
-    <section style="background-color: rgb(255,255,255);">
+    <section>
       <div id="official">
       ${await generateOfficialListHTML('',1)}
       </div>
@@ -159,7 +151,7 @@ const generategeneralHTML = async () => {
     </section>
     </div>
     </div>
-    </main>
+    </body>
   </html>
   `
 }
