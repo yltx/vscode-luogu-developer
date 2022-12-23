@@ -468,7 +468,8 @@ export const postVote = async (id: number, type: number) =>
     })
 
 export const parseProblemID = async (name: string) => {
-  const regexs = new Array(/(AT_[A-Za-z]{3}[0-9]{3}_[0-9]{1,2})/i, /(CF[0-9]{1,4}[A-Z][0-9]{0,1})/i, /(SP[0-9]{1,5})/i, /(P[0-9]{4})/i, /(UVa[0-9]{1,5})/i, /(U[0-9]{1,6})/i, /(T[0-9]{1,6})/i, /(B[0-9]{4})/i);
+  const regexs = new Array(/([Aa][Tt]_[A-Za-z]{3}[0-9]{3}_[0-9]{1,2})/i, /([Cc][Ff][0-9]{1,4}[A-Z][0-9]{0,1})/i, /([Ss][Pp][0-9]{1,5})/i, /([Pp][0-9]{4})/i, /([Uu][Vv][Aa][0-9]{1,5})/i, /([Uu][0-9]{1,6})/i, /([Tt][0-9]{1,6})/i, /([Bb][0-9]{4})/i, /([Ll][Uu][Oo][Gg][Uu]_[Cc][Ff]_[0-9]{1,4}_[A-Z])/i, /([Ll][Uu][Oo][Gg][Uu]_[Ss][Pp]_[0-9]{1,5})/i, /([Ll][Uu][Oo][Gg][Uu]_[Pp]_[0-9]{4})/i, /([Ll][Uu][Oo][Gg][Uu]_[Uu][Vv][Aa]_[0-9]{1,5})/i, /([Ll][Uu][Oo][Gg][Uu]_[Uu]_[0-9]{1,6})/i, /([Ll][Uu][Oo][Gg][Uu]_[Tt]_[0-9]{1,6})/i, /([Ll][Uu][Oo][Gg][Uu]_[Bb]_[0-9]{4})/i);
+  console.log(name)
   for (const regex of regexs) {
     const m = regex.exec(name);
     if (m !== null) {
