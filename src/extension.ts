@@ -76,9 +76,10 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h1>本次更新</h1>
     <h2>
     <ul>
-    <ol>
-    <li>修复登录问题</li>
-    </ol>
+        <ol>
+            <li>支持打开 AtCoder 来源的题目</li>
+            <li>为比赛页面完善深色模式</li>
+        </ol>
     </ul>
     </h2>
   </div>
