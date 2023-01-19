@@ -94,6 +94,14 @@ const generategeneralHTML = async () => {
             console.log("detail id:",id);
             vscode.postMessage({type: 'open',data: id});
           })
+          $("#search").keypress(function(event){
+            if(event.key == "Enter"){
+              event.preventDefault();
+              var keyword=document.getElementById("search").value;
+              console.log("Search func get keyword:",keyword);
+              vscode.postMessage({type: 'search',channel: channel,keyword: keyword});
+            }
+          })
         }
         $(document).ready(function () {
           window.addEventListener('message', event => {
