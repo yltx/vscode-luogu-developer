@@ -270,51 +270,35 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
         <main>
             <div>
                 <ul>
-                    <li>
-                        <span class="lfe-caption" id="description" style="background-color: rgb(52,152,219);" data-v-20b7d558><a style="color: rgb(255,255,255); font-size: large;" title="比赛说明" href="javascript:void(0)" onclick="Description()" id="des">比赛说明</a>&nbsp;</span>
-                    </li>
-                    <li>
-                        <span class="lfe-caption" id="problemlist" data-v-20b7d558>&nbsp;<a style="color: rgb(0,0,0); font-size: large;" title="题目列表" href="javascript:void(0)" onclick="ProblemList()" id="pro">题目列表</a>&nbsp;</span>
-                    </li>
-                    <li>
-                        <span class="lfe-caption" id="ranklist" data-v-20b7d558>&nbsp;<a style="color: rgb(0,0,0); font-size: large;" title="排行榜" href="javascript:void(0)" onclick="Ranklist()" id="ran">排行榜</a></span>
-                    </li>
+                  <span class="lfe-caption" id="description"><a style="border-bottom: 2px solid var(--vscode-textLink-foreground); font-size: large;" title="比赛说明" href="javascript:void(0)" onclick="Description()" id="des">比赛说明</a>&nbsp;</span>
+                  <span class="lfe-caption" id="problemlist">&nbsp;<a style="color: var(--vscode-text-foreground); font-size: large;" title="题目列表" href="javascript:void(0)" onclick="ProblemList()" id="pro">题目列表</a>&nbsp;</span>
+                  <span class="lfe-caption" id="ranklist">&nbsp;<a style="color: var(--vscode-text-foreground); font-size: large;" title="排行榜" href="javascript:void(0)" onclick="Ranklist()" id="ran">排行榜</a></span>
                 </ul>
                 <script>
-                    var last="description"
                     var lastshow="showdescription"
                     var lasta="des"
                     function Description() {
-                        document.getElementById(last).style=""
                         document.getElementById(lastshow).style="display: none"
-                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
-                        last="description"
+                        document.getElementById(lasta).style="color: var(--vscode-text-foreground); font-size: large;"
                         lastshow="showdescription"
                         lasta="des"
-                        document.getElementById(last).style="background-color: rgb(52,152,219);"
-                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lasta).style="border-bottom: 2px solid var(--vscode-textLink-foreground); font-size: large;"
                         document.getElementById(lastshow).style=""
                     }
                     function ProblemList() {
-                        document.getElementById(last).style=""
                         document.getElementById(lastshow).style="display: none"
-                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
-                        last="problemlist"
+                        document.getElementById(lasta).style="color: var(--vscode-text-foreground); font-size: large;"
                         lastshow="showproblem"
                         lasta="pro"
-                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lasta).style="border-bottom: 2px solid var(--vscode-textLink-foreground); font-size: large;"
                         document.getElementById(lastshow).style=""
                     }
                     function Ranklist() {
-                        document.getElementById(last).style=""
                         document.getElementById(lastshow).style="display: none"
-                        document.getElementById(lasta).style="color: rgb(0,0,0); font-size: large;"
-                        last="ranklist"
+                        document.getElementById(lasta).style="color: var(--vscode-text-foreground); font-size: large;"
                         lastshow="showranklist"
                         lasta="ran"
-                        document.getElementById(last).style="background-color: rgb(52,152,219); color: rgb(255,255,255)"
-                        document.getElementById(lasta).style="color: rgb(255,255,255); font-size: large;"
+                        document.getElementById(lasta).style="border-bottom: 2px solid var(--vscode-textLink-foreground); font-size: large;"
                         document.getElementById(lastshow).style=""
                     }
                 </script>
