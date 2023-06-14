@@ -43,7 +43,8 @@ export const jar = new CookieJar();
 export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
-    withCredentials: true
+    withCredentials: true,
+    headers:{'X-Requested-With':'XMLHttpRequest'}
   })
   axiosCookieJarSupport(axios)
 
