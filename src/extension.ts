@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.6.0'
+const version = '4.6.4'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,7 +77,7 @@ export async function activate (context: vscode.ExtensionContext): Promise<void>
     <h2>
     <ul>
         <ol>
-            <li>修复了无法正常登录的问题</li>
+            <li>修复了对乱序测试点组成的 Subtask 的显示</li>
         </ol>
     </ul>
     </h2>

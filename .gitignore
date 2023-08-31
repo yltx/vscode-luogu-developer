@@ -1,6 +1,7 @@
 out
 vsce
 dist
+node_modules
 .vscode-test/
 package-lock.json
 *.vsix
@@ -9,4 +10,3 @@ package-lock.json
 test.*
 1.html
 .vs
-tempCodeRunnerFile.ts

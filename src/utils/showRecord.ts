@@ -18,6 +18,7 @@ export const showRecord = async (rid: number) => {
   pannel.onDidDispose(() => pannelClosed = true)
   while (!pannelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
     try {
+      console.log(rid)
       const result = await fetchResult(rid);
       debug('Get result: ', result.record)
       pannel.webview.html = await generateRecordHTML(result);
@@ -79,7 +80,6 @@ const generateRecordHTML = async (data: any) => {
           <div data-v-327ef1ce="">
             <div data-v-796309f8="" data-v-327ef1ce="" class="card padding-default">`
     html += `<h3 data-v-327ef1ce="" data-v-796309f8="" class="lfe-h3">测试点信息</h3>`
-    let beg = 0
     for (let currentSubtask = 0; currentSubtask < subtasks.length; currentSubtask++) {
       html += `<div data-v-327ef1ce="" data-v-796309f8="" class="test-case-wrap">`
       if (subtasks.length > 1) {
@@ -88,9 +88,8 @@ const generateRecordHTML = async (data: any) => {
               Subtask #${subtasksID[currentSubtask]}
             </h5>`
       }
-      html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), beg)
+      html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), testCaseGroup[currentSubtask])
       html += `</div>`
-      beg += Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length)
     }
     html += '</div></div></div>'
   }
@@ -128,29 +127,25 @@ const generateRecordHTML = async (data: any) => {
   `;
 }
 
-const generateRecordSubtaskHTML = async (testcases: any[], len: number, beg: number) => {
+const generateRecordSubtaskHTML = async (testcases: any[], len: number, casesid: any[]) => {
   let html = '';
-  let currentTestcasePos = beg
-  debug('currrentTestcasePos: ', currentTestcasePos)
   debug('testcases: ', testcases)
   debug('len: ', len)
-  debug('beg: ', beg)
   // testcases.sort((lhs, rhs) => lhs.id - rhs.id)
   for (let i = 0; i < len; i++) {
     html += `<div data-v-bb301a88="" data-v-327ef1ce="" class="wrapper" data-v-796309f8="">
-      <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[currentTestcasePos].status)};">
+      <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[casesid[i]].status)};">
         <div data-v-bb301a88="" class="content">
           <div data-v-bb301a88="" class="info">
-          ${testcases[currentTestcasePos].time < 1000 ? testcases[currentTestcasePos].time.toString() + `ms` : (testcases[currentTestcasePos].time < 60000 ? (testcases[currentTestcasePos].time / 1000).toString() + `s` : (testcases[currentTestcasePos].time / 60000).toString() + `min`)}/${testcases[currentTestcasePos].memory < 1000 ? testcases[currentTestcasePos].memory.toString() + `KB` : (testcases[currentTestcasePos].memory / 1000).toString() + `MB`}
+          ${testcases[casesid[i]].time < 1000 ? testcases[casesid[i]].time.toString() + `ms` : (testcases[casesid[i]].time < 60000 ? (testcases[casesid[i]].time / 1000).toString() + `s` : (testcases[casesid[i]].time / 60000).toString() + `min`)}/${testcases[casesid[i]].memory < 1000 ? testcases[casesid[i]].memory.toString() + `KB` : (testcases[casesid[i]].memory / 1000).toString() + `MB`}
           </div>
-          <div data-v-bb301a88="" class="status">${resultState[testcases[currentTestcasePos].status]}</div>
+          <div data-v-bb301a88="" class="status">${resultState[testcases[casesid[i]].status]}</div>
         </div>
-        <div data-v-bb301a88="" class="id">#${testcases[currentTestcasePos].id + 1}</div>
+        <div data-v-bb301a88="" class="id">#${testcases[casesid[i]].id + 1}</div>
       </div>
-      <div data-v-bb301a88="" class="message">${testcases[currentTestcasePos]?.description ?? ''} 得分 ${testcases[currentTestcasePos].score}</div>
+      <div data-v-bb301a88="" class="message">${testcases[casesid[i]]?.description ?? ''} 得分 ${testcases[casesid[i]].score}</div>
       </div>
       `
-    currentTestcasePos++
   }
   return html;
 }

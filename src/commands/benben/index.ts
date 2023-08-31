@@ -37,7 +37,7 @@ export default new SuperCommand({
     }
     const mode2 = (mode === '我发布的' ? 'my' : (mode === '我关注的' ? 'watching' : 'all'));
     if (mode2 === 'all') {
-      vscode.window.showInformationMessage('因社区秩序管控需要，全网动态临时关闭。');
+      vscode.window.showInformationMessage('因社区秩序管控需要，全网动态永久关闭。');
       return
     }
     const regex = /<li class=\"am-comment am-comment-primary feed-li\">\n\s*<div class=\"lg-left\"><a href="\/user\/(\d{1,6})\" class=\"center\">\n\s*<.*?>\n\s*<.*>\n\s*<div class=\"am-comment-main\">\n\s*<header class=\"am-comment-hd\">\n\s*<div class="am-comment-meta">\n\s*<span class=\"feed-username\"><a class=\'(.*?)\' href=\".*?\" target=\"_blank\">(.*?)<\/a>(.*?)<\/span> (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\n\s*(<a name=\"feed-delete\" data-feed-id=\"\d+\">.*?<\/a>\n\s*)?.*\n.*\n.*\n.*\n\s*.*\n<span class=\"feed-comment\">(.*?)<\/span>\n\s*<\/div>\n\s*<\/div>\n\s*<\/li/gm;
