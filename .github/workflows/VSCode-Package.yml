@@ -4,8 +4,10 @@
 name: VSCode Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+    - master
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,14 +17,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm i vsce
-
-  publish-npm:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - run: npm i vsce -g
+      - run: npm install
+      - run: vsce package --allow-star-activation -o vscode-luogu.vsix
+      - uses: actions/upload-artifact@v3
         with:
-          node-version: 16
-      - run: vsce package
+          name: vscode-luogu.vsix
+          path: vscode-luogu.vsix
