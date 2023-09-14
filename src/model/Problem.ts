@@ -72,6 +72,8 @@ export class Problem {
   public description = ''
   public background = ''
   public translation?: string
+  public timeLimit:Array<number> = []
+  public memoryLimit:Array<number> = []
 
   public constructor (
     fields?: any
@@ -92,6 +94,8 @@ export class Problem {
     this.description = fields.description
     this.background = fields.background
     this.translation = fields.translation
+    this.timeLimit = fields.limits.time
+    this.memoryLimit = fields.limits.memory
   }
 
   toHTML (): string {

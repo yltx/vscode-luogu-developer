@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { searchProblem, getResourceFilePath, getStatus, searchContestProblem } from '@/utils/api'
+import { axios,searchProblem, getResourceFilePath, getStatus, searchContestProblem } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
 import { UserStatus, Languages } from '@/utils/shared'
@@ -8,6 +8,8 @@ import * as path from 'path'
 import { getSelectedLanguage, getLanauageFromExt, sleep } from '@/utils/workspaceUtils';
 import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
+import { stat } from 'fs'
+import { indexOf } from 'lodash'
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -124,9 +126,51 @@ export const showProblem = async (pid: string, cid: string) => {
           }
         }
       }
+      /// Written by @Mr-Python-in-China
+      /// 添加 “跳转至 CPH” 功能
+      else if (message.type === 'open_cph'){
+        let cph_config = {
+          batch: {
+            "id": "vscode-luogu", "size": 1
+          },
+          name: `Luogu_${problem.stringPID}`,
+          group: "Luogu",
+          url: `https://www.luogu.com.cn/problem/${problem.stringPID}`,
+          interactive: "false",
+          memoryLimit: -1,
+          timeLimit: -1,
+          tests: Array(problem.sample.length),
+          input: { "type": "stdin" },
+          output: { "type": "stdout" },
+          language: { "java": { "mainClass": "Main", "taskClass": problem.stringPID } },
+          testType: "single"
+        };
+        for (const i of problem.timeLimit) if (i>cph_config.timeLimit) cph_config.timeLimit=i;
+        for (const i of problem.memoryLimit) if (i>cph_config.memoryLimit) cph_config.memoryLimit=i;
+        cph_config.memoryLimit/=1000;
+        for (let i=0;i<problem.sample.length;++i)
+          cph_config.tests[i]={input:problem.sample[i][0],output:problem.sample[i][1]};
+        try{
+          let res=await axios.post("http://localhost:27121/",cph_config,{validateStatus:(status)=>status<400});
+        }catch (err){
+          vscode.window.showErrorMessage("传送失败。请确认 cph 是否启动！");
+          console.error("Cannot jumped to cph.");
+          console.error(err);
+        }
+      }else if (message.type === "check_cph"){
+        let res:boolean;
+        try{
+          await axios.get("http://localhost:27121/",{validateStatus:(status)=>status<400});
+          res=true;
+        }catch (err){
+          res=false;
+        }
+        panel.webview.postMessage({type:"check_cph_res","value":res});
+      }
     })
   } catch (err) {
     vscode.window.showErrorMessage(err.message)
+    
     throw err
   }
 }
@@ -218,12 +262,26 @@ export const generateProblemHTML = (problem: Problem) => `
 </head>
 <body>
 <script>
-    const vscode = acquireVsCodeApi();
-    function submit(pid) {
-        vscode.postMessage({ type: 'submit', data: pid });
-    }
+  const vscode = acquireVsCodeApi();
+  function submit(pid) {
+    vscode.postMessage({ type: 'submit', data: pid });
+  }
+  function open_cph(){
+    vscode.postMessage({ type: 'open_cph' });
+  }
+
+  // 处理显示/隐藏 cph 按钮
+  window.onload=(function(){
+    var cphbutton=document.getElementById("gotoCPH");
+    window.addEventListener('message', message => {
+      if (message.data.type==="check_cph_res")
+        cphbutton.style.display=(message.data.value?"inline":"none");
+    });
+    vscode.postMessage({ type: 'check_cph' });
+  });
 </script>
 <button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="submit(\'${problem.stringPID}\')">提交</button>
+<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="open_cph()" id="gotoCPH" style="display:none">传送至 cph</button>
 ${md.render(problem.toMarkDown())}
 </body>
 </html>`
