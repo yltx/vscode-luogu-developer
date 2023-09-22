@@ -44,7 +44,8 @@ export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
     withCredentials: true,
-    headers:{'X-Requested-With':'XMLHttpRequest'}
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    proxy: false
   })
   axiosCookieJarSupport(axios)
 
