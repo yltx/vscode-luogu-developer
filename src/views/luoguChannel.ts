@@ -12,6 +12,10 @@ class LuoguChannel implements vscode.Disposable {
     this.channel.append(message)
   }
 
+  public replace (message: string): void {
+    this.channel.replace(message)
+  }
+
   public show (): void {
     this.channel.show()
   }
