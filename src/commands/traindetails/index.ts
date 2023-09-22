@@ -26,7 +26,7 @@ export default new SuperCommand({
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
       })
-      const html = await showTrainDetails(tid)
+      const html = await showTrainDetails(panel.webview, tid)
       panel.webview.html = html
       panel.webview.onDidReceiveMessage(async message => {
         if(message.type === "open") {

@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { axios,searchProblem, getResourceFilePath, getStatus, searchContestProblem } from '@/utils/api'
+import { axios,searchProblem, getResourceFilePath, getStatus, searchContestProblem, getErrorMessage } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
 import { UserStatus, Languages } from '@/utils/shared'
@@ -24,7 +24,7 @@ export const showProblem = async (pid: string, cid: string) => {
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
     if (cid === '') { problem.contestID = '' } else { problem.contestID = `?contestId=${cid}` }
-    let html = generateProblemHTML(problem)
+    let html = generateProblemHTML(panel.webview, problem)
     console.log(html)
     panel.webview.html = html
     panel.webview.onDidReceiveMessage(async message => {
@@ -115,9 +115,7 @@ export const showProblem = async (pid: string, cid: string) => {
           }
         } catch (err) {
           vscode.window.showInformationMessage('提交失败')
-          if (err.errorMessage) {
-            vscode.window.showErrorMessage(err.errorMessage)
-          }
+          vscode.window.showErrorMessage(getErrorMessage(err))
           console.error(err);
         } finally {
           if (success) {
@@ -169,23 +167,22 @@ export const showProblem = async (pid: string, cid: string) => {
       }
     })
   } catch (err) {
-    vscode.window.showErrorMessage(err.message)
-    
+    vscode.window.showErrorMessage(getErrorMessage(err))
     throw err
   }
 }
 
-export const generateProblemHTML = (problem: Problem) => `
+export const generateProblemHTML = (webview: vscode.Webview, problem: Problem) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${problem.name}</title>
-  <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('problem.css')}">
-  <script src="${getResourceFilePath('jquery.min.js')}"></script>
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
+  <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
       margin: .5em 0 !important;

@@ -7,21 +7,21 @@ import { debug } from '@/utils/debug'
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
 export const showRecord = async (rid: number) => {
-  let pannel = vscode.window.createWebviewPanel(`${rid}`, `R${rid} 记录详情`, vscode.ViewColumn.Two, {
+  let panel = vscode.window.createWebviewPanel(`${rid}`, `R${rid} 记录详情`, vscode.ViewColumn.Two, {
     enableScripts: true,
     retainContextWhenHidden: true,
     localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
   });
-  let pannelClosed = false;
+  let panelClosed = false;
   let retryTimes = 0;
   const maxRetryTimes = 2;
-  pannel.onDidDispose(() => pannelClosed = true)
-  while (!pannelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+  panel.onDidDispose(() => panelClosed = true)
+  while (!panelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
     try {
       console.log(rid)
       const result = await fetchResult(rid);
       debug('Get result: ', result.record)
-      pannel.webview.html = await generateRecordHTML(result);
+      panel.webview.html = await generateRecordHTML(panel.webview, result);
       retryTimes = 0
       if (!(result.record.status >= 0 && result.record.status <= 1)) {
         break
@@ -53,7 +53,7 @@ const escapeHtml = (data: string) => {
   return data.replace(/[&<>"'`=\/]/g, s => entityMap[s]);
 }
 
-const generateRecordHTML = async (data: any) => {
+const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
   let html = '';
   debug('Generating record html:', data)
   const subtasks: any[] = Object.values(data.record.detail.judgeResult.subtasks);
@@ -100,7 +100,7 @@ const generateRecordHTML = async (data: any) => {
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="${getResourceFilePath('record.css')}">
+    <link rel="stylesheet" href="${getResourceFilePath(webview, 'record.css')}">
   </head>
   <body>
     <h2>R${data.record.id} 记录详情</h2>

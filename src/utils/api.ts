@@ -541,9 +541,9 @@ export const prettyTime = (time: number) => {
   return undefined
 }
 
-export const getResourceFilePath = (relativePath: string) => {
+export const getResourceFilePath = (webview: vscode.Webview, relativePath: string) => {
   const diskPath = vscode.Uri.file(path.join(exports.resourcesPath.value, relativePath));
-  return diskPath.with({ scheme: 'vscode-resource' }).toString();
+  return webview.asWebviewUri(diskPath);
 }
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
@@ -622,7 +622,7 @@ export const changeTime = (x: number) => {
 }
 
 export const getErrorMessage = (err: unknown) => {
-  if (err instanceof Error)
-      return err.message
-  return String(err)
+    if (err instanceof Error)
+        return err.message
+    return String(err)
 }

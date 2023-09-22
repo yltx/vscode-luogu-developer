@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { setUID, setClientID, logout, getStatus } from '@/utils/api'
+import { setUID, setClientID, logout, getStatus, getErrorMessage } from '@/utils/api'
 import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
 
@@ -29,7 +29,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       vscode.window.showErrorMessage('删除文件时出现错误');
-      vscode.window.showErrorMessage(err);
+      vscode.window.showErrorMessage(getErrorMessage(err));
     }
     try {
       // await logout()

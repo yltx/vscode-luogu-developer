@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon } from '@/utils/api'
+import { fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon, getErrorMessage } from '@/utils/api'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
@@ -42,27 +42,27 @@ export default new SuperCommand({
     }
     const regex = /<li class=\"am-comment am-comment-primary feed-li\">\n\s*<div class=\"lg-left\"><a href="\/user\/(\d{1,6})\" class=\"center\">\n\s*<.*?>\n\s*<.*>\n\s*<div class=\"am-comment-main\">\n\s*<header class=\"am-comment-hd\">\n\s*<div class="am-comment-meta">\n\s*<span class=\"feed-username\"><a class=\'(.*?)\' href=\".*?\" target=\"_blank\">(.*?)<\/a>(.*?)<\/span> (\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\n\s*(<a name=\"feed-delete\" data-feed-id=\"\d+\">.*?<\/a>\n\s*)?.*\n.*\n.*\n.*\n\s*.*\n<span class=\"feed-comment\">(.*?)<\/span>\n\s*<\/div>\n\s*<\/div>\n\s*<\/li/gm;
     let rec: any[] = new Array();
-    let pannel = vscode.window.createWebviewPanel(`犇犇 - ${mode}`, `犇犇 - ${mode}`, vscode.ViewColumn.Two, {
+    let panel = vscode.window.createWebviewPanel(`犇犇 - ${mode}`, `犇犇 - ${mode}`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     });
-    pannel.webview.onDidReceiveMessage(async message => {
+    panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = ${message.data}`)
       if (message.type === 'post') {
         // todo: add error handling in webview
         try {
           console.log(message.data)
-          pannel.webview.postMessage({ type: 'post-result', message: await postBenben(message.data) })
+          panel.webview.postMessage({ type: 'post-result', message: await postBenben(message.data) })
         } catch (err) {
           console.log(err)
-          pannel.webview.postMessage({ type: 'postError', message: err.message })
+          panel.webview.postMessage({ type: 'postError', message: getErrorMessage(err) })
         }
       } else if (message.type === 'delete') {
         try {
-          pannel.webview.postMessage({ type: 'delete-result', message: await deleteBenben(message.data) })
+          panel.webview.postMessage({ type: 'delete-result', message: await deleteBenben(message.data) })
         } catch (err) {
-          pannel.webview.postMessage({ type: 'deleteError', message: err.message })
+          panel.webview.postMessage({ type: 'deleteError', message: getErrorMessage(err) })
         }
       } else if (message.type === 'reply') {
         // ???
@@ -72,12 +72,12 @@ export default new SuperCommand({
       }
       return;
     })
-    let pannelClosed = false;
-    pannel.onDidDispose(() => pannelClosed = true)
-    pannel.webview.html = await generateHTML();
+    let panelClosed = false;
+    panel.onDidDispose(() => panelClosed = true)
+    panel.webview.html = await generateHTML(panel.webview);
     let retryTimes = 0;
     const maxRetryTimes = 2;
-    while (!pannelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+    while (!panelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
       try {
         let ret = (await fetchBenben(mode2, 1)) + (await fetchBenben(mode2, 2)) + (await fetchBenben(mode2, 3));
         let pret = new Array();
@@ -146,7 +146,7 @@ export default new SuperCommand({
         <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i][0]))}"
         class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${tmp[i][1]}' href="https://www.luogu.com.cn/user/${tmp[i][0]}"  target="_blank">${tmp[i][2]}</a>${tmp[i][3]}</span> ${tmp[i][4]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i][2]}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${tmp[i][6]}</span></div></div></li>`);
         }
-        pannel.webview.postMessage({ type: 'benbennew', message: message });
+        panel.webview.postMessage({ type: 'benbennew', message: message });
         retryTimes = maxRetryTimes + 2 //max+1说明重试次数超限引起错误（下面有if判断），max+2则说明正常结束
       } catch (err) {
         console.error(err)
@@ -161,15 +161,15 @@ export default new SuperCommand({
   }
 })
 
-const generateHTML = async () => {
+const generateHTML = async (webview: vscode.Webview) => {
   return `
   <!DOCTYPE html>
   <html>
   <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="${getResourceFilePath('jquery.min.js')}"></script>
-  <link rel="stylesheet" href="${getResourceFilePath('benben.css')}">
+  <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'benben.css')}">
   <script>
   const vscode = acquireVsCodeApi();
   $(document).ready(function() {

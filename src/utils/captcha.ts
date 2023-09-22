@@ -4,7 +4,7 @@ import * as path from 'path'
 import * as vscode from 'vscode'
 import { promptForOpenOutputChannel, DialogType } from '@/utils/uiUtils'
 
-const generateHTML = (imageEncoded: string) => `
+const generateHTML = (webview: vscode.Webview, imageEncoded: string) => `
 <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -15,9 +15,9 @@ const generateHTML = (imageEncoded: string) => `
   <body style="padding-top: 64px;">
     <img id="cap" src="data:image/jpeg;base64,${imageEncoded}">
     <br/>
-    <link rel="stylesheet" href="${getResourceFilePath('bootstrap.min.css')}">
-    <script src="${getResourceFilePath('jquery.min.js')}"></script>
-    <script src="${getResourceFilePath('bootstrap.min.js')}"></script>
+    <link rel="stylesheet" href="${getResourceFilePath(webview, 'bootstrap.min.css')}">
+    <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
+    <script src="${getResourceFilePath(webview, 'bootstrap.min.js')}"></script>
     <button type="button" onclick="document.getElementById(\"cap\").innerHTML = \"data:image/jpeg;base64,${imageEncoded}\"" class="btn btn-small">更换验证码</button>
   </body>
 </html>`
@@ -38,7 +38,7 @@ export async function getUserCaptcha () {
       enableScripts: true,
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
-    panel.webview.html = generateHTML(image.toString('base64'))
+    panel.webview.html = generateHTML(panel.webview, image.toString('base64'))
     captchaText = await vscode.window.showInputBox({
       placeHolder: '输入验证码',
       ignoreFocusOut: true

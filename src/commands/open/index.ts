@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
-import { parseProblemID } from '@/utils/api'
+import { getErrorMessage, parseProblemID } from '@/utils/api'
 exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({
@@ -44,7 +44,7 @@ export default new SuperCommand({
       panel.webview.html = html
     } catch (err) {
       vscode.window.showErrorMessage('打开失败')
-      vscode.window.showErrorMessage(err)
+      vscode.window.showErrorMessage(getErrorMessage(err))
       console.error(err)
     }
   }

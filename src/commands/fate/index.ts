@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { getFate, getStatus } from '@/utils/api'
+import { getErrorMessage, getFate, getStatus } from '@/utils/api'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 import * as fs from 'fs'
@@ -93,7 +93,7 @@ export default new SuperCommand({
       }
     } catch (err) {
       // vscode.window.showErrorMessage('打卡时出现错误')
-      vscode.window.showErrorMessage(err)
+      vscode.window.showErrorMessage(getErrorMessage(err))
     }
   }
 })

@@ -2,6 +2,7 @@ import { getResourceFilePath, searchTrainingdetail } from './api'
 import md from './markdown'
 import { tagsStatus } from './shared'
 import { getScoreColor } from './workspaceUtils'
+import * as vscode from 'vscode'
 const getUserScoreStatus = (userScore,fullScore) => {
   if (userScore === fullScore) {
     return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`
@@ -103,21 +104,21 @@ export class TrainDetals {
     `
   }
 }
-export const showTrainDetails = async (id: any) => {
+export const showTrainDetails = async (webview: vscode.Webview, id: any) => {
   const train = await searchTrainingdetail(id).then(res => new TrainDetals(res['training']))
-  return generateTrainDetailsHTML(train)
+  return generateTrainDetailsHTML(webview, train)
 }
-export const generateTrainDetailsHTML = (train: TrainDetals) => `
+export const generateTrainDetailsHTML = (webview: vscode.Webview, train: TrainDetals) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${train.title}</title>
-  <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('problem.css')}">
-  <script src="${getResourceFilePath('jquery.min.js')}"></script>
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
+  <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
       margin: .5em 0 !important;

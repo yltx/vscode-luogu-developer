@@ -48,7 +48,7 @@ export default new SuperCommand({
           console.log(message.data)
         }
       })
-      const html = await generateHTML(res, ranklist)
+      const html = await generateHTML(panel.webview, res, ranklist)
       // debug(html)
       console.log(html)
       panel.webview.html = html
@@ -130,7 +130,7 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
   return html
 }
 
-const generateHTML = async (res: any[], ranklist: any[]) => {
+const generateHTML = async (webview: vscode.Webview, res: any[], ranklist: any[]) => {
   const contest = res['contest']
   console.log(ranklist)
   let html = `
@@ -139,13 +139,13 @@ const generateHTML = async (res: any[], ranklist: any[]) => {
 
     <head>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
-        <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
-        <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
-        <link rel="stylesheet" href="${getResourceFilePath('solution.css')}">
-        <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
-        <script src="${getResourceFilePath('jquery.min.js')}"></script>
-        <script src="${getResourceFilePath('sweetalert-dev.js')}"></script>
+        <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
+        <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
+        <link rel="stylesheet" href="${getResourceFilePath(webview, 'loader.css')}">
+        <link rel="stylesheet" href="${getResourceFilePath(webview, 'solution.css')}">
+        <link rel="stylesheet" href="${getResourceFilePath(webview, 'sweetalert.css')}">
+        <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
+        <script src="${getResourceFilePath(webview, 'sweetalert-dev.js')}"></script>
         <style>
         pre {
             margin: .5em 0 !important;

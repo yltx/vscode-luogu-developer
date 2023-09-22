@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getStatus, setClientID, setUID, searchUser,parseUID } from '@/utils/api'
+import { getStatus, setClientID, setUID, searchUser,parseUID, getErrorMessage } from '@/utils/api'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
@@ -63,15 +63,15 @@ export default new SuperCommand({
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           try {
             fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID }))
-          } catch (error) {
+          } catch (err) {
             vscode.window.showErrorMessage('写入文件时出现错误');
-            vscode.window.showErrorMessage(error);
+            vscode.window.showErrorMessage(getErrorMessage(err));
           }
           return;
         }
       } catch (err) {
         console.error(err)
-        vscode.window.showErrorMessage(err);
+        vscode.window.showErrorMessage(getErrorMessage(err));
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
         const res = await promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
         if (res?.title === '重试') {

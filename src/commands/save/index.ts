@@ -23,7 +23,13 @@ export default new SuperCommand({
     }
     exports.pid = pid;
     const problem = await searchProblem(pid).then(res => new Problem(res))
-    const html = generateProblemHTML(problem) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
+    const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+    })
+    const html = generateProblemHTML(panel.webview, problem) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
+    panel.dispose()
     const filename = pid + '.html'
     exports.luoguProblems = path.join(exports.luoguProblemPath, filename)
     if (!fs.existsSync(exports.luoguProblemPath)) {

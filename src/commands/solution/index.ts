@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote } from '@/utils/api'
+import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote, getErrorMessage } from '@/utils/api'
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as os from 'os'
@@ -78,7 +78,7 @@ export default new SuperCommand({
           } catch (err) {
             panel.webview.postMessage({
               type: 'vote-error',
-              message: err.message
+              message: getErrorMessage(err)
             });
           }
         } else {
@@ -86,7 +86,7 @@ export default new SuperCommand({
         }
         return;
       })
-      const html = await generateHTML(res.solutions)
+      const html = await generateHTML(panel.webview, res.solutions)
       console.log(html)
       panel.webview.html = html
     } catch (err) {
@@ -96,15 +96,15 @@ export default new SuperCommand({
   }
 })
 
-const generateHTML = async (solutions: any[]) => {
+const generateHTML = async (webview: vscode.Webview, solutions: any[]) => {
   return `
 <head>
-  <link rel="stylesheet" href="${getResourceFilePath('katex.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('highlightjs.default.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('solution.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
-  <script src="${getResourceFilePath('jquery.min.js')}"></script>
-  <script src="${getResourceFilePath('sweetalert-dev.js')}"></script>
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'solution.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'sweetalert.css')}">
+  <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
+  <script src="${getResourceFilePath(webview, 'sweetalert-dev.js')}"></script>
   <style>
   pre {
     margin: .5em 0 !important;

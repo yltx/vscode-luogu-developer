@@ -3,6 +3,7 @@ import * as vscode from 'vscode'
 import { getResourceFilePath, searchTrainingdetail, searchTraininglist } from '@/utils/api'
 import { showTrainDetails } from '@/utils/showTrainDetails'
 import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
+import showProblem from '@/utils/showProblem'
 
 export default new SuperCommand({
   onCommand: 'traininglist',
@@ -21,7 +22,13 @@ export default new SuperCommand({
           retainContextWhenHidden: true,
           localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
         })
-        panel2.webview.html = await showTrainDetails(message.data)
+        panel2.webview.html = await showTrainDetails(panel2.webview, message.data)
+        panel2.webview.onDidReceiveMessage(async message => {
+            if(message.type === "open") {
+              console.log("pid:",message.data);
+              await showProblem(message.data,'');
+            }
+        })
       } else if (message.type === 'request') {
         panel.webview.postMessage({
           message: {
@@ -38,19 +45,19 @@ export default new SuperCommand({
         })
       }
     })
-    const html = await generategeneralHTML()
+    const html = await generategeneralHTML(panel.webview)
     panel.webview.html = html
   }
 })
 
-const generategeneralHTML = async () => {
+const generategeneralHTML = async (webview: vscode.Webview) => {
   return `
   <html lang="zh">
     <head>
-      <link rel="stylesheet" href="${getResourceFilePath('loader.css')}">
-      <link rel="stylesheet" href="${getResourceFilePath('sweetalert.css')}">
-      <script src="${getResourceFilePath('jquery.min.js')}"></script>
-      <script src="${getResourceFilePath('sweetalert-dev.js')}"></script>
+      <link rel="stylesheet" href="${getResourceFilePath(webview, 'loader.css')}">
+      <link rel="stylesheet" href="${getResourceFilePath(webview, 'sweetalert.css')}">
+      <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
+      <script src="${getResourceFilePath(webview, 'sweetalert-dev.js')}"></script>
       <style>
         pre {
             margin: .5em 0 !important;
