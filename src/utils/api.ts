@@ -35,7 +35,7 @@ export namespace API {
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
   export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
   export const TRAINLISTDETAIL = (id: any) => `${baseURL}/training/${id}?_contentOnly=1`
-  export const SEARCHTRAINLIST = (channel: string,keyword: string,page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(keyword)}&_contentOnly=1`
+  export const SEARCHTRAINLIST = (channel: string, keyword: string, page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(keyword)}&_contentOnly=1`
 }
 
 export const jar = new CookieJar();
@@ -243,37 +243,37 @@ export const searchSolution = async (pid: string) =>
       }
     })
 
-export const searchTraininglist = async (type: string,keyword: string,page: number) =>
-    axios.get(API.SEARCHTRAINLIST(type,keyword,page))
-      .then(res => res?.data?.currentData).then(async res => {
-        // console.log(res)
-        if ((res || null) === null) { throw Error('题单不存在') }
-        return res
-      }).catch(err => {
-        if (err.response) {
-          throw err.response.data;
-        } else if (err.request) {
-          throw Error('请求超时，请重试')
-        } else {
-          throw err;
-        }
-      })
+export const searchTraininglist = async (type: string, keyword: string, page: number) =>
+  axios.get(API.SEARCHTRAINLIST(type, keyword, page))
+    .then(res => res?.data?.currentData).then(async res => {
+      // console.log(res)
+      if ((res || null) === null) { throw Error('题单不存在') }
+      return res
+    }).catch(err => {
+      if (err.response) {
+        throw err.response.data;
+      } else if (err.request) {
+        throw Error('请求超时，请重试')
+      } else {
+        throw err;
+      }
+    })
 
 export const searchTrainingdetail = async (id: any) =>
-    axios.get(API.TRAINLISTDETAIL(id))
-      .then(res => res?.data?.currentData).then(async res => {
-        // console.log(res)
-        if ((res || null) === null) { throw Error('题单不存在') }
-        return res
-      }).catch(err => {
-        if (err.response) {
-          throw err.response.data;
-        } else if (err.request) {
-          throw Error('请求超时，请重试')
-        } else {
-          throw err;
-        }
-      })
+  axios.get(API.TRAINLISTDETAIL(id))
+    .then(res => res?.data?.currentData).then(async res => {
+      // console.log(res)
+      if ((res || null) === null) { throw Error('题单不存在') }
+      return res
+    }).catch(err => {
+      if (err.response) {
+        throw err.response.data;
+      } else if (err.request) {
+        throw Error('请求超时，请重试')
+      } else {
+        throw err;
+      }
+    })
 
 /**
  * @api 登录
@@ -419,7 +419,7 @@ export const fetchBenben = async (mode: string, page: number) =>
 export const postBenben = async (text: string) =>
   axios.post(API.BENBEN_POST, `content=${text}`, {
     headers: {
-      'content-type':'application/x-www-form-urlencoded',
+      'content-type': 'application/x-www-form-urlencoded',
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.baseURL,
       'Origin': API.baseURL
@@ -622,7 +622,7 @@ export const changeTime = (x: number) => {
 }
 
 export const getErrorMessage = (err: unknown) => {
-    if (err instanceof Error)
-        return err.message
-    return String(err)
+  if (err instanceof Error)
+    return err.message
+  return String(err)
 }

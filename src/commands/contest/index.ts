@@ -44,7 +44,7 @@ export default new SuperCommand({
             }
           })
         } else if (message.type === 'request-problem') {
-          await showProblem(message.data,exports.cid)
+          await showProblem(message.data, exports.cid)
           console.log(message.data)
         }
       })

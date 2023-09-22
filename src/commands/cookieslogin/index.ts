@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getStatus, setClientID, setUID, searchUser,parseUID, getErrorMessage } from '@/utils/api'
+import { getStatus, setClientID, setUID, searchUser, parseUID, getErrorMessage } from '@/utils/api'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'

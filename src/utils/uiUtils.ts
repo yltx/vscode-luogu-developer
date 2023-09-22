@@ -9,7 +9,7 @@ export namespace DialogOptions {
   export const singUp: vscode.MessageItem = { title: 'Sign up' }
 }
 
-export async function promptForOpenOutputChannel (message: string, type: DialogType = DialogType.info, channel: vscode.OutputChannel = luoguChannel): Promise<void> {
+export async function promptForOpenOutputChannel(message: string, type: DialogType = DialogType.info, channel: vscode.OutputChannel = luoguChannel): Promise<void> {
   let result: vscode.MessageItem | undefined
   switch (type) {
     case DialogType.info:
@@ -29,7 +29,7 @@ export async function promptForOpenOutputChannel (message: string, type: DialogT
     // channel.show()
   }
 }
-export async function promptForOpenOutputChannelWithResult (message: string, type: DialogType = DialogType.info, channel: vscode.OutputChannel = luoguChannel): Promise<vscode.MessageItem | undefined> {
+export async function promptForOpenOutputChannelWithResult(message: string, type: DialogType = DialogType.info, channel: vscode.OutputChannel = luoguChannel): Promise<vscode.MessageItem | undefined> {
   let result: vscode.MessageItem | undefined
   switch (type) {
     case DialogType.info:
@@ -51,7 +51,7 @@ export async function promptForOpenOutputChannelWithResult (message: string, typ
   return result;
 }
 
-export async function showFileSelectDialog (): Promise<vscode.Uri[] | undefined> {
+export async function showFileSelectDialog(): Promise<vscode.Uri[] | undefined> {
   const defaultUri: vscode.Uri | undefined = vscode.workspace.rootPath ? vscode.Uri.file(vscode.workspace.rootPath) : undefined
   const options: vscode.OpenDialogOptions = {
     defaultUri,

@@ -5,14 +5,14 @@ import debug from '@/utils/debug'
 export class LuoguStatusBar implements vscode.Disposable {
   private readonly statusBarItem: vscode.StatusBarItem
 
-  constructor () {
+  constructor() {
     debug('initializing luoguStatusBarItem.')
     this.statusBarItem = vscode.window.createStatusBarItem()
     this.statusBarItem.command = 'luogu.userInfo'
     debug('init luoguStatusBarItem finished.')
   }
 
-  public updateStatusBar (status: UserStatus): void {
+  public updateStatusBar(status: UserStatus): void {
     // todo: update text content
     switch (status) {
       case UserStatus.SignedIn:
@@ -28,7 +28,7 @@ export class LuoguStatusBar implements vscode.Disposable {
     debug(`luoguStatusBarItem: userStatus ${UserStatus[status]}.`)
   }
 
-  public dispose (): void {
+  public dispose(): void {
     debug('luoguStatusBarItem: dispose.')
     // todo
   }

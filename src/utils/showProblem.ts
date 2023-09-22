@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { axios,searchProblem, getResourceFilePath, getStatus, searchContestProblem, getErrorMessage } from '@/utils/api'
+import { axios, searchProblem, getResourceFilePath, getStatus, searchContestProblem, getErrorMessage } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
 import { UserStatus, Languages } from '@/utils/shared'
@@ -126,7 +126,7 @@ export const showProblem = async (pid: string, cid: string) => {
       }
       /// Written by @Mr-Python-in-China
       /// 添加 “跳转至 CPH” 功能
-      else if (message.type === 'open_cph'){
+      else if (message.type === 'open_cph') {
         let cph_config = {
           batch: {
             "id": "vscode-luogu", "size": 1
@@ -143,27 +143,27 @@ export const showProblem = async (pid: string, cid: string) => {
           language: { "java": { "mainClass": "Main", "taskClass": problem.stringPID } },
           testType: "single"
         };
-        for (const i of problem.timeLimit) if (i>cph_config.timeLimit) cph_config.timeLimit=i;
-        for (const i of problem.memoryLimit) if (i>cph_config.memoryLimit) cph_config.memoryLimit=i;
-        cph_config.memoryLimit/=1000;
-        for (let i=0;i<problem.sample.length;++i)
-          cph_config.tests[i]={input:problem.sample[i][0],output:problem.sample[i][1]};
-        try{
-          let res=await axios.post("http://localhost:27121/",cph_config,{validateStatus:(status)=>status<400});
-        }catch (err){
+        for (const i of problem.timeLimit) if (i > cph_config.timeLimit) cph_config.timeLimit = i;
+        for (const i of problem.memoryLimit) if (i > cph_config.memoryLimit) cph_config.memoryLimit = i;
+        cph_config.memoryLimit /= 1000;
+        for (let i = 0; i < problem.sample.length; ++i)
+          cph_config.tests[i] = { input: problem.sample[i][0], output: problem.sample[i][1] };
+        try {
+          let res = await axios.post("http://localhost:27121/", cph_config, { validateStatus: (status) => status < 400 });
+        } catch (err) {
           vscode.window.showErrorMessage("传送失败。请确认 cph 是否启动！");
           console.error("Cannot jumped to cph.");
           console.error(err);
         }
-      }else if (message.type === "check_cph"){
-        let res:boolean;
-        try{
-          await axios.get("http://localhost:27121/",{validateStatus:(status)=>status<400});
-          res=true;
-        }catch (err){
-          res=false;
+      } else if (message.type === "check_cph") {
+        let res: boolean;
+        try {
+          await axios.get("http://localhost:27121/", { validateStatus: (status) => status < 400 });
+          res = true;
+        } catch (err) {
+          res = false;
         }
-        panel.webview.postMessage({type:"check_cph_res","value":res});
+        panel.webview.postMessage({ type: "check_cph_res", "value": res });
       }
     })
   } catch (err) {

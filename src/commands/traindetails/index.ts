@@ -21,7 +21,7 @@ export default new SuperCommand({
     try {
       const data = await searchTrainingdetail(tid)
       // console.log(data)
-      const panel = vscode.window.createWebviewPanel('题单详情',`${data['training']['title']}`,vscode.ViewColumn.Two,{
+      const panel = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
         localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
@@ -29,15 +29,15 @@ export default new SuperCommand({
       const html = await showTrainDetails(panel.webview, tid)
       panel.webview.html = html
       panel.webview.onDidReceiveMessage(async message => {
-        if(message.type === "open") {
-          console.log("pid:",message.data);
-          await showProblem(message.data,'');
+        if (message.type === "open") {
+          console.log("pid:", message.data);
+          await showProblem(message.data, '');
         }
       })
     } catch (err) {
       vscode.window.showErrorMessage('打开失败')
       vscode.window.showErrorMessage(`${err}`)
-      throw(err)
+      throw (err)
     }
   }
 })

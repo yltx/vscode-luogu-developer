@@ -18,7 +18,7 @@ interface ISetting {
 class UserManager extends EventEmitter {
   private settings: ISetting = {}
 
-  constructor () {
+  constructor() {
     super()
     this.on('login', () => {
       luoguStatusBar.updateStatusBar(UserStatus.SignedIn)

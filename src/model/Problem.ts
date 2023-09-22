@@ -24,7 +24,7 @@ export class Tag {
   private name = ''
   private parentId = 0
 
-  constructor (fields?: IAPITag) {
+  constructor(fields?: IAPITag) {
     if (!fields) {
       return
     }
@@ -33,27 +33,27 @@ export class Tag {
     this.parentId = fields.ParentId
   }
 
-  setID (id: number) {
+  setID(id: number) {
     this.id = id
   }
 
-  getID () {
+  getID() {
     return this.id
   }
 
-  setName (name: string) {
+  setName(name: string) {
     this.name = name
   }
 
-  getName () {
+  getName() {
     return this.name
   }
 
-  setParentID (parentId: number) {
+  setParentID(parentId: number) {
     this.parentId = parentId
   }
 
-  getParentID () {
+  getParentID() {
     return this.parentId
   }
 }
@@ -72,10 +72,10 @@ export class Problem {
   public description = ''
   public background = ''
   public translation?: string
-  public timeLimit:Array<number> = []
-  public memoryLimit:Array<number> = []
+  public timeLimit: Array<number> = []
+  public memoryLimit: Array<number> = []
 
-  public constructor (
+  public constructor(
     fields?: any
   ) {
     if (!fields) {
@@ -98,7 +98,7 @@ export class Problem {
     this.memoryLimit = fields.limits.memory
   }
 
-  toHTML (): string {
+  toHTML(): string {
     let sample = ''
     this.sample.forEach((array, index) => {
       sample += `<strong>输入${index + 1}</strong>:
@@ -138,7 +138,7 @@ export class Problem {
         </html>`
   }
 
-  toMarkDown (): string {
+  toMarkDown(): string {
 
     let sample = ''
     this.sample.forEach((array, index) => {

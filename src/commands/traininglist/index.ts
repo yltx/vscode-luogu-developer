@@ -17,30 +17,30 @@ export default new SuperCommand({
       console.log(`Got type ${message.type} page ${message.page} request.`)
       if (message.type === 'open') {
         const data = await searchTrainingdetail(message.data)
-        const panel2 = vscode.window.createWebviewPanel('题单详情',`${data['training']['title']}`,vscode.ViewColumn.Two, {
+        const panel2 = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
           enableScripts: true,
           retainContextWhenHidden: true,
           localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
         })
         panel2.webview.html = await showTrainDetails(panel2.webview, message.data)
         panel2.webview.onDidReceiveMessage(async message => {
-            if(message.type === "open") {
-              console.log("pid:",message.data);
-              await showProblem(message.data,'');
-            }
+          if (message.type === "open") {
+            console.log("pid:", message.data);
+            await showProblem(message.data, '');
+          }
         })
       } else if (message.type === 'request') {
         panel.webview.postMessage({
           message: {
             channel: message.channel,
-            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword,message.page) : await generateSelectedListHTML(message.keyword,message.page)
+            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword, message.page) : await generateSelectedListHTML(message.keyword, message.page)
           }
         })
       } else if (message.type === 'search') {
         panel.webview.postMessage({
           message: {
             channel: message.channel,
-            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword,1) : await generateSelectedListHTML(message.keyword,1)
+            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword, 1) : await generateSelectedListHTML(message.keyword, 1)
           }
         })
       }
@@ -158,10 +158,10 @@ const generategeneralHTML = async (webview: vscode.Webview) => {
     <div class="card padding-default" style="margin-top: 2em;">
     <section>
       <div id="official">
-      ${await generateOfficialListHTML('',1)}
+      ${await generateOfficialListHTML('', 1)}
       </div>
       <div id="select" style="display:none">
-      ${await generateSelectedListHTML('',1)}
+      ${await generateSelectedListHTML('', 1)}
       </div>
     </section>
     </div>
@@ -171,8 +171,8 @@ const generategeneralHTML = async (webview: vscode.Webview) => {
   `
 }
 
-const generateOfficialListHTML = async (keyword: string,page: number) => {
-  const data = await searchTraininglist('official',keyword,page)
+const generateOfficialListHTML = async (keyword: string, page: number) => {
+  const data = await searchTraininglist('official', keyword, page)
   const list = data['trainings']['result']
   const accepted = data['acceptedCounts']
   console.log(data)
@@ -186,7 +186,7 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
   html += '          <th nowrap>题目数</th>\n'
   html += '          <th nowrap>收藏数</th>\n'
   html += '        </tr>\n'
-  for (let i = 1;i <= list['length'];i++) {
+  for (let i = 1; i <= list['length']; i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
     html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
@@ -243,8 +243,8 @@ const generateOfficialListHTML = async (keyword: string,page: number) => {
       </div>`
   return html
 }
-const generateSelectedListHTML = async (keyword: string,page: number) => {
-  const data = await searchTraininglist('select',keyword,page)
+const generateSelectedListHTML = async (keyword: string, page: number) => {
+  const data = await searchTraininglist('select', keyword, page)
   const list = data['trainings']['result']
   console.log(data)
   let html = ''
@@ -256,7 +256,7 @@ const generateSelectedListHTML = async (keyword: string,page: number) => {
   html += '          <th nowrap>收藏数</th>\n'
   html += '          <th nowrap>创建者</th>\n'
   html += '        </tr>\n'
-  for (let i = 1;i <= list['length'];i++) {
+  for (let i = 1; i <= list['length']; i++) {
     html += '        <tr>\n'
     html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
     html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`

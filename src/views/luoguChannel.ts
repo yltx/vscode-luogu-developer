@@ -4,31 +4,31 @@ class LuoguChannel implements vscode.Disposable {
   readonly name: string = 'luogu'
   private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel('luogu')
 
-  public appendLine (message: string): void {
+  public appendLine(message: string): void {
     this.channel.appendLine(message)
   }
 
-  public append (message: string): void {
+  public append(message: string): void {
     this.channel.append(message)
   }
 
-  public replace (message: string): void {
+  public replace(message: string): void {
     this.channel.replace(message)
   }
 
-  public show (): void {
+  public show(): void {
     this.channel.show()
   }
 
-  public clear (): void {
+  public clear(): void {
     this.channel.clear()
   }
 
-  public hide (): void {
+  public hide(): void {
     this.channel.hide()
   }
 
-  public dispose (): void {
+  public dispose(): void {
     this.channel.dispose()
   }
 }

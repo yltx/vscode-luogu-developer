@@ -3,7 +3,7 @@ import debug from '@/utils/debug'
 export default class {
   public readonly onCommand!: string
 
-  constructor (props: { onCommand: string, handle: Function }) {
+  constructor(props: { onCommand: string, handle: Function }) {
     Object.assign(this, props)
   }
 

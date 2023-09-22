@@ -3,13 +3,13 @@ export const type = {
   USER_LOGIN: Symbol('user-login')
 }
 
-export function loginUser () {
+export function loginUser() {
   return {
     type: type.USER_LOGIN
   }
 }
 
-export function logoutUser () {
+export function logoutUser() {
   return {
     type: type.USER_LOGOUT
   }

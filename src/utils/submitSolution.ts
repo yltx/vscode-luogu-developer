@@ -10,7 +10,7 @@ import * as vscode from 'vscode'
  *
  * @returns {number} 测评id
  */
-export async function submitSolution (id: string, code: string, language = 0, enableO2 = false): Promise<any> {
+export async function submitSolution(id: string, code: string, language = 0, enableO2 = false): Promise<any> {
   const url = `/fe/api/problem/submit/${id}`;
   return axios.post(url, {
     'code': code,

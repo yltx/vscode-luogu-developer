@@ -3,7 +3,7 @@ import md from './markdown'
 import { tagsStatus } from './shared'
 import { getScoreColor } from './workspaceUtils'
 import * as vscode from 'vscode'
-const getUserScoreStatus = (userScore,fullScore) => {
+const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {
     return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`
   } else {
@@ -50,7 +50,7 @@ export class TrainDetals {
   public description = ''
   public userScore: [] = []
 
-  public constructor (
+  public constructor(
     fields?: any
   ) {
     if (!fields) {
@@ -65,7 +65,7 @@ export class TrainDetals {
     this.userScore = fields.userScore
   }
 
-  toHTML (): string {
+  toHTML(): string {
     let problemlist = '<div>\n'
     if (this.problemCount > 0) {
       problemlist += '<table border="0" width="100%">\n'
@@ -81,7 +81,7 @@ export class TrainDetals {
     this.problemlist.forEach(index => {
       problemlist += `  <tr>
     <td nowrap>${index['problem']['pid']}</td>
-    <td style="text-align: center;" nowrap>${getUserScoreStatus(this.userScore ? (this.userScore['status'][index['problem']['pid']] ? this.userScore['score'][index['problem']['pid']] : -1) : -1,index['problem']['fullScore'])}</td>
+    <td style="text-align: center;" nowrap>${getUserScoreStatus(this.userScore ? (this.userScore['status'][index['problem']['pid']] ? this.userScore['score'][index['problem']['pid']] : -1) : -1, index['problem']['fullScore'])}</td>
     <td align="left" nowrap><a href="${index['problem']['pid']}" class="pid" id="${index['problem']['pid']}">${md.render(index['problem']['title'])}</a></td>
     <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
     <td nowrap>${getDifficultyStatus(index['problem']['difficulty'])}</td>

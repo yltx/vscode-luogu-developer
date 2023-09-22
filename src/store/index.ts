@@ -1,7 +1,7 @@
 import { createStore } from 'redux'
 
 // tslint:disable-next-line: no-empty
-function appStore () { }
+function appStore() { }
 
 export * from '../utils/shared'
 

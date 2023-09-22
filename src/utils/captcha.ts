@@ -22,7 +22,7 @@ const generateHTML = (webview: vscode.Webview, imageEncoded: string) => `
   </body>
 </html>`
 
-export async function getUserCaptcha () {
+export async function getUserCaptcha() {
   let captchaText: string | null = null;
   let image: Buffer | null = null;
   while (captchaText === null) {
