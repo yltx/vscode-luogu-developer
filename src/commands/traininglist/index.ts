@@ -116,6 +116,7 @@ const generategeneralHTML = async (webview: vscode.Webview) => {
             console.log("JS Get message:",event.data.message);
             if(message.channel==0) $("#official").html(message.html);
             else $("#select").html(message.html);
+            load();
           });
           load();
         });
