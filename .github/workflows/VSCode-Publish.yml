@@ -5,7 +5,7 @@ name: VSCode Publish
 
 on:
   release:
-    types: [published,created]
+    types: [published]
   workflow_dispatch:
 
 jobs:
