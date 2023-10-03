@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.7.1'
+const version = '4.7.2'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,8 +77,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>使扩展在目标主机运行</li>
-            <li>修复使从题单广场打开的题单能点击进入题目</li>
+            <li>修复使在题单广场中搜索后能打开题单</li>
         </ol>
     </ul>
     </h2>
