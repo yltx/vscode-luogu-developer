@@ -1,6 +1,6 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { difficulty, problemset } from '@/utils/shared'
+import { difficultyID, problemset } from '@/utils/shared'
 import { getSelectedDifficulty, getSelectedProblemset } from '@/utils/workspaceUtils'
 import axios from 'axios';
 import showProblem from '@/utils/showProblem';
@@ -10,7 +10,7 @@ export default new SuperCommand({
   handle: async () => {
     const selectedDifficulty = vscode.workspace.getConfiguration('luogu').get<string>('defaultDifficulty')!
     let diff: string[] = []
-    for (let item in difficulty) {
+    for (let item in difficultyID) {
       if (isNaN(Number(item))) { diff.push(item) }
     }
     const userdifficulty = vscode.workspace.getConfiguration('luogu').get<boolean>('showSelectDifficultyHint') ? (await vscode.window.showQuickPick(diff).then((value) => {

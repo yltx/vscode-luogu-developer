@@ -154,7 +154,7 @@ export const contestVisibilityStyle: string[] = ['',
   'color: rgb(255, 255, 255); background: rgb(41, 73, 180);'
 ]
 
-export enum difficulty {
+export enum difficultyID {
   '暂无评定' = 0,
   '入门' = 1,
   '普及-' = 2,
@@ -164,6 +164,27 @@ export enum difficulty {
   '省选/NOI-' = 6,
   'NOI/NOI+/CTSC' = 7
 }
+export const difficultyName=[
+  '暂无评定',
+  '入门',
+  '普及-',
+  '普及/提高-',
+  '普及+/提高',
+  '提高+/省选-',
+  '省选/NOI-',
+  'NOI/NOI+/CTSC'
+]
+// Reference: https://www.luogu.com.cn/paste/3ez54nl2
+export const difficultyColor=[
+  "#BFBFBF",
+  "#FE4C61",
+  "#F39C11",
+  "#FFC116",
+  "#52C41A",
+  "#3498DB",
+  "#3498DB",
+  "#0E1D69"
+]
 
 export enum problemset {
   '洛谷题库' = 'P',

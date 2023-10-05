@@ -74,6 +74,7 @@ export class Problem {
   public translation?: string
   public timeLimit: Array<number> = []
   public memoryLimit: Array<number> = []
+  public difficulty = 0
 
   public constructor(
     fields?: any
@@ -96,6 +97,7 @@ export class Problem {
     this.translation = fields.translation
     this.timeLimit = fields.limits.time
     this.memoryLimit = fields.limits.memory
+    this.difficulty = fields.difficulty
   }
 
   toHTML(): string {

@@ -9,10 +9,22 @@ import { getSelectedLanguage, getLanauageFromExt, sleep } from '@/utils/workspac
 import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
 import { stat } from 'fs'
-import { indexOf } from 'lodash'
+import { indexOf, size } from 'lodash'
+import { difficultyName,difficultyColor } from '@/utils/shared';
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+
+const _get_array_max=function(arr:Array<any>){
+  let res=arr[0];
+  for (const i of arr) if (i>res) res=i;
+  return res;
+}
+const _get_array_min=function(arr:Array<any>){
+  let res=arr[0];
+  for (const i of arr) if (i<res) res=i;
+  return res;
+}
 
 export const showProblem = async (pid: string, cid: string) => {
   try {
@@ -24,147 +36,15 @@ export const showProblem = async (pid: string, cid: string) => {
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
     if (cid === '') { problem.contestID = '' } else { problem.contestID = `?contestId=${cid}` }
-    let html = generateProblemHTML(panel.webview, problem)
+    let html = generateProblemHTML(panel.webview, problem,await check_cph());
     console.log(html)
     panel.webview.html = html
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = `, message.data)
-      if (message.type === 'submit') {
-        const waitingtime = +vscode.workspace.getConfiguration('luogu').get<'integer'>('defaultWaitingTime')!
-        await sleep(waitingtime)
-        const edtior = vscode.window.activeTextEditor;
-        if (!edtior) {
-          vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试')
-          return;
-        }
-        try {
-          if (await getStatus() === UserStatus.SignedOut.toString()) {
-            vscode.window.showErrorMessage('您没有登录，请先登录');
-            return;
-          }
-        } catch (err) {
-          console.error(err)
-          vscode.window.showErrorMessage(`${err}`);
-          return;
-        }
-        let text = edtior.document.getText();
-        const filePath = edtior.document.fileName;
-        const fileFName = path.parse(filePath).base;
-        const fileExt = path.parse(filePath).ext.slice(1);
-        console.log(fileExt)
-        const languages: string[] = getLanauageFromExt(fileExt);
-
-        console.log(languages)
-
-        const O2 = await vscode.window.showQuickPick(['否', '是'], {
-          placeHolder: '是否开启O2优化 (非 C/C++/Pascal 切勿开启)'
-        }).then(ans => ans === undefined ? undefined : ans === '是');
-        if (O2 === undefined) {
-          return
-        }
-        // tslint:disable-next-line: strict-type-predicates
-        // const langs = Object.keys(Languages).filter(k => typeof Languages[k as any] === 'number');
-        const selectedLanguage = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!
-        let langs: string[] = [];
-        if (languages.indexOf(selectedLanguage) !== -1) {
-          langs.push(selectedLanguage)
-        }
-        for (let item in Languages) {
-          if (isNaN(Number(item))) {
-            if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
-              langs.push(item)
-            }
-          }
-        }
-        for (let item in Languages) {
-          if (isNaN(Number(item))) {
-            if (item === 'Auto' && languages.indexOf(item) === -1) {
-              langs.push(item)
-            }
-          }
-        }
-        for (let item in Languages) {
-          if (isNaN(Number(item))) {
-            if (item !== 'Auto' && languages.indexOf(item) === -1) {
-              langs.push(item)
-            }
-          }
-        }
-        const selected = vscode.workspace.getConfiguration('luogu').get<boolean>('showSelectLanguageHint') ? (await vscode.window.showQuickPick(langs).then((value) => {
-          if (value === undefined) {
-            return undefined
-          }
-          const v = getSelectedLanguage(value);
-          return (v === -1 || !v) ? 0 : v;
-        })) : getSelectedLanguage(selectedLanguage);
-        if (selected === undefined) {
-          return
-        }
-        let id = message.data
-        if (!id) {
-          return;
-        }
-        let success = false;
-        let rid: any = 0;
-        try {
-          vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
-          if (cid !== '') { id += `?contestId=${cid}` }
-          rid = await submitSolution(id, text, selected, O2);
-          if (rid !== undefined) {
-            success = true;
-          }
-        } catch (err) {
-          vscode.window.showInformationMessage('提交失败')
-          vscode.window.showErrorMessage(getErrorMessage(err))
-          console.error(err);
-        } finally {
-          if (success) {
-            // vscode.window.showInformationMessage('提交成功');
-            await showRecord(rid as number)
-          }
-        }
-      }
+      if (message.type === 'submit') submit(problem);
       /// Written by @Mr-Python-in-China
       /// 添加 “跳转至 CPH” 功能
-      else if (message.type === 'open_cph') {
-        let cph_config = {
-          batch: {
-            "id": "vscode-luogu", "size": 1
-          },
-          name: `Luogu_${problem.stringPID}`,
-          group: "Luogu",
-          url: `https://www.luogu.com.cn/problem/${problem.stringPID}`,
-          interactive: "false",
-          memoryLimit: -1,
-          timeLimit: -1,
-          tests: Array(problem.sample.length),
-          input: { "type": "stdin" },
-          output: { "type": "stdout" },
-          language: { "java": { "mainClass": "Main", "taskClass": problem.stringPID } },
-          testType: "single"
-        };
-        for (const i of problem.timeLimit) if (i > cph_config.timeLimit) cph_config.timeLimit = i;
-        for (const i of problem.memoryLimit) if (i > cph_config.memoryLimit) cph_config.memoryLimit = i;
-        cph_config.memoryLimit /= 1000;
-        for (let i = 0; i < problem.sample.length; ++i)
-          cph_config.tests[i] = { input: problem.sample[i][0], output: problem.sample[i][1] };
-        try {
-          let res = await axios.post("http://localhost:27121/", cph_config, { validateStatus: (status) => status < 400 });
-        } catch (err) {
-          vscode.window.showErrorMessage("传送失败。请确认 cph 是否启动！");
-          console.error("Cannot jumped to cph.");
-          console.error(err);
-        }
-      } else if (message.type === "check_cph") {
-        let res: boolean;
-        try {
-          await axios.get("http://localhost:27121/", { validateStatus: (status) => status < 400 });
-          res = true;
-        } catch (err) {
-          res = false;
-        }
-        panel.webview.postMessage({ type: "check_cph_res", "value": res });
-      }
+      else if (message.type === 'open_cph') goto_cph(problem);
     })
   } catch (err) {
     vscode.window.showErrorMessage(getErrorMessage(err))
@@ -172,7 +52,140 @@ export const showProblem = async (pid: string, cid: string) => {
   }
 }
 
-export const generateProblemHTML = (webview: vscode.Webview, problem: Problem) => `
+const submit=async function(problem:Problem){
+  const waitingtime = +vscode.workspace.getConfiguration('luogu').get<'integer'>('defaultWaitingTime')!
+  await sleep(waitingtime)
+  const edtior = vscode.window.activeTextEditor;
+  if (!edtior) {
+    vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试')
+    return;
+  }
+  try {
+    if (await getStatus() === UserStatus.SignedOut.toString()) {
+      vscode.window.showErrorMessage('您没有登录，请先登录');
+      return;
+    }
+  } catch (err) {
+    console.error(err)
+    vscode.window.showErrorMessage(`${err}`);
+    return;
+  }
+  let text = edtior.document.getText();
+  const filePath = edtior.document.fileName;
+  const fileFName = path.parse(filePath).base;
+  const fileExt = path.parse(filePath).ext.slice(1);
+  console.log(fileExt)
+  const languages: string[] = getLanauageFromExt(fileExt);
+
+  console.log(languages)
+
+  const O2 = await vscode.window.showQuickPick(['否', '是'], {
+    placeHolder: '是否开启O2优化 (非 C/C++/Pascal 切勿开启)'
+  }).then(ans => ans === undefined ? undefined : ans === '是');
+  if (O2 === undefined) {
+    return
+  }
+  // tslint:disable-next-line: strict-type-predicates
+  // const langs = Object.keys(Languages).filter(k => typeof Languages[k as any] === 'number');
+  const selectedLanguage = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!
+  let langs: string[] = [];
+  if (languages.indexOf(selectedLanguage) !== -1) {
+    langs.push(selectedLanguage)
+  }
+  for (let item in Languages) {
+    if (isNaN(Number(item))) {
+      if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
+        langs.push(item)
+      }
+    }
+  }
+  for (let item in Languages) {
+    if (isNaN(Number(item))) {
+      if (item === 'Auto' && languages.indexOf(item) === -1) {
+        langs.push(item)
+      }
+    }
+  }
+  for (let item in Languages) {
+    if (isNaN(Number(item))) {
+      if (item !== 'Auto' && languages.indexOf(item) === -1) {
+        langs.push(item)
+      }
+    }
+  }
+  const selected = vscode.workspace.getConfiguration('luogu').get<boolean>('showSelectLanguageHint') ? (await vscode.window.showQuickPick(langs).then((value) => {
+    if (value === undefined) {
+      return undefined
+    }
+    const v = getSelectedLanguage(value);
+    return (v === -1 || !v) ? 0 : v;
+  })) : getSelectedLanguage(selectedLanguage);
+  if (selected === undefined) {
+    return
+  }
+  let id = problem.stringPID;
+  if (!id) {
+    return;
+  }
+  let success = false;
+  let rid: any = 0;
+  try {
+    vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
+    if (problem.contestID !== '') { id += `?contestId=${problem.contestID}` }
+    rid = await submitSolution(id, text, selected, O2);
+    if (rid !== undefined) {
+      success = true;
+    }
+  } catch (err) {
+    vscode.window.showInformationMessage('提交失败')
+    vscode.window.showErrorMessage(getErrorMessage(err))
+    console.error(err);
+  } finally {
+    if (success) {
+      // vscode.window.showInformationMessage('提交成功');
+      await showRecord(rid as number)
+    }
+  }
+}
+const goto_cph=async function(problem:Problem){
+  let cph_config = {
+    batch: {
+      "id": "vscode-luogu", "size": 1
+    },
+    name: `Luogu_${problem.stringPID}`,
+    group: "Luogu",
+    url: `https://www.luogu.com.cn/problem/${problem.stringPID}`,
+    interactive: "false",
+    memoryLimit: _get_array_max(problem.timeLimit),
+    timeLimit: _get_array_max(problem.memoryLimit)/1000,
+    tests: Array(problem.sample.length),
+    input: { "type": "stdin" },
+    output: { "type": "stdout" },
+    language: { "java": { "mainClass": "Main", "taskClass": problem.stringPID } },
+    testType: "single"
+  };
+  for (let i = 0; i < problem.sample.length; ++i)
+    cph_config.tests[i] = { input: problem.sample[i][0], output: problem.sample[i][1] };
+  try {
+    let res = await axios.post("http://localhost:27121/", cph_config, { validateStatus: (status) => status < 400 });
+  } catch (err) {
+    vscode.window.showErrorMessage("传送失败。请确认 cph 是否启动！");
+    console.error("Cannot jumped to cph.");
+    console.error(err);
+  }
+}
+const check_cph=async function(){
+  let res: boolean;
+  try {
+    await axios.get("http://localhost:27121/", { validateStatus: (status) => status < 400 });
+    res = true;
+  } catch (err) {
+    res = false;
+  }
+  return res;
+}
+
+export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, enble_cph: Boolean) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,6 +195,7 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem) =
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
+  <link rel="stylesheet" herf="${getResourceFilePath(webview, 'FontAwesome/css/fontawesome.min.css')}">
   <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
@@ -196,38 +210,28 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem) =
       font-size: .875em !important;
       font-family: Courier New !important;
     }
-    .ui.button {
-      cursor: pointer;
+    .probleminfo {
       display: inline-block;
-      min-height: 1em;
-      outline: 0;
-      border: none;
-      vertical-align: baseline;
-      background: transparent;
-      color: rgb(52,152,219);
-      font-family: Lato,'Helvetica Neue',Arial,Helvetica,sans-serif;
-      margin: 0 .25em 0 0;
-      padding: .78571429em 1.5em .78571429em;
-      text-transform: none;
-      text-shadow: none;
-      font-weight: 700;
-      line-height: 1em;
-      font-style: normal;
+      border-right: 1px solid;
+      padding-left:12px;
+      padding-right:12px;
+      font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Noto Sans", "Noto Sans CJK SC", "Noto Sans CJK", "Source Han Sans", "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    .probleminfo_title{
       text-align: center;
-      text-decoration: none;
-      border-radius: .28571429rem;
-      -webkit-box-shadow: 0 0 0 1px transparent inset, 0 0 0 0 rgba(34,36,38,.15) inset;
-      box-shadow: 0 0 0 1px transparent inset, 0 0 0 0 rgba(34,36,38,.15) inset;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      user-select: none;
-      -webkit-transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,-webkit-box-shadow .1s ease;
-      transition: opacity .1s ease,background-color .1s ease,color .1s ease,background .1s ease,-webkit-box-shadow .1s ease;
-      transition: opacity .1s ease,background-color .1s ease,color .1s ease,box-shadow .1s ease,background .1s ease;
-      transition: opacity .1s ease,background-color .1s ease,color .1s ease,box-shadow .1s ease,background .1s ease,-webkit-box-shadow .1s ease;
-      will-change: '';
-      -webkit-tap-highlight-color: transparent;
+    }
+    .probleminfo_val{
+      text-align: center;
+      font-weight: 700;
+    }
+    .difficulty_tag{
+      display: inline-block;
+      padding: 0 8px;
+      box-sizing: border-box;
+      font-weight: 400;
+      line-height: 1.5;
+      border-radius: 2px;
+      font-size: 0.875em;
     }
   </style>
   <script type="text/javascript">
@@ -260,25 +264,53 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem) =
 <body>
 <script>
   const vscode = acquireVsCodeApi();
-  function submit(pid) {
-    vscode.postMessage({ type: 'submit', data: pid });
+  function submit() {
+    vscode.postMessage({ type: 'submit' });
   }
   function open_cph(){
     vscode.postMessage({ type: 'open_cph' });
   }
-
-  // 处理显示/隐藏 cph 按钮
-  window.onload=(function(){
-    var cphbutton=document.getElementById("gotoCPH");
-    window.addEventListener('message', message => {
-      if (message.data.type==="check_cph_res")
-        cphbutton.style.display=(message.data.value?"inline":"none");
-    });
-    vscode.postMessage({ type: 'check_cph' });
-  });
 </script>
-<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="submit(\'${problem.stringPID}\')">提交</button>
-<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="open_cph()" id="gotoCPH" style="display:none">传送至 cph</button>
+<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="submit()">提交</button>
+${enble_cph?`<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="open_cph()" id="gotoCPH" style="display:none">传送至 cph</button>`:``}
+<!--题目属性-->
+<div style="float:right;padding:10px;">
+  <div class="probleminfo">
+  <div class="probleminfo_title">题目难度</div>
+  <div class="probleminfo_val"><span class="difficulty_tag" style="background-color:${difficultyColor[problem.difficulty]};color:white">${difficultyName[problem.difficulty]}</span></div>
+  </div><div class="probleminfo">
+    <div class="probleminfo_title">时间限制</div>
+    <div class="probleminfo_val">${(function(){
+      let mintime=_get_array_min(problem.timeLimit),maxtime=_get_array_max(problem.timeLimit);
+      let mintimestr:string,maxtimestr:string;
+      if (mintime<1e3) mintimestr=`${mintime}ms`;
+      else if (mintime<60e3) mintimestr=`${(mintime/1e3).toFixed(2)}s`;
+      else mintimestr=`${(mintime/60e3).toFixed(2)}min`;
+      if (maxtime<1e3) maxtimestr=`${maxtime}ms`;
+      else if (maxtime<60e3) maxtimestr=`${(maxtime/1e3).toFixed(2)}s`;
+      else maxtimestr=`${(maxtime/60e3).toFixed(2)}min`;
+      return mintimestr==maxtimestr?mintimestr:`${mintimestr}~${maxtimestr}`;
+    })()}</div>
+  </div><div class="probleminfo">
+    <div class="probleminfo_title">内存限制</div>
+    <div class="probleminfo_val">${(function(){
+      let minmemory=_get_array_min(problem.memoryLimit),maxmemory=_get_array_max(problem.memoryLimit);
+      let minmemorystr:string,maxmemorystr:string;
+      if (minmemory<2**10) minmemorystr=`${minmemory}B`;
+      else if (minmemory<2**20) minmemorystr=`${(minmemory/2**10).toFixed(2)}KB`;
+      else if (minmemory<2**10) minmemorystr=`${(minmemory/2**20).toFixed(2)}MB`;
+      else minmemorystr=`${(minmemory/1e9).toFixed(2)}GB`;
+      if (maxmemory<2**10) maxmemorystr=`${maxmemory}B`;
+      else if (maxmemory<2**20) maxmemorystr=`${(maxmemory/2**10).toFixed(2)}KB`;
+      else if (maxmemory<2**30) maxmemorystr=`${(maxmemory/2**20).toFixed(2)}MB`;
+      else maxmemorystr=`${(maxmemory/1e9).toFixed(2)}GB`;
+      return minmemorystr==maxmemorystr?minmemorystr:`${minmemorystr}~${maxmemorystr}`;
+    })()}</div>
+  </div><div class="probleminfo" style="border:0">
+    <div class="probleminfo_title">题目标签</div>
+    <div class="probleminfo_val"><i class=fa fa-angle-down></i></div>
+  </div>
+</div>
 ${md.render(problem.toMarkDown())}
 </body>
 </html>`
