@@ -9,18 +9,18 @@ import { getSelectedLanguage, getLanauageFromExt, sleep } from '@/utils/workspac
 import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
 import { stat } from 'fs'
-import { indexOf, size } from 'lodash'
-import { difficultyName,difficultyColor } from '@/utils/shared';
+import { indexOf, max, size } from 'lodash'
+import { difficultyName,difficultyColor,tagsColor,tagsName } from '@/utils/shared';
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
-const _get_array_max=function(arr:Array<any>){
+const get_array_max=function(arr:Array<any>){
   let res=arr[0];
   for (const i of arr) if (i>res) res=i;
   return res;
 }
-const _get_array_min=function(arr:Array<any>){
+const get_array_min=function(arr:Array<any>){
   let res=arr[0];
   for (const i of arr) if (i<res) res=i;
   return res;
@@ -156,8 +156,8 @@ const goto_cph=async function(problem:Problem){
     group: "Luogu",
     url: `https://www.luogu.com.cn/problem/${problem.stringPID}`,
     interactive: "false",
-    memoryLimit: _get_array_max(problem.timeLimit),
-    timeLimit: _get_array_max(problem.memoryLimit)/1000,
+    memoryLimit: get_array_max(problem.timeLimit),
+    timeLimit: get_array_max(problem.memoryLimit)/1000,
     tests: Array(problem.sample.length),
     input: { "type": "stdin" },
     output: { "type": "stdout" },
@@ -187,7 +187,7 @@ const check_cph=async function(){
 
 export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, enble_cph: Boolean) => `
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-cn">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -195,7 +195,7 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
-  <link rel="stylesheet" herf="${getResourceFilePath(webview, 'FontAwesome/css/fontawesome.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(webview, 'FontAwesome/css/all.min.css')}">
   <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
@@ -211,8 +211,7 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
       font-family: Courier New !important;
     }
     .probleminfo {
-      display: inline-block;
-      border-right: 1px solid;
+      border:0;
       padding-left:12px;
       padding-right:12px;
       font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Noto Sans", "Noto Sans CJK SC", "Noto Sans CJK", "Source Han Sans", "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
@@ -224,7 +223,7 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
       text-align: center;
       font-weight: 700;
     }
-    .difficulty_tag{
+    .tag{
       display: inline-block;
       padding: 0 8px;
       box-sizing: border-box;
@@ -232,6 +231,35 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
       line-height: 1.5;
       border-radius: 2px;
       font-size: 0.875em;
+      color:white;
+      margin:2px;
+    }
+    button{
+      border-color: rgb(52, 152, 219);
+      background-color: rgb(52, 152, 219); 
+      color: rgb(255,255,255);
+    }
+    #tagwindow{
+      width:200px;
+      position:absolute;
+      right:0px;
+      top:110px;
+      backdrop-filter: blur(12px);
+      background-color:rgba(255,255,255,80%);
+      box-shadow: 0 3px 8px #0009;
+      border-radius: 7px;
+      padding: 10px;
+      margin: 10px;
+      z-index: 114514;
+    }
+    #probleminfo{
+      width:auto;
+      float:right;border:0;
+    }
+    @media only screen and (max-width: 420px) {
+      #probleminfo{
+        display:none;
+      }
     }
   </style>
   <script type="text/javascript">
@@ -263,54 +291,91 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
 </head>
 <body>
 <script>
+  const sleep=async function(time){
+    return new Promise((resolve) => setTimeout(resolve, time));
+  }
+
+  var tagwindow;
   const vscode = acquireVsCodeApi();
-  function submit() {
+
+  window.onload=function(){
+    tagwindow=document.getElementById("tagwindow");
+  };
+  const show_tagwindow=async function(){
+    const fps=100,frame=100;
+    console.log("show_tagwindow",Date());
+    tagwindow.style.display="block";
+    for (let i=1;i<=frame;++i){
+      tagwindow.style.opacity=i/frame;
+      await sleep(1/fps);
+    }
+  };
+  const hide_tagwindow=async function(){
+    console.log("hide_tagwindow",Date());
+    const fps=100,frame=100;
+    for (let i=frame-1;i>=0;--i){
+      tagwindow.style.opacity=i/frame;
+      await sleep(1/fps);
+    }
+    tagwindow.style.display="none";
+  };
+
+  const submit=function() {
     vscode.postMessage({ type: 'submit' });
   }
-  function open_cph(){
+  const open_cph=function(){
     vscode.postMessage({ type: 'open_cph' });
   }
 </script>
-<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="submit()">提交</button>
-${enble_cph?`<button style="border-color: rgb(52, 152, 219); background-color: rgb(52, 152, 219); color: rgb(255,255,255);" onclick="open_cph()" id="gotoCPH" style="display:none">传送至 cph</button>`:``}
-<!--题目属性-->
-<div style="float:right;padding:10px;">
-  <div class="probleminfo">
-  <div class="probleminfo_title">题目难度</div>
-  <div class="probleminfo_val"><span class="difficulty_tag" style="background-color:${difficultyColor[problem.difficulty]};color:white">${difficultyName[problem.difficulty]}</span></div>
-  </div><div class="probleminfo">
-    <div class="probleminfo_title">时间限制</div>
-    <div class="probleminfo_val">${(function(){
-      let mintime=_get_array_min(problem.timeLimit),maxtime=_get_array_max(problem.timeLimit);
-      let mintimestr:string,maxtimestr:string;
-      if (mintime<1e3) mintimestr=`${mintime}ms`;
-      else if (mintime<60e3) mintimestr=`${(mintime/1e3).toFixed(2)}s`;
-      else mintimestr=`${(mintime/60e3).toFixed(2)}min`;
-      if (maxtime<1e3) maxtimestr=`${maxtime}ms`;
-      else if (maxtime<60e3) maxtimestr=`${(maxtime/1e3).toFixed(2)}s`;
-      else maxtimestr=`${(maxtime/60e3).toFixed(2)}min`;
-      return mintimestr==maxtimestr?mintimestr:`${mintimestr}~${maxtimestr}`;
-    })()}</div>
-  </div><div class="probleminfo">
-    <div class="probleminfo_title">内存限制</div>
-    <div class="probleminfo_val">${(function(){
-      let minmemory=_get_array_min(problem.memoryLimit),maxmemory=_get_array_max(problem.memoryLimit);
-      let minmemorystr:string,maxmemorystr:string;
-      if (minmemory<2**10) minmemorystr=`${minmemory}B`;
-      else if (minmemory<2**20) minmemorystr=`${(minmemory/2**10).toFixed(2)}KB`;
-      else if (minmemory<2**10) minmemorystr=`${(minmemory/2**20).toFixed(2)}MB`;
-      else minmemorystr=`${(minmemory/1e9).toFixed(2)}GB`;
-      if (maxmemory<2**10) maxmemorystr=`${maxmemory}B`;
-      else if (maxmemory<2**20) maxmemorystr=`${(maxmemory/2**10).toFixed(2)}KB`;
-      else if (maxmemory<2**30) maxmemorystr=`${(maxmemory/2**20).toFixed(2)}MB`;
-      else maxmemorystr=`${(maxmemory/1e9).toFixed(2)}GB`;
-      return minmemorystr==maxmemorystr?minmemorystr:`${minmemorystr}~${maxmemorystr}`;
-    })()}</div>
-  </div><div class="probleminfo" style="border:0">
-    <div class="probleminfo_title">题目标签</div>
-    <div class="probleminfo_val"><i class=fa fa-angle-down></i></div>
-  </div>
-</div>
+<button onclick="submit()">提交</button>
+${enble_cph?`<button onclick="open_cph()" id="gotoCPH">传送至 cph</button>`:``}
+<span style="float:right">
+  <table id="probleminfo">
+    <tr>
+      <td class="probleminfo" style="/*border-right:1px solid;*/border-bottom:1px solid;">
+        <div class="probleminfo_title">时间限制</div>
+        <div class="probleminfo_val">${(function(){
+          let mintime=get_array_min(problem.timeLimit),maxtime=get_array_max(problem.timeLimit);
+          let mintimestr:string,maxtimestr:string;
+          if (mintime<1e3) mintimestr=`${mintime}ms`;
+          else if (mintime<60e3) mintimestr=`${(mintime/1e3).toFixed(2)}s`;
+          else mintimestr=`${(mintime/60e3).toFixed(2)}min`;
+          if (maxtime<1e3) maxtimestr=`${maxtime}ms`;
+          else if (maxtime<60e3) maxtimestr=`${(maxtime/1e3).toFixed(2)}s`;
+          else maxtimestr=`${(maxtime/60e3).toFixed(2)}min`;
+          return mintimestr==maxtimestr?mintimestr:`${mintimestr}~${maxtimestr}`;
+        })()}</div>
+      </td><td class="probleminfo" style="border-bottom:1px solid;">
+        <div class="probleminfo_title">内存限制</div>
+        <div class="probleminfo_val">${(function(){
+          let minmemory=get_array_min(problem.memoryLimit),maxmemory=get_array_max(problem.memoryLimit);
+          let minmemorystr:string,maxmemorystr:string;
+          if (minmemory<2**1) minmemorystr=`${minmemory}KB`;
+          else if (minmemory<2**20) minmemorystr=`${(minmemory/2**10).toFixed(2)}MB`;
+          else minmemorystr=`${(minmemory/2**20).toFixed(2)}GB`;
+          if (maxmemory<2**1) maxmemorystr=`${maxmemory}KB`;
+          else if (maxmemory<2**20) maxmemorystr=`${(maxmemory/2**10).toFixed(2)}MB`;
+          else maxmemorystr=`${(maxmemory/2**20).toFixed(2)}GB`;
+          return minmemorystr==maxmemorystr?minmemorystr:`${minmemorystr}~${maxmemorystr}`;
+        })()}</div>
+      </td>
+    </tr>
+    <tr>
+      <td class="probleminfo">
+        <div class="probleminfo_title">题目难度</div>
+        <div class="probleminfo_val"><span class="tag" style="background-color:${difficultyColor[problem.difficulty]};">${difficultyName[problem.difficulty]}</span></div>
+      </td><td class="probleminfo" onmouseenter="show_tagwindow()" onmouseleave="hide_tagwindow()">
+        <div class="probleminfo_title">题目标签</div>
+        <div class="probleminfo_val"><i class="fa-solid fa-chevron-down"></i></div>
+      </td>
+    </tr>
+  </table>
+<div id="tagwindow" style="display:none;opacity:0;">${(function(){
+  let res="";
+  for (let i of problem.tags) res+=`<span class="tag" style="background-color:${tagsColor[i]};">${tagsName[i]}</span>`
+  return res;
+})()}</div>
+</span>
 ${md.render(problem.toMarkDown())}
 </body>
 </html>`

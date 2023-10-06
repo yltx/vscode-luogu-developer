@@ -61,7 +61,7 @@ export class Tag {
 export class Problem {
   public stringPID = ''
   public contestID = ''
-  public tags: Tag[] = []
+  public tags: Array<number> = []
   public type = 0
   public sample: [string[]] = [[]]
   public inputFormat = ''
