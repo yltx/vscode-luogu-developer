@@ -20,10 +20,12 @@ export const showRecord = async (rid: number) => {
     try {
       console.log(rid)
       const result = await fetchResult(rid);
+      const record = result.record;
+      //console.log("status: ",record.status);
       debug('Get result: ', result.record)
       panel.webview.html = await generateRecordHTML(panel.webview, result);
       retryTimes = 0
-      if (!(result.record.status >= 0 && result.record.status <= 1)) {
+      if (!(record.status >= 0 && record.status <= 1)) {
         break
       }
       await delay(1000)
