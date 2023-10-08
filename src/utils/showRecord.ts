@@ -31,13 +31,13 @@ export const showRecord = async (rid: number) => {
       await delay(1000)
     } catch (err) {
       console.error(err)
-      vscode.window.showErrorMessage(`222获取记录详情失败，已重试 ${retryTimes} 次`);
+      vscode.window.showErrorMessage(`获取记录详情失败，已重试 ${retryTimes} 次`);
       retryTimes++
       await delay(2000)
     }
   }
   if (retryTimes === maxRetryTimes + 1) {
-    vscode.window.showErrorMessage(`111获取记录详情失败`);
+    vscode.window.showErrorMessage(`获取记录详情失败`);
   }
 };
 const entityMap = {
