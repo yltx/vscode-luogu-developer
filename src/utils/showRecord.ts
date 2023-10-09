@@ -91,7 +91,7 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
               Subtask #${subtasksID[currentSubtask]}
             </h5>`
       }
-      if (problemInfo.type === "P") {
+      if (problemInfo.type === "P" || problemInfo.type === "T" || problemInfo.type === "U" || problemInfo.type === "B") {
         html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), testCaseGroup[currentSubtask], problemInfo.type);
       } else {
         html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, subtasks[currentSubtask].testCases.length, testCaseGroup[currentSubtask], problemInfo.type);
@@ -140,7 +140,7 @@ const generateRecordSubtaskHTML = async (testcases: any[], len: number, casesid:
   debug('len: ', len)
   debug('id: ', casesid)
   // testcases.sort((lhs, rhs) => lhs.id - rhs.id)
-  if (type === "P") {
+  if (type === "P" || type === "T" || type === "U" || type === "B") {
     for (let i = 0; i < len; i++) {
       html += `<div data-v-bb301a88="" data-v-327ef1ce="" class="wrapper" data-v-796309f8="">
         <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[casesid[i]].status)};">
