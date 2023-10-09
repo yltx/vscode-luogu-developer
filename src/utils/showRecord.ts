@@ -20,10 +20,12 @@ export const showRecord = async (rid: number) => {
     try {
       console.log(rid)
       const result = await fetchResult(rid);
+      const status = result.record.status;
       debug('Get result: ', result.record)
       panel.webview.html = await generateRecordHTML(panel.webview, result);
       retryTimes = 0
-      if (!(result.record.status >= 0 && result.record.status <= 1)) {
+      console.log("status: ", status);
+      if (!(status >= 0 && status <= 1)) {
         break
       }
       await delay(1000)
@@ -58,7 +60,8 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
   debug('Generating record html:', data)
   const subtasks: any[] = Object.values(data.record.detail.judgeResult.subtasks);
   const testCaseGroup: any[] = Object.values(data.testCaseGroup);
-  const subtasksID = Object.keys(data.testCaseGroup)
+  const subtasksID = Object.keys(data.testCaseGroup);
+  const problemInfo = data.record.problem;
   debug('subtasks: ', subtasks)
   debug('testCaseGroup: ', testCaseGroup)
   debug('subtaskID: ', subtasksID)
@@ -88,7 +91,11 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
               Subtask #${subtasksID[currentSubtask]}
             </h5>`
       }
-      html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), testCaseGroup[currentSubtask])
+      if (problemInfo.type === "P" || problemInfo.type === "T" || problemInfo.type === "U" || problemInfo.type === "B") {
+        html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, Math.max(subtasks[currentSubtask].testCases.length || 0, testCaseGroup[currentSubtask].length), testCaseGroup[currentSubtask], problemInfo.type);
+      } else {
+        html += await generateRecordSubtaskHTML(subtasks[currentSubtask].testCases, subtasks[currentSubtask].testCases.length, testCaseGroup[currentSubtask], problemInfo.type);
+      }
       html += `</div>`
     }
     html += '</div></div></div>'
@@ -127,25 +134,44 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
   `;
 }
 
-const generateRecordSubtaskHTML = async (testcases: any[], len: number, casesid: any[]) => {
+const generateRecordSubtaskHTML = async (testcases: any[], len: number, casesid: any[], type: String) => {
   let html = '';
   debug('testcases: ', testcases)
   debug('len: ', len)
+  debug('id: ', casesid)
   // testcases.sort((lhs, rhs) => lhs.id - rhs.id)
-  for (let i = 0; i < len; i++) {
-    html += `<div data-v-bb301a88="" data-v-327ef1ce="" class="wrapper" data-v-796309f8="">
-      <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[casesid[i]].status)};">
-        <div data-v-bb301a88="" class="content">
-          <div data-v-bb301a88="" class="info">
-          ${testcases[casesid[i]].time < 1000 ? testcases[casesid[i]].time.toString() + `ms` : (testcases[casesid[i]].time < 60000 ? (testcases[casesid[i]].time / 1000).toString() + `s` : (testcases[casesid[i]].time / 60000).toString() + `min`)}/${testcases[casesid[i]].memory < 1000 ? testcases[casesid[i]].memory.toString() + `KB` : (testcases[casesid[i]].memory / 1000).toString() + `MB`}
+  if (type === "P" || type === "T" || type === "U" || type === "B") {
+    for (let i = 0; i < len; i++) {
+      html += `<div data-v-bb301a88="" data-v-327ef1ce="" class="wrapper" data-v-796309f8="">
+        <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[casesid[i]].status)};">
+          <div data-v-bb301a88="" class="content">
+            <div data-v-bb301a88="" class="info">
+            ${testcases[casesid[i]].time < 1000 ? testcases[casesid[i]].time.toString() + `ms` : (testcases[casesid[i]].time < 60000 ? (testcases[casesid[i]].time / 1000).toString() + `s` : (testcases[casesid[i]].time / 60000).toString() + `min`)}/${testcases[casesid[i]].memory < 1000 ? testcases[casesid[i]].memory.toString() + `KB` : (testcases[casesid[i]].memory / 1000).toString() + `MB`}
+            </div>
+            <div data-v-bb301a88="" class="status">${resultState[testcases[casesid[i]].status]}</div>
           </div>
-          <div data-v-bb301a88="" class="status">${resultState[testcases[casesid[i]].status]}</div>
+          <div data-v-bb301a88="" class="id">#${testcases[casesid[i]].id + 1}</div>
         </div>
-        <div data-v-bb301a88="" class="id">#${testcases[casesid[i]].id + 1}</div>
-      </div>
-      <div data-v-bb301a88="" class="message">${testcases[casesid[i]]?.description ?? ''} 得分 ${testcases[casesid[i]].score}</div>
-      </div>
-      `
+        <div data-v-bb301a88="" class="message">${testcases[casesid[i]]?.description ?? ''} 得分 ${testcases[casesid[i]].score}</div>
+        </div>
+        `
+    }
+  } else {
+    for (let i = 0; i < len; i++) {
+      html += `<div data-v-bb301a88="" data-v-327ef1ce="" class="wrapper" data-v-796309f8="">
+        <div data-v-bb301a88="" class="test-case" style="background: ${getStatusColor(testcases[i].status)};">
+          <div data-v-bb301a88="" class="content">
+            <div data-v-bb301a88="" class="info">
+            ${testcases[i].time < 1000 ? testcases[i].time.toString() + `ms` : (testcases[i].time < 60000 ? (testcases[i].time / 1000).toString() + `s` : (testcases[i].time / 60000).toString() + `min`)}/${testcases[i].memory < 1000 ? testcases[i].memory.toString() + `KB` : (testcases[i].memory / 1000).toString() + `MB`}
+            </div>
+            <div data-v-bb301a88="" class="status">${resultState[testcases[i].status]}</div>
+          </div>
+          <div data-v-bb301a88="" class="id">#${testcases[i].id + 1}</div>
+        </div>
+        <div data-v-bb301a88="" class="message">${testcases[i]?.description ?? ''} 得分 ${testcases[i].score}</div>
+        </div>
+        `
+    }
   }
   return html;
 }
