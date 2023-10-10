@@ -33,7 +33,7 @@ export async function submitSolution(id: string, code: string, language = 0, ena
     }
   }).catch(err => {
     if (err.response) {
-      throw err.response.data;
+      throw err.response.data.data ?? err.response.data;
     } else if (err.request) {
       throw new Error('请求超时，请重试')
     } else {

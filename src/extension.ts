@@ -77,7 +77,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>修复使在题单广场中搜索后能打开题单</li>
+            <li>修复 RMJ 提交记录显示</li>
+            <li>修复提交失败的错误信息显示</li>
         </ol>
     </ul>
     </h2>
