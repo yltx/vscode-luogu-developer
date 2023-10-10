@@ -1,6 +1,6 @@
 import { getResourceFilePath, searchTrainingdetail } from './api'
 import md from './markdown'
-import { tagsStatus } from './shared'
+import { tagsColor,tagsName } from './shared'
 import { getScoreColor } from './workspaceUtils'
 import * as vscode from 'vscode'
 const getUserScoreStatus = (userScore, fullScore) => {
@@ -37,7 +37,7 @@ const getDifficultyStatus = (difficulty: number) => {
 const getTagsStatus = (tags: []) => {
   let html = ''
   tags.forEach(index => {
-    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: rgb(${tagsStatus[index]}</span>&nbsp;`
+    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`
   })
   return html
 }

@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.7.2'
+const version = '4.7.3'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,7 +77,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>修复使在题单广场中搜索后能打开题单</li>
+            <li>修复 RMJ 提交记录显示</li>
+            <li>修复提交失败的错误信息显示</li>
         </ol>
     </ul>
     </h2>
