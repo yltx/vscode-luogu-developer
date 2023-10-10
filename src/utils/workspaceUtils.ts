@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-import { languageList, Languages, ProblemState, stateColor, colorStyle, fileExtention, difficulty, problemset } from '@/utils/shared';
+import { languageList, Languages, ProblemState, stateColor, colorStyle, fileExtention, difficultyID, problemset } from '@/utils/shared';
 
 export function getSelectedLanguage(selected: string = vscode.workspace.getConfiguration('luogu').get<string>('defaultLanguage')!): number {
   // @ts-ignore
@@ -9,7 +9,7 @@ export function getSelectedLanguage(selected: string = vscode.workspace.getConfi
 
 export function getSelectedDifficulty(selected: string): number {
   // @ts-ignore
-  return difficulty[selected as any];
+  return difficultyID[selected as any];
 }
 
 export function getSelectedProblemset(selected: string): string {
