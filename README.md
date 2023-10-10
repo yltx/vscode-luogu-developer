@@ -52,4 +52,3 @@ Follow [MIT](LICENSE) LICENSE.
 - 蒟蒻水儿
 - [宝硕](https://baoshuo.ren)
 - 品小呈
-- MrPython
