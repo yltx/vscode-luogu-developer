@@ -195,7 +195,6 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath(webview, 'FontAwesome/css/all.min.css')}">
   <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
@@ -245,8 +244,8 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
       right:0px;
       top:110px;
       backdrop-filter: blur(12px);
-      background-color:rgba(255,255,255,80%);
-      box-shadow: 0 3px 8px #0009;
+      background-color:var(--vscode-editor-background);
+      box-shadow: 0 3px 8px var(--vscode-editor-foreground);
       border-radius: 7px;
       padding: 10px;
       margin: 10px;
@@ -303,7 +302,6 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
   };
   const show_tagwindow=async function(){
     const fps=100,frame=100;
-    console.log("show_tagwindow",Date());
     tagwindow.style.display="block";
     for (let i=1;i<=frame;++i){
       tagwindow.style.opacity=i/frame;
@@ -311,7 +309,6 @@ export const generateProblemHTML = (webview: vscode.Webview, problem: Problem, e
     }
   };
   const hide_tagwindow=async function(){
-    console.log("hide_tagwindow",Date());
     const fps=100,frame=100;
     for (let i=frame-1;i>=0;--i){
       tagwindow.style.opacity=i/frame;
@@ -364,9 +361,12 @@ ${enble_cph?`<button onclick="open_cph()" id="gotoCPH">传送至 cph</button>`:`
       <td class="probleminfo">
         <div class="probleminfo_title">题目难度</div>
         <div class="probleminfo_val"><span class="tag" style="background-color:${difficultyColor[problem.difficulty]};">${difficultyName[problem.difficulty]}</span></div>
-      </td><td class="probleminfo" onmouseenter="show_tagwindow()" onmouseleave="hide_tagwindow()">
+      </td><td class="probleminfo"${problem.tags.length?`onmouseenter="show_tagwindow()" onmouseleave="hide_tagwindow()"`:``}>
         <div class="probleminfo_title">题目标签</div>
-        <div class="probleminfo_val"><i class="fa-solid fa-chevron-down"></i></div>
+        <div class="probleminfo_val">${problem.tags.length?
+          `<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path  fill="var(--vscode-editor-foreground)" d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>`
+          :`暂无标签`
+        }</div>
       </td>
     </tr>
   </table>
