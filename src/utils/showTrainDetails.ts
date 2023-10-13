@@ -1,6 +1,6 @@
 import { getResourceFilePath, searchTrainingdetail } from './api'
 import md from './markdown'
-import { tagsColor,tagsName } from './shared'
+import { tagsColor, tagsName } from './shared'
 import { getScoreColor } from './workspaceUtils'
 import * as vscode from 'vscode'
 const getUserScoreStatus = (userScore, fullScore) => {
