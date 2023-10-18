@@ -27,6 +27,10 @@ class LuoguChannel implements vscode.Disposable {
   public dispose (): void {
     this.channel.dispose()
   }
+
+  public replace(): void {
+    
+  }
 }
 
 export const luoguChannel = new LuoguChannel()

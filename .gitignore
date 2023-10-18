@@ -10,3 +10,4 @@ package-lock.json
 test.*
 1.html
 .vs
+node_modules

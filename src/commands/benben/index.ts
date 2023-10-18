@@ -51,19 +51,25 @@ export default new SuperCommand({
       console.log(`Got ${message.type} request: message = ${message.data}`)
       if (message.type === 'post') {
         // todo: add error handling in webview
-        try {
-          console.log(message.data)
-          pannel.webview.postMessage({ type: 'post-result', message: await postBenben(message.data) })
-        } catch (err) {
+        await postBenben(message.data).then(
+          message=>{
+            console.log(message.data)
+            pannel.webview.postMessage({ type: 'post-result', message })
+          }
+        ).catch(err => {
           console.log(err)
           pannel.webview.postMessage({ type: 'postError', message: err.message })
-        }
+        })
       } else if (message.type === 'delete') {
-        try {
-          pannel.webview.postMessage({ type: 'delete-result', message: await deleteBenben(message.data) })
-        } catch (err) {
+        await deleteBenben(message.data).then(
+          message=>{
+            console.log(message.data)
+            pannel.webview.postMessage({ type: 'delete-result', message })
+          }
+        ).catch(err => {
+          console.log(err)
           pannel.webview.postMessage({ type: 'deleteError', message: err.message })
-        }
+        })
       } else if (message.type === 'reply') {
         // ???
         throw Error;

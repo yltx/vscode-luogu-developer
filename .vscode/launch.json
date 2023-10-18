@@ -11,11 +11,12 @@
 			],
 			"name": "Launch Extension",
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/dist/**/*.js"
 			],
 			"preLaunchTask": "npm: compile",
 			"request": "launch",
-			"type": "extensionHost"
+			"type": "extensionHost",
+			"sourceMaps": true,
 		}
 	]
 }

@@ -13,9 +13,13 @@ exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
 export const showProblem = async (pid: string, cid: string) => {
-  try {
-    let problem: Problem
-    if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid, cid).then(res => new Problem(res)) }
+    let problemPre: Promise<Problem>
+    if (cid === '') { problemPre = searchProblem(pid) } else { problemPre = searchContestProblem(pid, cid) }
+    let problem = await problemPre.then(res => new Problem(res)).catch(err => {
+      vscode.window.showErrorMessage(err.message)
+      return;
+    })
+    if(!problem) return;
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
@@ -104,31 +108,20 @@ export const showProblem = async (pid: string, cid: string) => {
         }
         let success = false;
         let rid: any = 0;
-        try {
           vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
           if (cid !== '') { id += `?contestId=${cid}` }
-          rid = await submitSolution(id, text, selected, O2);
-          if (rid !== undefined) {
-            success = true;
-          }
-        } catch (err) {
-          vscode.window.showInformationMessage('提交失败')
-          if (err.errorMessage) {
-            vscode.window.showErrorMessage(err.errorMessage)
-          }
-          console.error(err);
-        } finally {
-          if (success) {
-            // vscode.window.showInformationMessage('提交成功');
-            await showRecord(rid as number)
-          }
-        }
+          await submitSolution(id, text, selected, O2).then(rid => {
+            showRecord(rid as number)
+          }).catch(err => {
+            vscode.window.showInformationMessage('提交失败')
+            if (err.errorMessage) {
+              vscode.window.showErrorMessage(err.errorMessage)
+            }
+            console.error(err);
+          });
+          
       }
     })
-  } catch (err) {
-    vscode.window.showErrorMessage(err.message)
-    throw err
-  }
 }
 
 export const generateProblemHTML = (problem: Problem) => `

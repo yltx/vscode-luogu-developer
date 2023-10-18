@@ -1,19 +1,21 @@
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import json from 'rollup-plugin-json'
-import { terser } from 'rollup-plugin-terser'
-import typescript from 'rollup-plugin-typescript'
-import builtins from 'builtin-modules'
+const resolve = require('@rollup/plugin-node-resolve')
+const commonjs = require('@rollup/plugin-commonjs')
+const json = require('@rollup/plugin-json')
+const terser = require('@rollup/plugin-terser')
+const typescript = require('@rollup/plugin-typescript')
 
-export default {
+module.exports = {
   input: './src/extension.ts',
   output: {
-    file: 'dist/extension.js',
-    format: 'cjs'
+    file: './dist/extension.js',
+    format: 'cjs',
+    sourcemap: true
   },
-  external: builtins,
+  external: ["vscode"],
   plugins: [
-    resolve(),
+    resolve({
+      preferBuiltins: true,
+    }),
     commonjs(),
     json(),
     typescript(),

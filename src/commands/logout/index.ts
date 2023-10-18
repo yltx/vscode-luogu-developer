@@ -4,7 +4,7 @@ import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
 
 import * as vscode from 'vscode'
-import * as fs from 'fs'
+import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as os from 'os'
 exports.luoguPath = path.join(os.homedir(), '.luogu');
@@ -23,22 +23,20 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    try {
-      if (fs.existsSync(exports.luoguJSONPath)) {
-        fs.unlinkSync(exports.luoguJSONPath)
-      }
-    } catch (err) {
+    await fs.stat(exports.luoguJSONPath).then(()=>{
+      fs.unlink(exports.luoguJSONPath)
+    }).catch(err=>{
       vscode.window.showErrorMessage('删除文件时出现错误');
       vscode.window.showErrorMessage(err);
-    }
-    try {
-      // await logout()
-    } finally {
-      await setUID('')
-      await setClientID('')
-      exports.islogged = false;
-      luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
-      vscode.window.showInformationMessage('注销成功');
-    }
+    })
+    // try {
+    //   // await logout()
+    // } finally {
+    await setUID('')
+    await setClientID('')
+    exports.islogged = false;
+    luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
+    vscode.window.showInformationMessage('注销成功');
+    // }
   }
 })
