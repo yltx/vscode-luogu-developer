@@ -2,24 +2,22 @@ import SuperCommand from '../SuperCommand'
 import { getErrorMessage, getFate, getStatus } from '@/utils/api'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
-import * as fs from 'fs'
 
 export default new SuperCommand({
   onCommand: 'fate',
   handle: async () => {
     while (!exports.init) { continue; }
-    try {
-      if (await getStatus() === UserStatus.SignedOut.toString()) {
-        vscode.window.showErrorMessage('未登录');
-        return;
+    await getStatus().then(
+      message => {
+        if (message === UserStatus.SignedOut.toString()) {
+          vscode.window.showErrorMessage('未登录');
+        }
       }
-    } catch (err) {
+    ).catch(err => {
       console.error(err)
       vscode.window.showErrorMessage(`${err}`);
-      return;
-    }
-    try {
-      let data = await getFate();
+    })
+    await getFate().then(data => {
       if (data.code !== 201 && data.code !== 200) {
         vscode.window.showErrorMessage('打卡失败')
       } else {
@@ -89,11 +87,9 @@ export default new SuperCommand({
         } else {
           vscode.window.showInformationMessage(data.message)
         }
-        // console.log(data)
       }
-    } catch (err) {
-      // vscode.window.showErrorMessage('打卡时出现错误')
-      vscode.window.showErrorMessage(getErrorMessage(err))
-    }
+    }).catch(err => {
+      vscode.window.showErrorMessage(err)
+    })
   }
 })

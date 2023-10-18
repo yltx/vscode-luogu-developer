@@ -8,7 +8,7 @@ import * as vscode from 'vscode'
 import { DialogType, promptForOpenOutputChannelWithResult } from '@/utils/uiUtils'
 import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs'
+import * as fs from 'fs/promises'
 
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
@@ -49,62 +49,66 @@ export default new SuperCommand({
       if (!password) {
         return
       }
-      while (true) {
+      let flag = true;
+      while (flag) {
         const captcha = await getUserCaptcha()
         if (!captcha) {
           debug('No captcha text')
           return;
         }
         let clientID: string | null
-        try {
-          const r1 = await login(username, password, captcha.captchaText)
-          let resp: string | null
-          if (r1.locked) {
-            const code = await vscode.window.showInputBox({
-              placeHolder: '输入2FA验证码',
-              ignoreFocusOut: true
-            })
-            if (!code) {
-              return
+          await login(username, password, captcha.captchaText).then(async r1=>{
+            let resp: string | null
+            if (r1.locked) {
+              const code = await vscode.window.showInputBox({
+                placeHolder: '输入2FA验证码',
+                ignoreFocusOut: true
+              })
+              if (!code) {
+                return
+              }
+              const r2 = await unlock(code)
+              resp = r2
+            } else {
+              resp = r1
             }
-            const r2 = await unlock(code)
-            resp = r2
-          } else {
-            resp = r1
-          }
-          console.log(resp)
-          exports.init = true
-          exports.islogged = true;
-          try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
-          } catch (error) {
-            vscode.window.showErrorMessage('写入文件时出现错误')
-            vscode.window.showErrorMessage(`${error}`)
-          }
-          luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-          vscode.window.showInformationMessage('登录成功')
-          break;
-        } catch (err) {
-          console.log(err)
-          exports.init = true
-          if (err.response) {
-            if (err.response.data.errorMessage === '验证码错误') {
+            console.log(resp)
+            exports.init = true
+            exports.islogged = true;
+            await fs.writeFile(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
+            .catch(err=>{
+              vscode.window.showErrorMessage('写入文件时出现错误')
+              vscode.window.showErrorMessage(`${err}`)
+            })
+            luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
+            vscode.window.showInformationMessage('登录成功')
+            flag = false
+            return
+          }).catch(async err => {
+            console.log(err)
+            exports.init = true
+            if (err.response) {
+              if (err.response.data.errorMessage === '验证码错误') {
+                const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
+                if (res?.title === '重试') {
+                  return;
+                } else {
+                  flag = false;
+                  return;
+                }
+              }
               const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
               if (res?.title === '重试') {
-                continue;
+                continued = true
+                flag = false;
               } else {
-                break;
+                flag = false;
               }
             }
-            const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
-            if (res?.title === '重试') {
-              continued = true
-              break
-            } else {
-              break;
-            }
-          }
-        }
+          })
+          
+          
+        
       }
     }
   }

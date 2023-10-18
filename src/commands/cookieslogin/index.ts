@@ -6,7 +6,7 @@ import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
 import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs'
+import * as fs from 'fs/promises';
 const luoguJSONName = 'luogu.json';
 exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
@@ -15,7 +15,8 @@ export default new SuperCommand({
   onCommand: 'cookieslogin',
   handle: async () => {
     while (!exports.init) { continue; }
-    while (true) {
+    let flag = true;
+    while (flag) {
       const keyword = await vscode.window.showInputBox({
         placeHolder: '输入用户名/uid（中文用户名有bug）',
         ignoreFocusOut: true
@@ -45,41 +46,35 @@ export default new SuperCommand({
       if (!clientID) {
         return
       }
-      try {
-        await setClientID(clientID)
-        await setUID(uid)
-        if (await getStatus() === UserStatus.SignedOut.toString()) {
+      await setClientID(clientID).then(()=>{
+        return setUID(uid)
+      }).then(()=>{
+        return getStatus()
+      }).then(async status => {
+        if (status === UserStatus.SignedOut.toString()) {
           exports.islogged = false;
           luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-          const res = await promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
-          if (res?.title === '重试') {
-            continue;
-          } else {
-            break;
-          }
+          return promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
         } else {
           exports.islogged = true;
           vscode.window.showInformationMessage('登录成功');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-          try {
-            fs.writeFileSync(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID }))
-          } catch (err) {
+          await fs.writeFile(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID })).catch(err=>{
             vscode.window.showErrorMessage('写入文件时出现错误');
-            vscode.window.showErrorMessage(getErrorMessage(err));
-          }
+            vscode.window.showErrorMessage(err);
+          })
           return;
         }
-      } catch (err) {
+      }).catch(err=>{
         console.error(err)
         vscode.window.showErrorMessage(getErrorMessage(err));
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-        const res = await promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
-        if (res?.title === '重试') {
-          continue;
-        } else {
-          break;
+        return promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
+      }).then(res => {
+        if (res?.title !== '重试') {
+          flag = false;
         }
-      }
+      })
     }
   }
 

@@ -55,9 +55,8 @@ export default new SuperCommand({
             }
           });
         } else if (message.type === 'vote') {
-          try {
-            const data = await postVote(message.data.id as number, message.data.type as number)
-            console.log(data)
+            await postVote(message.data.id as number, message.data.type as number).then(data => {
+              console.log(data)
             if (data.status !== 200) {
               if (data.errorMessage) {
                 throw Error(data.errorMessage)
@@ -75,12 +74,12 @@ export default new SuperCommand({
             });
             res.solutions[message.data.pos as number].thumbUp = data.data as number
             res.solutions[message.data.pos as number].currentUserVoteType = message.data.type as number
-          } catch (err) {
+            }).catch(err => {
             panel.webview.postMessage({
               type: 'vote-error',
               message: getErrorMessage(err)
             });
-          }
+          })
         } else {
           ;
         }

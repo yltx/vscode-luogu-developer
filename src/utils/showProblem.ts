@@ -14,9 +14,13 @@ exports.luoguPath = path.join(os.homedir(), '.luogu');
 exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
 
 export const showProblem = async (pid: string, cid: string) => {
-  try {
-    let problem: Problem
-    if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid, cid).then(res => new Problem(res)) }
+    let problemPre: Promise<Problem>
+    if (cid === '') { problemPre = searchProblem(pid) } else { problemPre = searchContestProblem(pid, cid) }
+    let problem = await problemPre.then(res => new Problem(res)).catch(err => {
+      vscode.window.showErrorMessage(err.message)
+      return;
+    })
+    if(!problem) return;
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
@@ -28,15 +32,11 @@ export const showProblem = async (pid: string, cid: string) => {
     panel.webview.html = html
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = `, message.data)
-      if (message.type === 'submit') submit(problem);
+      if (message.type === 'submit') submit(new Problem(problem));
       /// Written by @Mr-Python-in-China
       /// 添加 “跳转至 CPH” 功能
-      else if (message.type === 'open_cph') goto_cph(problem);
+      else if (message.type === 'open_cph') goto_cph(new Problem(problem));
     })
-  } catch (err) {
-    vscode.window.showErrorMessage(getErrorMessage(err))
-    throw err
-  }
 }
 
 const submit = async function (problem: Problem) {
