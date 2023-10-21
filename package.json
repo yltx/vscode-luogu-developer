@@ -303,6 +303,18 @@
             "scope": "window",
             "description": "Show select language hint when submit."
           },
+          "luogu.alwaysEnableO2": {
+            "type": "boolean",
+            "default": "false",
+            "scope": "window",
+            "description": "Always enable O2 when submit."
+          },
+          "luogu.checkFilenameAsProblemID": {
+            "type": "boolean",
+            "default": "true",
+            "scope": "window",
+            "description": "Continue to submit / open problem when your filename is a valid problem ID."
+          },
           "luogu.effectiveDuration": {
             "type": "integer",
             "default": "3",
