@@ -66,11 +66,12 @@ const submit = async function (problem: Problem) {
 
   console.log(languages)
 
-  const O2 = await vscode.window.showQuickPick(['否', '是'], {
+  const O2 = vscode.workspace.getConfiguration('luogu').get<boolean>('alwaysEnableO2') ? true :
+  await vscode.window.showQuickPick(['否', '是'], {
     placeHolder: '是否开启O2优化 (非 C/C++/Pascal 切勿开启)'
   }).then(ans => ans === undefined ? undefined : ans === '是');
   if (O2 === undefined) {
-    return
+    return;
   }
   // tslint:disable-next-line: strict-type-predicates
   // const langs = Object.keys(Languages).filter(k => typeof Languages[k as any] === 'number');
