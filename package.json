@@ -313,7 +313,7 @@
             "type": "boolean",
             "default": "true",
             "scope": "window",
-            "description": "Continue to submit when your filename is a valid problem ID."
+            "description": "Continue to submit / open problem when your filename is a valid problem ID."
           },
           "luogu.effectiveDuration": {
             "type": "integer",
