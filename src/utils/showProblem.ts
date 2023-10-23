@@ -17,12 +17,12 @@ export const showProblem = async (pid: string, cid: string) => {
   try {
     let problem: Problem
     if (cid === '') { problem = await searchProblem(pid).then(res => new Problem(res)) } else { problem = await searchContestProblem(pid, cid).then(res => new Problem(res)) }
+    problem.contestID = cid;
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
       localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
     })
-    if (cid === '') { problem.contestID = '' } else { problem.contestID = `?contestId=${cid}` }
     let html = generateProblemHTML(panel.webview, problem, await check_cph());
     console.log(html)
     panel.webview.html = html

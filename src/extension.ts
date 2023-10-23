@@ -12,7 +12,7 @@ import * as path from 'path'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.7.3'
+const version = '4.7.4'
 export let resourcesPath = { value: '' }
 
 exports.luoguPath = path.join(os.homedir(), '.luogu')
@@ -77,8 +77,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>修复 RMJ 提交记录显示</li>
-            <li>修复提交失败的错误信息显示</li>
+            <li>修复比赛赛题提交链接错误导致提交错误</li>
+            <li>删除了目前不支持的 languages</li>
+            <li>增加了自动 O2 开关（todo：自动检测能否开 O2 etc. Python 不能）</li>
+            <li>增加了自动跳过题号选择开关，当文件名是正确的题目编号时跳过这一步骤</li>
         </ol>
     </ul>
     </h2>
