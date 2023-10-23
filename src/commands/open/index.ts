@@ -16,15 +16,15 @@ export default new SuperCommand({
       defaultID = await parseProblemID(path.parse(edtior.document.fileName).base);
     }
     if (defaultID === '') {
-      defaultID = exports.pid
+      defaultID = exports.pid;
     }
-    const pid = await vscode.window.showInputBox({
+    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && defaultID !== '') ? defaultID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
       value: defaultID,
       ignoreFocusOut: true
-    }).then(res => res ? res.toUpperCase() : null)
+    }).then(res => res ? res.toUpperCase() : null);
     if (!pid) {
-      return
+      return;
     }
     exports.pid = pid;
     const filename = pid + '.html'

@@ -22,14 +22,14 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    let defaultID = exports.pid
-    const pid = await vscode.window.showInputBox({
+    let defaultID = exports.pid;
+    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && defaultID !== '') ? defaultID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
       value: defaultID,
       ignoreFocusOut: true
-    }).then(res => res ? res.toUpperCase() : null)
+    }).then(res => res ? res.toUpperCase() : null);
     if (!pid) {
-      return
+      return;
     }
     exports.pid = pid
     try {
