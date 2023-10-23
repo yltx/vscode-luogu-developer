@@ -420,7 +420,6 @@
     "redux": "^4.0.1",
     "set-cookie-parser": "^2.4.7",
     "start": "^5.1.0",
-    "vscode": "^1.1.37",
     "ws": "^6.0.0"
   },
   "author": ""
