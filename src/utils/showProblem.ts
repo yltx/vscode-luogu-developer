@@ -21,6 +21,7 @@ export const showProblem = async (pid: string, cid: string) => {
       return;
     })
     if(!problem) return;
+    problem.contestID = cid;
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
