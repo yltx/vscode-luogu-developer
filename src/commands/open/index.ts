@@ -14,6 +14,7 @@ export default new SuperCommand({
     let defaultID = '';
     if (edtior) {
       defaultID = await parseProblemID(path.parse(edtior.document.fileName).base);
+      defaultID = defaultID.toUpperCase();
     }
     if (defaultID === '') {
       defaultID = exports.pid;
