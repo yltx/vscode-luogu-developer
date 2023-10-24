@@ -32,10 +32,11 @@ export const showProblem = async (pid: string, cid: string) => {
     panel.webview.html = html
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = `, message.data)
-      if (message.type === 'submit') submit(new Problem(problem));
+      if (!problem) return;                           // why it warns problem -> void | Problem
+      if (message.type === 'submit') submit(problem); // why Problem(problem)? I can't understand
       /// Written by @Mr-Python-in-China
       /// 添加 “跳转至 CPH” 功能
-      else if (message.type === 'open_cph') goto_cph(new Problem(problem));
+      else if (message.type === 'open_cph') goto_cph(problem);
     })
 }
 
