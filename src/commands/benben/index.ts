@@ -18,6 +18,96 @@ const replyBenben = async (data: string) => {
 }
 */
 
+const getBenben = async (mode: string) => {
+  let clientId = await getClientID() as string;
+  let uid = await getUID() as string;
+  let cookie = '__client_id=' + clientId + ';_uid=' + uid;
+  //const csrftoken = await csrfToken();
+  //console.log("benbenCsrftoken", csrftoken);
+  //console.log("benbenCookie", cookie);
+  let ret1 = await fetchBenben(mode, 1, cookie);
+  let ret2 = await fetchBenben(mode, 2, cookie);
+  let ret3 = await fetchBenben(mode, 3, cookie);
+  let pret = new Array();
+  const m = [ret1, ret2, ret3];
+  //console.log(m);
+  //fixed by LYkcul 
+  if (mode === "list") {
+    for (let ret of m) {
+      if (ret.length === 0) { break; }
+      console.log(ret);
+      const retFeed = ret.feeds.result;
+      retFeed.forEach((node) => { pret.push(node); });
+    }
+  } else if (mode === "watching") {
+    for (let ret of m) {
+      if (ret.length === 0) { break; }
+      //let t = new Array();
+      console.log(ret);
+      const retData = ret.data;
+      retData.forEach((node) => { pret.push(node); });
+      //pret.push(t);
+    }
+  }
+  let tmp = new Array();
+  for (let i = pret.length - 1; i >= 0; i--) {
+      tmp.push(pret[i]);
+  }
+  let message = new Array();
+  if (mode === "list") {
+    for (let i = tmp.length - 1; i >= 0; i--) {
+      if (tmp[i].content.length === 0)  { continue; } 
+      let benbenTime = new Date(tmp[i].time * 1000);
+      console.log(tmp[i]);
+      let ccfLevel = tmp[i].user.ccfLevel;
+      let hook = '';
+      if (ccfLevel >= 4 && ccfLevel <= 5) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#5eb95e" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      else if (ccfLevel >= 6 && ccfLevel <= 7) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#3498db" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      else if (ccfLevel >= 8) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#f1c40f" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      let badge = '';
+      if (tmp[i].user.badge !== null && tmp[i].user.badge.length > 0) {
+        badge = ` <span class="am-badge am-radius lg-bg-${tmp[i].user.color.toLowerCase()}">${tmp[i].user.badge}</span>`;
+      }
+      if (ccfLevel === 0) {
+        message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
+        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
+        class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
+      } else {
+        message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
+        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
+        class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
+      }
+    }
+  } else if (mode === "watching") {
+    for (let i = tmp.length - 1; i >= 0; i--) {
+      if (tmp[i].comment.length === 0)  { continue; } 
+      let resInfo = await searchUser(tmp[i].uid);
+      let userInfo = resInfo.users[0];
+      console.log(tmp[i]);
+      console.log(userInfo);
+      let ccfLevel = userInfo.ccfLevel;
+      let hook = '';
+      if (ccfLevel >= 4 && ccfLevel <= 5) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#5eb95e" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      else if (ccfLevel >= 6 && ccfLevel <= 7) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#3498db" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      else if (ccfLevel >= 8) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#f1c40f" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
+      let badge = '';
+      if (userInfo.badge !== null && userInfo.badge.length > 0) {
+        badge = ` <span class="am-badge am-radius lg-bg-${userInfo.color.toLowerCase()}">${userInfo.badge}</span>`;
+      }
+      if (ccfLevel === 0) {
+        message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
+        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
+        class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
+      } else {
+        message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
+        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
+        class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
+      }
+    }
+  }
+  return message;
+}
+
 export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
@@ -72,6 +162,18 @@ export default new SuperCommand({
           console.log(err)
           panel.webview.postMessage({ type: 'deleteError', message: err.message })
         })
+      } else if (message.type === 'get'){
+        try {
+          vscode.window.showInformationMessage('重新获取犇犇中...')
+          let benben = await getBenben(mode2);
+          console.log(mode2);
+          console.log(benben);
+          panel.webview.postMessage({ type: 'benbennew', message: benben });         
+        } catch (err) {
+          console.error(err)
+          vscode.window.showErrorMessage(`获取犇犇失败`);
+          await delay(2000)
+        }
       } else if (message.type === 'reply') {
         // ???
         throw Error;
@@ -87,122 +189,8 @@ export default new SuperCommand({
     const maxRetryTimes = 2;
     while (!panelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
       try {
-        let clientId = await getClientID() as string;
-        let uid = await getUID() as string;
-        let cookie = '__client_id=' + clientId + ';_uid=' + uid;
-        //const csrftoken = await csrfToken();
-        //console.log("benbenCsrftoken", csrftoken);
-        //console.log("benbenCookie", cookie);
-        let ret1 = await fetchBenben(mode2, 1, cookie);
-        let ret2 = await fetchBenben(mode2, 2, cookie);
-        let ret3 = await fetchBenben(mode2, 3, cookie);
-        let pret = new Array();
-        const m = [ret1, ret2, ret3];
-        //console.log(m);
-        //fixed by LYkcul 
-        if (mode2 === "list") {
-          for (let ret of m) {
-            if (ret.length === 0) { break; }
-            console.log(ret);
-            const retFeed = ret.feeds.result;
-            retFeed.forEach((node) => { pret.push(node); });
-          }
-        } else if (mode2 === "watching") {
-          for (let ret of m) {
-            if (ret.length === 0) { break; }
-            //let t = new Array();
-            console.log(ret);
-            const retData = ret.data;
-            retData.forEach((node) => { pret.push(node); });
-            //pret.push(t);
-          }
-        }
-        let tmp = new Array();
-        for (let i = pret.length - 1; i >= 0; i--) {
-            tmp.push(pret[i]);
-        }
-        // Why Sort?
-        // console.log(rec);
-        // const cmp = (x: string, y: string) => {
-        //   let x1 = new Array();
-        //   let y1 = new Array();
-        //   let m = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/.exec(x);
-        //   if (m !== null) {
-        //     m.forEach((match, id) => {
-        //       if (id !== 0) {
-        //         x1.push(match)
-        //       }
-        //     });
-        //   }
-        //   m = /(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/.exec(y);
-        //   if (m !== null) {
-        //     m.forEach((match, id) => {
-        //       if (id !== 0) {
-        //         y1.push(match)
-        //       }
-        //     })
-        //   }
-        //   for (let i = 0; i < x1.length; i++) {
-        //     if (x1[i] !== y1[i]) {
-        //       // tslint:disable: radix
-        //       return parseInt(x1[i]) - parseInt(y1[i]);
-        //     }
-        //   }
-        //   return 0
-        // }
-        // tmp.sort((a, b) => { return cmp(a[4], b[4]); })
-        let message = new Array();
-        if (mode2 === "list") {
-          for (let i = tmp.length - 1; i >= 0; i--) {
-            if (tmp[i].content.length === 0)  { continue; } 
-            let benbenTime = new Date(tmp[i].time * 1000);
-            console.log(tmp[i]);
-            let ccfLevel = tmp[i].user.ccfLevel;
-            let hook = '';
-            if (ccfLevel >= 4 && ccfLevel <= 5) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#5eb95e" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            else if (ccfLevel >= 6 && ccfLevel <= 7) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#3498db" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            else if (ccfLevel >= 8) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#f1c40f" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            let badge = '';
-            if (tmp[i].user.badge !== null && tmp[i].user.badge.length > 0) {
-              badge = ` <span class="am-badge am-radius lg-bg-${tmp[i].user.color.toLowerCase()}">${tmp[i].user.badge}</span>`;
-            }
-            if (ccfLevel === 0) {
-              message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
-              <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
-              class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
-            } else {
-              message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
-              <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
-              class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
-            }
-          }
-        } else if (mode2 === "watching") {
-          for (let i = tmp.length - 1; i >= 0; i--) {
-            if (tmp[i].comment.length === 0)  { continue; } 
-            let resInfo = await searchUser(tmp[i].uid);
-            let userInfo = resInfo.users[0];
-            console.log(tmp[i]);
-            console.log(userInfo);
-            let ccfLevel = userInfo.ccfLevel;
-            let hook = '';
-            if (ccfLevel >= 4 && ccfLevel <= 5) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#5eb95e" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            else if (ccfLevel >= 6 && ccfLevel <= 7) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#3498db" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            else if (ccfLevel >= 8) { hook = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="#f1c40f" style="margin-bottom: -3px;"><path d="M16 8C16 6.84375 15.25 5.84375 14.1875 5.4375C14.6562 4.4375 14.4688 3.1875 13.6562 2.34375C12.8125 1.53125 11.5625 1.34375 10.5625 1.8125C10.1562 0.75 9.15625 0 8 0C6.8125 0 5.8125 0.75 5.40625 1.8125C4.40625 1.34375 3.15625 1.53125 2.34375 2.34375C1.5 3.1875 1.3125 4.4375 1.78125 5.4375C0.71875 5.84375 0 6.84375 0 8C0 9.1875 0.71875 10.1875 1.78125 10.5938C1.3125 11.5938 1.5 12.8438 2.34375 13.6562C3.15625 14.5 4.40625 14.6875 5.40625 14.2188C5.8125 15.2812 6.8125 16 8 16C9.15625 16 10.1562 15.2812 10.5625 14.2188C11.5938 14.6875 12.8125 14.5 13.6562 13.6562C14.4688 12.8438 14.6562 11.5938 14.1875 10.5938C15.25 10.1875 16 9.1875 16 8ZM11.4688 6.625L7.375 10.6875C7.21875 10.8438 7 10.8125 6.875 10.6875L4.5 8.3125C4.375 8.1875 4.375 7.96875 4.5 7.8125L5.3125 7C5.46875 6.875 5.6875 6.875 5.8125 7.03125L7.125 8.34375L10.1562 5.34375C10.3125 5.1875 10.5312 5.1875 10.6562 5.34375L11.4688 6.15625C11.5938 6.28125 11.5938 6.5 11.4688 6.625Z"></path></svg>'; }
-            let badge = '';
-            if (userInfo.badge !== null && userInfo.badge.length > 0) {
-              badge = ` <span class="am-badge am-radius lg-bg-${userInfo.color.toLowerCase()}">${userInfo.badge}</span>`;
-            }
-            if (ccfLevel === 0) {
-              message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
-              <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
-              class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
-            } else {
-              message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
-              <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
-              class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
-            }
-          }
-        }
+        vscode.window.showInformationMessage('获取犇犇中...')
+        let message = await getBenben(mode2);
         panel.webview.postMessage({ type: 'benbennew', message: message });
         retryTimes = maxRetryTimes + 2 //max+1说明重试次数超限引起错误（下面有if判断），max+2则说明正常结束
       } catch (err) {
@@ -236,6 +224,7 @@ const generateHTML = async (webview: vscode.Webview) => {
     vscode.postMessage({type: 'post', data: content});
     $(e).removeClass("am-disabled");
     $("#feed-content").val('');
+    vscode.postMessage({type: 'get'});
   });
   window.addEventListener('message', event => {
     if (event.data.type === 'benbennew') {
@@ -248,6 +237,7 @@ const generateHTML = async (webview: vscode.Webview) => {
     }
     $("[name=feed-delete]").click(function() {
       vscode.postMessage({type: 'delete', data: \`\${$(this).attr('data-feed-id')}\`});
+      vscode.postMessage({type: 'get'});
     });
     $("[name=feed-reply]").click(function reply() {
       scrollToId('feed-content');
