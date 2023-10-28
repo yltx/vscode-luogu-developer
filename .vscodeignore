@@ -13,3 +13,5 @@ tests/**/*
 test.*
 tempCodeRunnerFile.ts
 .vs
+webpack.config.json
+.eslintrc.json

@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm i vsce -g
+      - run: npm i @vscode/vsce -g
       - run: npm install
       - run: vsce package --allow-star-activation -o vscode-luogu.vsix
       - uses: actions/upload-artifact@v3

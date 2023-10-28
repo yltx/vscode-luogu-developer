@@ -6,7 +6,7 @@ import * as vscode from 'vscode'
 export default new SuperCommand({
   onCommand: 'fate',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     await getStatus().then(
       message => {
         if (message === UserStatus.SignedOut.toString()) {

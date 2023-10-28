@@ -1,17 +1,16 @@
 import * as vscode from 'vscode'
-import { axios, searchProblem, getResourceFilePath, getStatus, searchContestProblem, getErrorMessage } from '@/utils/api'
+import { axios, searchProblem, getResourceFilePath, getStatus, searchContestProblem, getErrorMessage,submitCode } from '@/utils/api'
 import Problem from '@/model/Problem'
 import md from '@/utils/markdown'
 import { UserStatus, Languages } from '@/utils/shared'
 import * as os from 'os'
 import * as path from 'path'
 import { getSelectedLanguage, getLanauageFromExt, sleep } from '@/utils/workspaceUtils';
-import { submitSolution } from '@/utils/submitSolution'
 import showRecord from '@/utils/showRecord'
 import { difficultyName, difficultyColor, tagsColor, tagsName } from '@/utils/shared';
 const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export const showProblem = async (pid: string, cid: string) => {
     let problemPre: Promise<Problem>
@@ -25,7 +24,7 @@ export const showProblem = async (pid: string, cid: string) => {
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
     })
     let html = generateProblemHTML(panel.webview, problem, await check_cph());
     console.log(html)
@@ -121,7 +120,7 @@ const submit = async function (problem: Problem) {
   try {
     vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
     if (problem.contestID !== '') { id += `?contestId=${problem.contestID}` }
-    rid = await submitSolution(id, text, selected, O2);
+    rid = await submitCode(id, text, selected, O2);
     if (rid !== undefined) {
       success = true;
     }

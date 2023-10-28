@@ -10,13 +10,13 @@ export const showRecord = async (rid: number) => {
   let panel = vscode.window.createWebviewPanel(`${rid}`, `R${rid} 记录详情`, vscode.ViewColumn.Two, {
     enableScripts: true,
     retainContextWhenHidden: true,
-    localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+    localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
   });
   let panelClosed = false;
   let retryTimes = 0;
   const maxRetryTimes = 2;
   panel.onDidDispose(() => panelClosed = true)
-  while (!panelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+  while (!panelClosed && globalThis.islogged && retryTimes <= maxRetryTimes) {
     try {
       console.log(rid)
       const result = await fetchResult(rid);

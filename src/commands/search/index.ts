@@ -8,7 +8,7 @@ import showProblem from '@/utils/showProblem'
 export default new SuperCommand({
   onCommand: 'searchProblem',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init);
     const edtior = vscode.window.activeTextEditor;
     let defaultID = '';
     if (edtior) {
@@ -16,7 +16,7 @@ export default new SuperCommand({
       defaultID = defaultID.toUpperCase();
     }
     if (defaultID === '') {
-      defaultID = exports.pid;
+      defaultID = globalThis.pid;
     }
     const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && defaultID !== '') ? defaultID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
@@ -33,7 +33,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage('题目不存在')
       return
     }
-    exports.pid = pid;
+    globalThis.pid = pid;
     await showProblem(pid, '')
   }
 })
