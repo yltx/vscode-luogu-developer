@@ -29,7 +29,7 @@ export namespace API {
   export const LOGIN_REFERER = `${baseURL}/auth/login`
   export const LOGOUT = `${apiURL}/auth/logout`
   export const FATE = `/index/ajax_punch`
-  export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`
+  export const BENBEN = (mode: string, page: number) => `${apiURL}/feed/${mode}?page=${page}`
   export const BENBEN_POST = `${apiURL}/feed/postBenben`
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
@@ -400,11 +400,14 @@ export const searchUser = async (keyword: string) =>
       }
     })
 
-export const fetchBenben = async (mode: string, page: number) =>
+export const fetchBenben = async (mode: string, page: number, cookie: string) =>
   axios.get(API.BENBEN(mode, page), {
+
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL
+      //'Referer': API.baseURL,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69',
+      'Cookie': cookie
     }
   }).then(data => data?.data).catch(err => {
     if (err.response) {
@@ -416,13 +419,13 @@ export const fetchBenben = async (mode: string, page: number) =>
     }
   })
 
-export const postBenben = async (text: string) =>
-  axios.post(API.BENBEN_POST, `content=${text}`, {
+export const postBenben = async (benbenText: string) =>
+  axios.post(API.BENBEN_POST, {
+    'content': benbenText
+    }, {
     headers: {
-      'content-type': 'application/x-www-form-urlencoded',
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL,
-      'Origin': API.baseURL
+      'Referer': 'https://www.luogu.com.cn/',
     }
   }).then(data => data?.data).catch(err => {
     if (err.response) {
@@ -434,12 +437,16 @@ export const postBenben = async (text: string) =>
     }
   })
 
-export const deleteBenben = async (id: string) =>
+export const deleteBenben = async (id: string, cookie: string) =>
   axios.post(API.BENBEN_DELETE(id), {}, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL,
-      'Origin': API.baseURL
+      'Referer': 'https://www.luogu.com.cn/',
+      'Origin': API.baseURL,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36 Edg/118.0.2088.69',
+      'Cookie': cookie,
+      'Sec-Ch-Ua': '"Chromium";v="118", "Microsoft Edge";v="118", "Not=A?Brand";v="99"',
+      'Accept-Encoding': 'gzip, deflate, br'
     }
   }).then(data => data?.data).catch(err => {
     if (err.response) {
