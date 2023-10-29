@@ -8,7 +8,7 @@ const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 export default new SuperCommand({
   onCommand: 'lastRecord',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     try {
       if (await getStatus() === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');

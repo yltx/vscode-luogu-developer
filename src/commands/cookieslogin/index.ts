@@ -1,20 +1,21 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getStatus, setClientID, setUID, searchUser, parseUID, getErrorMessage } from '@/utils/api'
+import { getStatus, searchUser, parseUID, getErrorMessage } from '@/utils/api'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtils'
+import { changeCookie } from '@/utils/files';
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs/promises';
 const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'cookieslogin',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     let flag = true;
     while (flag) {
       const keyword = await vscode.window.showInputBox({
@@ -46,26 +47,23 @@ export default new SuperCommand({
       if (!clientID) {
         return
       }
-      await setClientID(clientID).then(()=>{
-        return setUID(uid)
-      }).then(()=>{
-        return getStatus()
-      }).then(async status => {
+      changeCookie({uid,clientID});
+      (async status => {
         if (status === UserStatus.SignedOut.toString()) {
-          exports.islogged = false;
+          globalThis.islogged = false;
           luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
           return promptForOpenOutputChannelWithResult('登录失败', DialogType.error)
         } else {
-          exports.islogged = true;
+          globalThis.islogged = true;
           vscode.window.showInformationMessage('登录成功');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-          await fs.writeFile(exports.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID })).catch(err=>{
+          await fs.writeFile(globalThis.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID })).catch(err=>{
             vscode.window.showErrorMessage('写入文件时出现错误');
             vscode.window.showErrorMessage(err);
           })
           return;
         }
-      }).catch(err=>{
+      })(await getStatus()).catch(err=>{
         console.error(err)
         vscode.window.showErrorMessage(getErrorMessage(err));
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)

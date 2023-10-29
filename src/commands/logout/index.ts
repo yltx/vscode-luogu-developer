@@ -1,5 +1,6 @@
 import SuperCommand from '../SuperCommand'
-import { setUID, setClientID, logout, getStatus, getErrorMessage } from '@/utils/api'
+import { logout, getStatus, getErrorMessage } from '@/utils/api'
+import { changeCookie } from '@/utils/files';
 import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
 
@@ -7,12 +8,12 @@ import * as vscode from 'vscode'
 import * as fs from 'fs/promises'
 import * as path from 'path'
 import * as os from 'os'
-exports.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
 
 export default new SuperCommand({
   onCommand: 'signout',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     try {
       if (await getStatus() === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');
@@ -23,8 +24,8 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    await fs.stat(exports.luoguJSONPath).then(()=>{
-      fs.unlink(exports.luoguJSONPath)
+    await fs.stat(globalThis.luoguJSONPath).then(()=>{
+      fs.unlink(globalThis.luoguJSONPath)
     }).catch(err=>{
       vscode.window.showErrorMessage('删除文件时出现错误');
       vscode.window.showErrorMessage(err);
@@ -32,9 +33,8 @@ export default new SuperCommand({
     // try {
     //   // await logout()
     // } finally {
-    await setUID('')
-    await setClientID('')
-    exports.islogged = false;
+    changeCookie({uid:'',clientID:''});
+    globalThis.islogged = false;
     luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
     vscode.window.showInformationMessage('注销成功');
     // }

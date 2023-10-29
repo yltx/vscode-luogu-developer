@@ -7,7 +7,7 @@ import luoguStatusBar from '@/views/luoguStatusBar'
 export default new SuperCommand({
   onCommand: 'userInfo',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     try {
       const data = await fetchHomepage();
       if (data.currentUser === undefined) {

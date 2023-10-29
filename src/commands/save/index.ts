@@ -7,12 +7,12 @@ import { searchProblem } from '@/utils/api'
 import { DialogType, promptForOpenOutputChannel } from '@/utils/uiUtils'
 import Problem from '@/model/Problem'
 import { generateProblemHTML } from '@/utils/showProblem'
-exports.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
+globalThis.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export default new SuperCommand({
   onCommand: 'save',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     const pid = await vscode.window.showInputBox({
       placeHolder: '输入题号',
       ignoreFocusOut: true
@@ -21,20 +21,20 @@ export default new SuperCommand({
       await promptForOpenOutputChannel('', DialogType.error)
       return
     }
-    exports.pid = pid;
+    globalThis.pid = pid;
     const problem = await searchProblem(pid).then(res => new Problem(res))
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
     })
-    const html = generateProblemHTML(panel.webview, problem) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
+    const html = generateProblemHTML(panel.webview, problem, false) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
     panel.dispose()
     const filename = pid + '.html'
-    exports.luoguProblems = path.join(exports.luoguProblemPath, filename)
-    if (!fs.existsSync(exports.luoguProblemPath)) {
+    globalThis.luoguProblems = path.join(globalThis.luoguProblemPath, filename)
+    if (!fs.existsSync(globalThis.luoguProblemPath)) {
       try {
-        fs.mkdirSync(exports.luoguProblemPath)
+        fs.mkdirSync(globalThis.luoguProblemPath)
       } catch (err) {
         vscode.window.showErrorMessage('创建题目保存路径失败')
         vscode.window.showErrorMessage(`${err}`)
@@ -43,13 +43,13 @@ export default new SuperCommand({
       }
     }
     try {
-      fs.writeFileSync(exports.luoguProblems, html)
+      fs.writeFileSync(globalThis.luoguProblems, html)
     } catch (err) {
       vscode.window.showErrorMessage('保存失败')
       vscode.window.showErrorMessage(`${err}`)
       console.error(err)
       return
     }
-    vscode.window.showInformationMessage('保存成功\n存储路径：' + exports.luoguProblems)
+    vscode.window.showInformationMessage('保存成功\n存储路径：' + globalThis.luoguProblems)
   }
 })

@@ -1,9 +1,10 @@
-import { login, unlock, getClientID, getUID, fetchHomepage, setUID, setClientID } from '@/utils/api'
+import { login, unlock, fetchHomepage, genCookies } from '@/utils/api'
 import SuperCommand from '../SuperCommand'
 import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import { getUserCaptcha } from '@/utils/captcha'
 import { debug } from '@/utils/debug'
+import { changeCookieByCookies } from '@/utils/files'
 import * as vscode from 'vscode'
 import { DialogType, promptForOpenOutputChannelWithResult } from '@/utils/uiUtils'
 import * as os from 'os'
@@ -11,26 +12,23 @@ import * as path from 'path'
 import * as fs from 'fs/promises'
 
 const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'signin',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init);
     const data = await fetchHomepage()
     if (data.currentUser !== undefined) {
       const result = await vscode.window.showInformationMessage(`您已登录用户 ${data.currentUser.name}，是否继续？`, { title: '是' }, { title: '否' })
       if (result?.title === '否') {
         return
       } else {
-        exports.islogged = false;
+        globalThis.islogged = false;
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
       }
-    } else {
-      await setUID('')
-      await setClientID('')
-    }
+    } else genCookies();
     let continued = true
     while (continued) {
       continued = false
@@ -56,59 +54,54 @@ export default new SuperCommand({
           debug('No captcha text')
           return;
         }
-        let clientID: string | null
-          await login(username, password, captcha.captchaText).then(async r1=>{
-            let resp: string | null
-            if (r1.locked) {
-              const code = await vscode.window.showInputBox({
-                placeHolder: '输入2FA验证码',
-                ignoreFocusOut: true
-              })
-              if (!code) {
-                return
-              }
-              const r2 = await unlock(code)
-              resp = r2
-            } else {
-              resp = r1
-            }
-            console.log(resp)
-            exports.init = true
-            exports.islogged = true;
-            await fs.writeFile(exports.luoguJSONPath, JSON.stringify({ 'uid': await getUID(), 'clientID': clientID = await getClientID() }))
-            .catch(err=>{
-              vscode.window.showErrorMessage('写入文件时出现错误')
-              vscode.window.showErrorMessage(`${err}`)
+        await login(username, password, captcha.captchaText).then(async r1 => {
+          let resp = r1;
+          if (r1.data.locked) {
+            const code = await vscode.window.showInputBox({
+              placeHolder: '输入2FA验证码',
+              ignoreFocusOut: true
             })
-            luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-            vscode.window.showInformationMessage('登录成功')
-            flag = false
-            return
-          }).catch(async err => {
-            console.log(err)
-            exports.init = true
-            if (err.response) {
-              if (err.response.data.errorMessage === '验证码错误') {
-                const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
-                if (res?.title === '重试') {
-                  return;
-                } else {
-                  flag = false;
-                  return;
-                }
-              }
+            if (!code) {
+              return
+            }
+            const r2 = await unlock(code);
+            resp = r2
+          }
+          console.log(resp)
+          globalThis.init = true
+          globalThis.islogged = true;
+          try {
+            changeCookieByCookies(resp.headers['set-cookie']);
+          }catch (err){
+            vscode.window.showErrorMessage('写入 cookie 时出现错误')
+            throw err;
+          }
+          luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
+          vscode.window.showInformationMessage('登录成功')
+          flag = false
+          return
+        }).catch(async err => {
+          console.log(err)
+          globalThis.init = true
+          if (err.response) {
+            if (err.response.data.errorMessage === '验证码错误') {
               const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
               if (res?.title === '重试') {
-                continued = true
-                flag = false;
+                return;
               } else {
                 flag = false;
+                return;
               }
             }
-          })
-          
-          
-        
+            const res = await promptForOpenOutputChannelWithResult(err.response.data.errorMessage, DialogType.error)
+            if (res?.title === '重试') {
+              continued = true
+              flag = false;
+            } else {
+              flag = false;
+            }
+          }
+        })
       }
     }
   }

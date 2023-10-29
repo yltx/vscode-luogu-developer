@@ -11,7 +11,7 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel('traininglist', `题单广场`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
     })
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got type ${message.type} page ${message.page} request.`)
@@ -20,7 +20,7 @@ export default new SuperCommand({
         const panel2 = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
           enableScripts: true,
           retainContextWhenHidden: true,
-          localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+          localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
         })
         panel2.webview.html = await showTrainDetails(panel2.webview, message.data)
         panel2.webview.onDidReceiveMessage(async message => {

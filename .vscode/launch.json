@@ -6,17 +6,16 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
-			"name": "Launch Extension",
 			"outFiles": [
 				"${workspaceFolder}/dist/**/*.js"
 			],
-			"preLaunchTask": "npm: compile",
-			"request": "launch",
-			"type": "extensionHost",
-			"sourceMaps": true,
+			"preLaunchTask": "${defaultBuildTask}"
 		}
 	]
 }

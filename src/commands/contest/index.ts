@@ -9,12 +9,12 @@ import { showProblem } from '../../utils/showProblem'
 export default new SuperCommand({
   onCommand: 'contest',
   handle: async () => {
-    while (!exports.init) { continue }
+    while (!globalThis.init) { continue }
     if (await getStatus() === UserStatus.SignedOut.toString()) {
       vscode.window.showErrorMessage('未登录')
       return
     }
-    let defaultID = exports.cid
+    let defaultID = globalThis.cid
     const cid = await vscode.window.showInputBox({
       placeHolder: '输入比赛编号',
       value: defaultID,
@@ -23,7 +23,7 @@ export default new SuperCommand({
     if (!cid) {
       return
     }
-    exports.cid = cid
+    globalThis.cid = cid
     try {
       const res = await searchContest(cid)
       console.log(res)
@@ -32,7 +32,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.contest.name}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
       })
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)
@@ -44,7 +44,7 @@ export default new SuperCommand({
             }
           })
         } else if (message.type === 'request-problem') {
-          await showProblem(message.data, exports.cid)
+          await showProblem(message.data, globalThis.cid)
           console.log(message.data)
         }
       })
