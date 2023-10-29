@@ -1,5 +1,6 @@
 import SuperCommand from '../SuperCommand'
-import { getClientID, getUID, searchUser, fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon, getErrorMessage } from '@/utils/api'
+import { searchUser, fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon, getErrorMessage } from '@/utils/api'
+import { cookieConfig, changeCookieByCookies } from '@/utils/files'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
@@ -17,20 +18,12 @@ const replyBenben = async (data: string) => {
   return postBenben(content);
 }
 */
-
 const getBenben = async (mode: string) => {
-  let clientId = await getClientID() as string;
-  let uid = await getUID() as string;
-  let cookie = '__client_id=' + clientId + ';_uid=' + uid;
-  //const csrftoken = await csrfToken();
-  //console.log("benbenCsrftoken", csrftoken);
-  //console.log("benbenCookie", cookie);
-  let ret1 = await fetchBenben(mode, 1, cookie);
-  let ret2 = await fetchBenben(mode, 2, cookie);
-  let ret3 = await fetchBenben(mode, 3, cookie);
+  let ret1 = await fetchBenben(mode, 1);
+  let ret2 = await fetchBenben(mode, 2);
+  let ret3 = await fetchBenben(mode, 3);
   let pret = new Array();
   const m = [ret1, ret2, ret3];
-  //console.log(m);
   //fixed by LYkcul 
   if (mode === "list") {
     for (let ret of m) {
@@ -138,42 +131,59 @@ export default new SuperCommand({
     });
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = ${message.data}`)
-      let clientId = await getClientID() as string;
-      let uid = await getUID() as string;
-      let cookie = '__client_id=' + clientId + ';_uid=' + uid;
       if (message.type === 'post') {
         // todo: add error handling in webview
+        let cookie = cookieConfig().headers.Cookie;
+        console.log(cookie);
         await postBenben(message.data).then(
-          message=>{
+          async message=>{
             console.log("data: ",message.data)
             panel.webview.postMessage({ type: 'post-result', message })
+            vscode.window.showInformationMessage('重新获取犇犇中...')
+            let benben = await getBenben(mode2);
+            panel.webview.postMessage({ type: 'benbenUpdate', message: benben });
           }
         ).catch(err => {
           console.log("error",err)
           panel.webview.postMessage({ type: 'postError', message: err.message })
         })
       } else if (message.type === 'delete') {
-        await deleteBenben(message.data, cookie).then(
-          message=>{
+        await deleteBenben(message.data).then(
+          async message=>{
             console.log(message.data)
             panel.webview.postMessage({ type: 'delete-result', message })
+            vscode.window.showInformationMessage('重新获取犇犇中...')
+            let benben = await getBenben(mode2);
+            panel.webview.postMessage({ type: 'benbenUpdate', message: benben });
           }
         ).catch(err => {
           console.log(err)
           panel.webview.postMessage({ type: 'deleteError', message: err.message })
         })
       } else if (message.type === 'get'){
-        try {
-          vscode.window.showInformationMessage('重新获取犇犇中...')
+        vscode.window.showInformationMessage('重新获取犇犇中...')
           let benben = await getBenben(mode2);
-          console.log(mode2);
-          console.log(benben);
-          panel.webview.postMessage({ type: 'benbennew', message: benben });         
-        } catch (err) {
-          console.error(err)
-          vscode.window.showErrorMessage(`获取犇犇失败`);
-          await delay(2000)
-        }
+          panel.webview.postMessage({ type: 'benbenUpdate', message: benben });
+        // let maxRetryTimes = 3;
+        // let retryTimes = 0;
+        // while (retryTimes <= maxRetryTimes) {
+        //   try {
+        //     vscode.window.showInformationMessage('重新获取犇犇中...')
+        //     let benben = await getBenben(mode2);
+        //     console.log(mode2);
+        //     console.log(benben);
+        //     panel.webview.postMessage({ type: 'benbennew', message: benben });        
+        //     retryTimes = maxRetryTimes + 2; 
+        //   } catch (err) {
+        //     console.error(err)
+        //     vscode.window.showErrorMessage(`获取犇犇失败，已重试 ${retryTimes} 次`);
+        //     retryTimes++
+        //     await delay(2000)
+        //   }          
+        // }
+        // if (retryTimes === maxRetryTimes + 1) {
+        //   vscode.window.showErrorMessage(`重新获取犇犇失败`);
+        // }
       } else if (message.type === 'reply') {
         // ???
         throw Error;
@@ -224,7 +234,6 @@ const generateHTML = async (webview: vscode.Webview) => {
     vscode.postMessage({type: 'post', data: content});
     $(e).removeClass("am-disabled");
     $("#feed-content").val('');
-    vscode.postMessage({type: 'get'});
   });
   window.addEventListener('message', event => {
     if (event.data.type === 'benbennew') {
@@ -232,12 +241,19 @@ const generateHTML = async (webview: vscode.Webview) => {
       for (var i = message.length - 1; i >= 0; i--) {
         $("#feed").prepend(message[i]);
       }
+      console.log('complete', message);
+    } else if (event.data.type === 'benbenUpdate') {
+      $("#feed").empty();
+      const message = event.data.message;
+      for (var i = message.length - 1; i >= 0; i--) {
+        $("#feed").prepend(message[i]);
+      }
+      console.log('complete', message);
     } else {
       ;
     }
     $("[name=feed-delete]").click(function() {
       vscode.postMessage({type: 'delete', data: \`\${$(this).attr('data-feed-id')}\`});
-      vscode.postMessage({type: 'get'});
     });
     $("[name=feed-reply]").click(function reply() {
       scrollToId('feed-content');
