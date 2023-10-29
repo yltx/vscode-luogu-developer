@@ -28,6 +28,7 @@ export namespace API {
   export const LOGOUT = `${apiURL}/auth/logout`
   export const FATE = `/index/ajax_punch`
   export const BENBEN = (mode: string, page: number) => `${apiURL}/feed/${mode}?page=${page}`
+  export const BenbenReferer = 'https://www.luogu.com.cn/'
   export const BENBEN_POST = `${apiURL}/feed/postBenben`
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
@@ -70,6 +71,7 @@ export const csrfToken = async () =>
   axios.get(API.baseURL, cookieConfig())
     .then(res => {
       const result = CSRF_TOKEN_REGEX.exec(res.data)
+      console.log(result ? result[1].trim() : null);
       return result ? result[1].trim() : null
     }).catch(() => '')
 
@@ -346,12 +348,11 @@ export const searchUser = async (keyword: string) =>
       }
     })
 
-export const fetchBenben = async (mode: string, page: number, cookie: string) =>
+export const fetchBenben = async (mode: string, page: number) =>
   axios.get(API.BENBEN(mode, page), {
-
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL,
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
       ...cookieConfig().headers
     },
   }).then(data => data?.data).catch(err => {
@@ -370,8 +371,7 @@ export const postBenben = async (benbenText: string) =>
     }, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL,
-      'Origin': API.baseURL,
+      'Referer': API.BenbenReferer,
       ...cookieConfig().headers
     }
   }).then(data => data?.data).catch(err => {
@@ -384,12 +384,11 @@ export const postBenben = async (benbenText: string) =>
     }
   })
 
-export const deleteBenben = async (id: string, cookie: string) =>
+export const deleteBenben = async (id: string) =>
   axios.post(API.BENBEN_DELETE(id), {}, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL,
-      'Origin': API.baseURL,
+      'Referer': API.BenbenReferer,
       ...cookieConfig().headers
     }
   }).then(data => data?.data).catch(err => {
