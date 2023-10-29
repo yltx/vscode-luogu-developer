@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "module": "esnext",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "target": "es6",
+    "target": "ES6",
     "outDir": "dist",
     "lib": [
       "es6",
@@ -18,7 +18,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-    }
+    },
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules/**/*",

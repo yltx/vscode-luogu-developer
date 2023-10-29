@@ -4,17 +4,16 @@ import { UserStatus, Languages } from '@/utils/shared'
 import * as os from 'os'
 import * as path from 'path'
 import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils';
-import { getStatus, parseProblemID } from '@/utils/api'
-import { submitSolution } from '@/utils/submitSolution'
+import { getStatus, parseProblemID,submitCode } from '@/utils/api'
 import showRecord from '@/utils/showRecord'
 const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
-  onCommand: 'submitSolution',
+  onCommand: 'sumbitCode',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     const edtior = vscode.window.activeTextEditor;
     if (!edtior) {
       vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试');
@@ -99,7 +98,7 @@ export default new SuperCommand({
     let rid: any = 0;
     try {
       vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
-      rid = await submitSolution(id, text, selected, O2);
+      rid = await submitCode(id, text, selected, O2);
       if (rid !== undefined) {
         success = true;
       }

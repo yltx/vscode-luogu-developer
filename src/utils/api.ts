@@ -1,16 +1,14 @@
 import _ from 'axios'
-import { Cookie, CookieJar } from 'tough-cookie'
-import axiosCookieJarSupport from 'axios-cookiejar-support'
 import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
+import { cookieConfig, changeCookieByCookies } from '@/utils/files'
 import * as os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
-const setCookie = require('set-cookie-parser');
 const luoguJSONName = 'luogu.json';
-exports.luoguPath = path.join(os.homedir(), '.luogu');
-exports.luoguJSONPath = path.join(exports.luoguPath, luoguJSONName);
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/
 
@@ -38,8 +36,6 @@ export namespace API {
   export const SEARCHTRAINLIST = (channel: string, keyword: string, page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(keyword)}&_contentOnly=1`
 }
 
-export const jar = new CookieJar();
-
 export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
@@ -47,7 +43,6 @@ export const axios = (() => {
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
     proxy: false
   })
-  axiosCookieJarSupport(axios)
 
   const defaults = axios.defaults;
   if (!defaults.transformRequest) {
@@ -61,71 +56,18 @@ export const axios = (() => {
   })
   defaults.timeout = 6000;
 
-  // It's correct though TypeScript doesn't think so.
-  // Reference: https://www.npmjs.com/package/axios-cookiejar-support#notice-set-default-cookiejar
-  (defaults.jar as any) = jar;
-
   return axios
 })()
 
-export const setClientID = async (value: string) => new Promise<void>((resolve, reject) => {
-  const cookie = new Cookie({
-    key: '__client_id',
-    value,
-    path: '/',
-    domain: API.cookieDomain
-  })
+export default axios
 
-  jar.setCookie(cookie, API.baseURL, (err, _) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve()
-    }
-  })
-})
-
-export const setUID = async (value: string) => new Promise<void>((resolve, reject) => {
-  const cookie = new Cookie({
-    key: '_uid',
-    value,
-    path: '/',
-    domain: API.cookieDomain
-  })
-
-  jar.setCookie(cookie, API.baseURL, (err, _) => {
-    if (err) {
-      reject(err)
-    } else {
-      resolve()
-    }
-  })
-})
-
-export const getClientID = async (): Promise<string | null> => new Promise((resolve, reject) => {
-  jar.getCookies(API.baseURL, (err, cookies) => {
-    if (err) {
-      reject(err);
-    } else {
-      let cookie = cookies.find((cookie) => cookie.key === '__client_id');
-      resolve(cookie ? cookie.value : null)
-    }
-  })
-})
-
-export const getUID = async (): Promise<string | null> => new Promise((resolve, reject) => {
-  jar.getCookies(API.baseURL, (err, cookies) => {
-    if (err) {
-      reject(err);
-    } else {
-      let cookie = cookies.find((cookie) => cookie.key === '_uid');
-      resolve(cookie ? cookie.value : null)
-    }
-  })
-})
+export const genCookies = async function () {
+  let res = await axios.get(API.baseURL);
+  changeCookieByCookies(res.headers['set-cookie']);
+}
 
 export const csrfToken = async () =>
-  axios.get(API.baseURL)
+  axios.get(API.baseURL, cookieConfig())
     .then(res => {
       const result = CSRF_TOKEN_REGEX.exec(res.data)
       return result ? result[1].trim() : null
@@ -136,7 +78,8 @@ export const captcha = async () =>
     params: {
       '_t': new Date().getTime()
     },
-    responseType: 'arraybuffer'
+    responseType: 'arraybuffer',
+    ...cookieConfig()
   })
     .then(resp => resp.data ? Buffer.from(resp.data, 'binary') : null).catch(err => {
       if (err.response) {
@@ -148,7 +91,7 @@ export const captcha = async () =>
       }
     })
 export const searchProblem = async (pid: string) =>
-  axios.get(API.SEARCH_PROBLEM(pid)).then(res => res.data)
+  axios.get(API.SEARCH_PROBLEM(pid), cookieConfig()).then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
         throw Error(res.currentData.errorMessage)
@@ -165,7 +108,7 @@ export const searchProblem = async (pid: string) =>
     })
 
 export const searchContestProblem = async (pid: string, cid: string) =>
-  axios.get(API.SEARCH_CONTESTPROBLEM(pid, cid)).then(res => res.data)
+  axios.get(API.SEARCH_CONTESTPROBLEM(pid, cid), cookieConfig()).then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
         throw Error(res.currentData.errorMessage)
@@ -182,7 +125,7 @@ export const searchContestProblem = async (pid: string, cid: string) =>
     })
 
 export const searchContest = async (cid: string) =>
-  axios.get(API.CONTEST(cid))
+  axios.get(API.CONTEST(cid), cookieConfig())
     .then(res => res?.data?.currentData).then(async res => {
       // console.log(res)
       if ((res || null) === null) { throw Error('比赛不存在') }
@@ -198,7 +141,7 @@ export const searchContest = async (cid: string) =>
     })
 
 export const searchSolution = async (pid: string) =>
-  axios.get(API.SEARCH_SOLUTION(pid, 1))
+  axios.get(API.SEARCH_SOLUTION(pid, 1), cookieConfig())
     .then(res => res.data).then(async (res) => {
       console.log(res)
       if ((res.currentData.solutions || null) === null) { throw Error('题目不存在') }
@@ -213,15 +156,16 @@ export const searchSolution = async (pid: string) =>
       let result: any[] = res.result;
       const pages = Math.ceil(res.count / res.perPage);
       for (let i = 2; i <= pages; i++) {
-        const currentPage = await axios.get(API.SEARCH_SOLUTION(pid, i)).then(res => res.data.currentData.solutions || null).catch(err => {
-          if (err.response) {
-            throw err.response.data;
-          } else if (err.request) {
-            throw Error('请求超时，请重试')
-          } else {
-            throw err;
-          }
-        })
+        const currentPage = await axios.get(API.SEARCH_SOLUTION(pid, i), cookieConfig())
+          .then(res => res.data.currentData.solutions || null).catch(err => {
+            if (err.response) {
+              throw err.response.data;
+            } else if (err.request) {
+              throw Error('请求超时，请重试')
+            } else {
+              throw err;
+            }
+          })
         if (currentPage) {
           currentPage.result.forEach(data => { result.push(data); })
         } else {
@@ -244,7 +188,7 @@ export const searchSolution = async (pid: string) =>
     })
 
 export const searchTraininglist = async (type: string, keyword: string, page: number) =>
-  axios.get(API.SEARCHTRAINLIST(type, keyword, page))
+  axios.get(API.SEARCHTRAINLIST(type, keyword, page),cookieConfig())
     .then(res => res?.data?.currentData).then(async res => {
       // console.log(res)
       if ((res || null) === null) { throw Error('题单不存在') }
@@ -260,7 +204,7 @@ export const searchTraininglist = async (type: string, keyword: string, page: nu
     })
 
 export const searchTrainingdetail = async (id: any) =>
-  axios.get(API.TRAINLISTDETAIL(id))
+  axios.get(API.TRAINLISTDETAIL(id),cookieConfig())
     .then(res => res?.data?.currentData).then(async res => {
       // console.log(res)
       if ((res || null) === null) { throw Error('题单不存在') }
@@ -285,48 +229,49 @@ export const searchTrainingdetail = async (id: any) =>
 export const login = async (username, password, captcha) => {
   const csrf = await csrfToken()
 
-  return axios.post(API.LOGIN_ENDPOINT, {
+  return await axios.post(API.LOGIN_ENDPOINT, {
     username,
     password,
     captcha
   }, {
     headers: {
       'Referer': API.LOGIN_REFERER,
-      'X-CSRF-Token': csrf
+      'X-CSRF-Token': csrf,
+      ...cookieConfig().headers
     }
-  }).then((resp) => resp.data)
+  })
 }
 
 export const unlock = async (code) => {
   const csrf = await csrfToken()
 
-  return axios.post(API.UNLOCK_ENDPOINT, {
+  return await axios.post(API.UNLOCK_ENDPOINT, {
     code
   }, {
     headers: {
       'Referer': API.LOGIN_REFERER,
-      'X-CSRF-Token': csrf
+      'X-CSRF-Token': csrf,
+      ...cookieConfig().headers
     }
-  }).then((resp) => resp.data)
+  })
 }
 
-export default axios
 
 export const getStatus = async () => {
   const ret = (await fetchHomepage()).currentUser
   if (ret) {
-    exports.islogged = true
+    globalThis.islogged = true
     luoguStatusBar.updateStatusBar(UserStatus.SignedIn)
     return UserStatus.SignedIn.toString()
   } else {
-    exports.islogged = false
+    globalThis.islogged = false
     luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
     return UserStatus.SignedOut.toString()
   }
 }
 
 export const fetchResult = async (rid: number) =>
-  axios.get(`/record/${rid}?_contentOnly=1`)
+  axios.get(`/record/${rid}?_contentOnly=1`,cookieConfig())
     .then(data => data?.data.currentData).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -338,7 +283,7 @@ export const fetchResult = async (rid: number) =>
     })
 
 export const fetchHomepage = async () =>
-  axios.get(`/user/1?_contentOnly=1`)
+  axios.get(`/user/1?_contentOnly=1`,cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -352,7 +297,8 @@ export const logout = async () => axios.post(API.LOGOUT, '', {
   headers: {
     'X-CSRF-Token': await csrfToken(),
     'Referer': API.baseURL,
-    'Origin': API.baseURL
+    'Origin': API.baseURL,
+    ...cookieConfig().headers
   }
 }).then(data => data?.data).catch(err => {
   if (err.response) {
@@ -365,7 +311,7 @@ export const logout = async () => axios.post(API.LOGOUT, '', {
 })
 
 export const getFate = async () =>
-  axios.get(API.FATE)
+  axios.get(API.FATE,cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -377,7 +323,7 @@ export const getFate = async () =>
     })
 
 export const fetchRecords = async () =>
-  axios.get(`/record/list?_contentOnly=1`)
+  axios.get(`/record/list?_contentOnly=1`,cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -389,7 +335,7 @@ export const fetchRecords = async () =>
     })
 
 export const searchUser = async (keyword: string) =>
-  axios.get(`/api/user/search?keyword=${keyword}`)
+  axios.get(`/api/user/search?keyword=${keyword}`,cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -404,8 +350,9 @@ export const fetchBenben = async (mode: string, page: number) =>
   axios.get(API.BENBEN(mode, page), {
     headers: {
       'X-CSRF-Token': await csrfToken(),
-      'Referer': API.baseURL
-    }
+      'Referer': API.baseURL,
+      ...cookieConfig().headers
+    },
   }).then(data => data?.data).catch(err => {
     if (err.response) {
       throw err.response.data;
@@ -422,7 +369,8 @@ export const postBenben = async (text: string) =>
       'content-type': 'application/x-www-form-urlencoded',
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.baseURL,
-      'Origin': API.baseURL
+      'Origin': API.baseURL,
+      ...cookieConfig().headers
     }
   }).then(data => data?.data).catch(err => {
     if (err.response) {
@@ -439,7 +387,8 @@ export const deleteBenben = async (id: string) =>
     headers: {
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.baseURL,
-      'Origin': API.baseURL
+      'Origin': API.baseURL,
+      ...cookieConfig().headers
     }
   }).then(data => data?.data).catch(err => {
     if (err.response) {
@@ -452,12 +401,12 @@ export const deleteBenben = async (id: string) =>
   })
 
 export const userIcon = async (uid: number) =>
-  axios.get(`https://cdn.luogu.com.cn/upload/usericon/${uid}.png`, { responseType: 'arraybuffer' })
+  axios.get(`https://cdn.luogu.com.cn/upload/usericon/${uid}.png`, { responseType: 'arraybuffer',...cookieConfig() })
     .then(resp => resp.data ? Buffer.from(resp.data, 'binary') : null)
     .catch(() => null)
 
 export const postVote = async (id: number, type: number) =>
-  axios.post(`/api/blog/vote/${id}`, { 'Type': type })
+  axios.post(`/api/blog/vote/${id}`, { 'Type': type,...cookieConfig() })
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -542,15 +491,15 @@ export const prettyTime = (time: number) => {
 }
 
 export const getResourceFilePath = (webview: vscode.Webview, relativePath: string) => {
-  const diskPath = vscode.Uri.file(path.join(exports.resourcesPath.value, relativePath));
+  const diskPath = vscode.Uri.file(path.join(globalThis.resourcesPath, relativePath));
   return webview.asWebviewUri(diskPath);
 }
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 export const loadUserIcon = async (uid: number) => {
   // tslint:disable-next-line: radix
-  if (fs.existsSync(path.join(exports.luoguPath, `${uid}.png`)) && fs.existsSync(path.join(exports.luoguPath, `${uid}`)) && ((new Date()).getTime() - parseInt(fs.readFileSync(path.join(exports.luoguPath, `${uid}`)).toString())) <= 21600000) {
-    return fs.readFileSync(path.join(exports.luoguPath, `${uid}.png`))
+  if (fs.existsSync(path.join(globalThis.luoguPath, `${uid}.png`)) && fs.existsSync(path.join(globalThis.luoguPath, `${uid}`)) && ((new Date()).getTime() - parseInt(fs.readFileSync(path.join(globalThis.luoguPath, `${uid}`)).toString())) <= 21600000) {
+    return fs.readFileSync(path.join(globalThis.luoguPath, `${uid}.png`))
   } else {
     let image = await userIcon(uid);
     let cnt = 0;
@@ -565,8 +514,8 @@ export const loadUserIcon = async (uid: number) => {
     }
     const ret = image.toString('base64');
     const time = (new Date()).getTime();
-    fs.writeFileSync(path.join(exports.luoguPath, `${uid}.png`), ret);
-    fs.writeFileSync(path.join(exports.luoguPath, `${uid}`), time.toString())
+    fs.writeFileSync(path.join(globalThis.luoguPath, `${uid}.png`), ret);
+    fs.writeFileSync(path.join(globalThis.luoguPath, `${uid}`), time.toString())
     console.log(`Get usericon; uid: ${uid}`);
     return ret
   }
@@ -598,7 +547,7 @@ export const formatTime = (date: Date, fmt: string) => {
   return fmt;
 }
 export const getRanklist = async (cid: string, page: number) => {
-  return axios.get(API.ranklist(cid, page))
+  return axios.get(API.ranklist(cid, page),cookieConfig())
     .then(res => res.data).catch(err => { throw err })
 }
 export const changeTime = (x: number) => {
@@ -625,4 +574,50 @@ export const getErrorMessage = (err: unknown) => {
   if (err instanceof Error)
     return err.message
   return String(err)
+}
+
+/**
+ * @api 提交代码
+ * @async
+ * @param {string} id 提交id
+ * @param {string} code 代码
+ * @param {number} language 选择语言
+ * @param {boolean} enableO2 是否启用O2优化
+ *
+ * @returns {number} 测评id
+ */
+export async function submitCode(id: string, code: string, language = 0, enableO2 = false): Promise<any> {
+  const url = `/fe/api/problem/submit/${id}`;
+  return axios.post(url, {
+    'code': code,
+    'lang': language,
+    'enableO2': enableO2,
+    'verify': ''
+  }, {
+    headers: {
+      'X-CSRF-Token': await csrfToken(),
+      'Referer': `${API.baseURL}/problem/${id}`,
+      ...cookieConfig().headers
+    }
+  }).then(res => {
+    if (res.status === 200) {
+      return res.data.rid;
+    } else if (res.status === 401) {
+      vscode.window.showErrorMessage('您没有登录');
+      throw Error('您没有登录');
+    } else {
+      throw res.data;
+    }
+  }).catch(err => {
+    if (err.response) {
+      throw err.response.data.data ?? err.response.data;
+    } else if (err.request) {
+      throw new Error('请求超时，请重试')
+    } else {
+      throw err;
+    }
+  }).catch(err => {
+    console.error(err)
+    throw err
+  });
 }

@@ -8,7 +8,7 @@ import * as fs from 'fs'
 export default new SuperCommand({
   onCommand: 'traindetails',
   handle: async () => {
-    let defaultID = exports.tid
+    let defaultID = globalThis.tid
     const tid = await vscode.window.showInputBox({
       placeHolder: '输入题单编号',
       value: defaultID,
@@ -17,14 +17,14 @@ export default new SuperCommand({
     if (!tid) {
       return
     }
-    exports.tid = tid
+    globalThis.tid = tid
     try {
       const data = await searchTrainingdetail(tid)
       // console.log(data)
       const panel = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
       })
       const html = await showTrainDetails(panel.webview, tid)
       panel.webview.html = html

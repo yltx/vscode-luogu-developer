@@ -5,7 +5,7 @@ import * as vscode from 'vscode'
 export default new SuperCommand({
   onCommand: 'selectLanguage',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     const defaultLanguage = vscode.workspace.getConfiguration().get('luogu.defaultLanguage')
     console.log(defaultLanguage)
     let langs: string[] = []

@@ -6,12 +6,12 @@ import * as os from 'os'
 import md from '@/utils/markdown'
 import { UserStatus } from '@/utils/shared'
 import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
-exports.luoguPath = path.join(os.homedir(), '.luogu');
+globalThis.luoguPath = path.join(os.homedir(), '.luogu');
 
 export default new SuperCommand({
   onCommand: 'solution',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     try {
       if (await getStatus() === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');
@@ -22,7 +22,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    let defaultID = exports.pid;
+    let defaultID = globalThis.pid;
     const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && defaultID !== '') ? defaultID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
       value: defaultID,
@@ -31,7 +31,7 @@ export default new SuperCommand({
     if (!pid) {
       return;
     }
-    exports.pid = pid
+    globalThis.pid = pid
     try {
       const res = await searchSolution(pid)
       console.log(res)
@@ -42,7 +42,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(pid, `${res.problem.pid} ${res.problem.title} 题解`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
       })
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)

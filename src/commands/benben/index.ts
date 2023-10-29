@@ -20,7 +20,7 @@ const replyBenben = async (data: string) => {
 export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
-    while (!exports.init) { continue; }
+    while (!globalThis.init) { continue; }
     try {
       if (await getStatus() === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');
@@ -45,7 +45,7 @@ export default new SuperCommand({
     let panel = vscode.window.createWebviewPanel(`犇犇 - ${mode}`, `犇犇 - ${mode}`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(exports.resourcesPath.value)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
     });
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = ${message.data}`)
@@ -83,7 +83,7 @@ export default new SuperCommand({
     panel.webview.html = await generateHTML(panel.webview);
     let retryTimes = 0;
     const maxRetryTimes = 2;
-    while (!panelClosed && exports.islogged && retryTimes <= maxRetryTimes) {
+    while (!panelClosed && globalThis.islogged && retryTimes <= maxRetryTimes) {
       try {
         let ret = (await fetchBenben(mode2, 1)) + (await fetchBenben(mode2, 2)) + (await fetchBenben(mode2, 3));
         let pret = new Array();
