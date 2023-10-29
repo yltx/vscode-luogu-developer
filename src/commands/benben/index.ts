@@ -22,6 +22,7 @@ const getBenben = async (mode: string) => {
   let ret1 = await fetchBenben(mode, 1);
   let ret2 = await fetchBenben(mode, 2);
   let ret3 = await fetchBenben(mode, 3);
+  //这里fetch三次是因为犇犇默认就只get前三页
   let pret = new Array();
   const m = [ret1, ret2, ret3];
   //fixed by LYkcul 
