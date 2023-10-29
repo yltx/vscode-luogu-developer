@@ -47,11 +47,9 @@ a {
   background-image: url(https://www.luogu.com.cn/images/icon.png);
   background-size: 48px, 48px;
 }
-@media only screen and (min-width: 641px) {
 .am-comment-avatar {
   width: 48px;
   height: 48px;
-}
 }
 .am-comment-avatar {
   float: left;
@@ -269,7 +267,7 @@ h2 {
   display: block;
   width: 100%;
   padding: .1em;
-  font-size: 1.6rem;
+  font-size: 1rem;
   line-height: 1.2;
   color: #555;
   vertical-align: middle;
