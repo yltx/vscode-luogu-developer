@@ -27,7 +27,7 @@ export namespace API {
   export const LOGIN_REFERER = `${baseURL}/auth/login`
   export const LOGOUT = `${apiURL}/auth/logout`
   export const FATE = `/index/ajax_punch`
-  export const BENBEN = (mode: string, page: number) => `/feed/${mode}?page=${page}`
+  export const BENBEN = (mode: string, page: number) => `${apiURL}/feed/${mode}?page=${page}`
   export const BENBEN_POST = `${apiURL}/feed/postBenben`
   export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`
@@ -346,8 +346,9 @@ export const searchUser = async (keyword: string) =>
       }
     })
 
-export const fetchBenben = async (mode: string, page: number) =>
+export const fetchBenben = async (mode: string, page: number, cookie: string) =>
   axios.get(API.BENBEN(mode, page), {
+
     headers: {
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.baseURL,
@@ -363,10 +364,11 @@ export const fetchBenben = async (mode: string, page: number) =>
     }
   })
 
-export const postBenben = async (text: string) =>
-  axios.post(API.BENBEN_POST, `content=${text}`, {
+export const postBenben = async (benbenText: string) =>
+  axios.post(API.BENBEN_POST, {
+    'content': benbenText
+    }, {
     headers: {
-      'content-type': 'application/x-www-form-urlencoded',
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.baseURL,
       'Origin': API.baseURL,
@@ -382,7 +384,7 @@ export const postBenben = async (text: string) =>
     }
   })
 
-export const deleteBenben = async (id: string) =>
+export const deleteBenben = async (id: string, cookie: string) =>
   axios.post(API.BENBEN_DELETE(id), {}, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
