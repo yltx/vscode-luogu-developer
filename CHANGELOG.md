@@ -1,10 +1,12 @@
 # Change Log
 
-## 4.7.4
+## 4.8.0
 
 - Fix:
   1. 比赛赛题提交链接错误导致提交错误
   2. 删除了目前不支持的 languages
+  3. 全面升级了项目依赖 Thanks@My.Python
+  4. 修复了犇犇功能
 
 - Add:
   1. 增加了自动 O2 开关（todo：自动检测能否开 O2 etc. Python 不能）

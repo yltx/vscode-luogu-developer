@@ -14,7 +14,7 @@ import contest from './commands/contest'
 const luoguCsrfToken = 'CsrfToken.json'
 const luoguJSONName = 'luogu.json'
 const luoguUIDName = 'uid.json'
-const version = '4.7.4'
+const version = '4.8.0'
 
 globalThis.islogged = false
 globalThis.init = false
@@ -60,7 +60,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         <ol>
             <li>修复比赛赛题提交链接错误导致提交错误</li>
             <li>删除了目前不支持的 languages</li>
-            <li>增加了自动 O2 开关（todo：自动检测能否开 O2 etc. Python 不能）</li>
+            <li>全面升级了项目依赖 languages</li>
+            <li>修复了犇犇功能 languages</li>
+            <li>增加了自动 O2 开关</li>
             <li>增加了自动跳过题号选择开关，当文件名是正确的题目编号时跳过这一步骤</li>
         </ol>
     </ul>
