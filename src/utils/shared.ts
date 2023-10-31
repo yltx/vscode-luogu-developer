@@ -192,6 +192,7 @@ export const difficultyColor = [
   "#FFC116",
   "#52C41A",
   "#3498DB",
+  "#9D3DCF",
   "#0E1D69"
 ]
 
