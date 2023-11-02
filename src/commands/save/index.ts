@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
-import { searchProblem } from '@/utils/api'
+import { parseProblemID, searchProblem } from '@/utils/api'
 import { DialogType, promptForOpenOutputChannel } from '@/utils/uiUtils'
 import Problem from '@/model/Problem'
 import { generateProblemHTML } from '@/utils/showProblem'
@@ -13,8 +13,15 @@ export default new SuperCommand({
   onCommand: 'save',
   handle: async () => {
     while (!globalThis.init) { continue; }
-    const pid = await vscode.window.showInputBox({
+    const edtior = vscode.window.activeTextEditor;
+    let fileNameID = '';
+    if (edtior) {
+      fileNameID = await parseProblemID(path.parse(edtior.document.fileName).base);
+      fileNameID = fileNameID.toUpperCase();
+    }
+    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && fileNameID !== '') ? fileNameID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
+      value: globalThis.pid,
       ignoreFocusOut: true
     }).then(res => res ? res.toUpperCase() : null)
     if (!pid) {

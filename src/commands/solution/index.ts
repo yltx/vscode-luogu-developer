@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand'
-import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote, getErrorMessage } from '@/utils/api'
+import { searchSolution, getStatus, getResourceFilePath, formatTime, loadUserIcon, postVote, getErrorMessage, parseProblemID } from '@/utils/api'
 import * as vscode from 'vscode'
 import * as path from 'path'
 import * as os from 'os'
@@ -22,10 +22,15 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    let defaultID = globalThis.pid;
-    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && defaultID !== '') ? defaultID : await vscode.window.showInputBox({
+    const edtior = vscode.window.activeTextEditor;
+    let fileNameID = '';
+    if (edtior) {
+      fileNameID = await parseProblemID(path.parse(edtior.document.fileName).base);
+      fileNameID = fileNameID.toUpperCase();
+    }
+    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && fileNameID !== '') ? fileNameID : await vscode.window.showInputBox({
       placeHolder: '输入题号',
-      value: defaultID,
+      value: globalThis.pid,
       ignoreFocusOut: true
     }).then(res => res ? res.toUpperCase() : null);
     if (!pid) {
@@ -55,8 +60,8 @@ export default new SuperCommand({
             }
           });
         } else if (message.type === 'vote') {
-            await postVote(message.data.id as number, message.data.type as number).then(data => {
-              console.log(data)
+          await postVote(message.data.id as number, message.data.type as number).then(data => {
+            console.log(data)
             if (data.status !== 200) {
               if (data.errorMessage) {
                 throw Error(data.errorMessage)
@@ -74,7 +79,7 @@ export default new SuperCommand({
             });
             res.solutions[message.data.pos as number].thumbUp = data.data as number
             res.solutions[message.data.pos as number].currentUserVoteType = message.data.type as number
-            }).catch(err => {
+          }).catch(err => {
             panel.webview.postMessage({
               type: 'vote-error',
               message: getErrorMessage(err)
