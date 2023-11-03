@@ -1,10 +1,8 @@
-import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs/promises'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
 import { getErrorMessage, parseProblemID } from '@/utils/api'
-globalThis.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
+import { config, getSavedProblem } from '@/utils/files'
 
 export default new SuperCommand({
   onCommand: 'open',
@@ -24,31 +22,20 @@ export default new SuperCommand({
     if (!pid) {
       return;
     }
-    globalThis.pid = pid;
-    const filename = pid + '.html'
-    globalThis.luoguProblems = path.join(globalThis.luoguProblemPath, filename)
-    if(!await fs.stat(globalThis.luoguProblems).catch(err => {
-      vscode.window.showErrorMessage('此题未在本地保存')
-      return false;
-    })) return;
-    
-    await fs.readFile(globalThis.luoguProblems).then(
-      r=>{
-        let html = r.toString();
-        const problemname = html.match(/<title>(.*)<\/title>/)![1]
-        const panel = vscode.window.createWebviewPanel(pid, problemname, vscode.ViewColumn.Two, {
-          enableScripts: true,
-          retainContextWhenHidden: true,
-          localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
-        })
-        panel.webview.html = html
-      }
-    ).catch(err => {
-      vscode.window.showErrorMessage('打开失败')
-      vscode.window.showErrorMessage(getErrorMessage(err))
-      console.error(err)
-    })
-      
+    let html: string;
+    try {
+      html = getSavedProblem(pid);
+    } catch (err) {
+      vscode.window.showErrorMessage('打开题目失败')
+      throw err;
+    }
 
+    const problemname = html.match(/<title>(.*)<\/title>/)![1];
+    const panel = vscode.window.createWebviewPanel(pid, problemname, vscode.ViewColumn.Two, {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
+    });
+    panel.webview.html = html;
   }
 })

@@ -1,23 +1,11 @@
 import SuperCommand from '../SuperCommand'
-import { searchUser, fetchBenben, getStatus, userIcon, postBenben, deleteBenben, getResourceFilePath, loadUserIcon, getErrorMessage } from '@/utils/api'
-import { cookieConfig, changeCookieByCookies } from '@/utils/files'
+import { searchUser, fetchBenben, getStatus, postBenben, deleteBenben, loadUserIcon } from '@/utils/api'
+import { getResourceFilePath } from '@/utils/html'
 import { UserStatus } from '@/utils/shared'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 
-/*
-const replyBenben = async (data: string) => {
-  const content = await vscode.window.showInputBox({
-    placeHolder: '输入内容',
-    ignoreFocusOut: true,
-    value: data,
-    validateInput: s => s && s.trim() ? undefined : '输入不能为空'
-  });
-  if (!content) { return; }
-  return postBenben(content);
-}
-*/
 const getBenben = async (mode: string) => {
   let ret1 = await fetchBenben(mode, 1);
   let ret2 = await fetchBenben(mode, 2);
@@ -64,11 +52,11 @@ const getBenben = async (mode: string) => {
       }
       if (ccfLevel === 0) {
         message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
-        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
+        <img src="data:image/jpeg;base64,${(await loadUserIcon(parseInt(tmp[i].user.uid)))?.toString("base64")}"
         class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
       } else {
         message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${tmp[i].user.uid}" class="center">
-        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(tmp[i].user.uid))}"
+        <img src="data:image/jpeg;base64,${(await loadUserIcon(parseInt(tmp[i].user.uid)))?.toString("base64")}"
         class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+tmp[i].user.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${tmp[i].user.uid}"  target="_blank">${tmp[i].user.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${benbenTime.toLocaleString()}<a name="feed-delete" data-feed-id="${tmp[i].id}">删除</a><a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${tmp[i].user.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].content)}</span></div></div></li>`);
       }
     }
@@ -90,11 +78,11 @@ const getBenben = async (mode: string) => {
       }
       if (ccfLevel === 0) {
         message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
-        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
+        <img src="data:image/jpeg;base64,${(await loadUserIcon(parseInt(userInfo.uid)))?.toString("base64")}"
         class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
       } else {
         message.push(`<li class="am-comment am-comment-primary feed-li"><div class="lg-left"><a href="https://www.luogu.com.cn/user/${userInfo.uid}" class="center">
-        <img src="data:image/jpeg;base64,${await loadUserIcon(parseInt(userInfo.uid))}"
+        <img src="data:image/jpeg;base64,${(await loadUserIcon(parseInt(userInfo.uid)))?.toString("base64")}"
         class="am-comment-avatar"/></a></div><div class="am-comment-main"><header class="am-comment-hd"><div class="am-comment-meta"><span class="feed-username"><a class='${'lg-fg-'+userInfo.color.toLowerCase()+' lg-bold'}' href="https://www.luogu.com.cn/user/${userInfo.uid}"  target="_blank">${userInfo.name}</a> <a class="sb_amazeui" target="_blank" href="https://www.luogu.com.cn/discuss/show/142324">${hook}</a>${badge}</span> ${tmp[i].time.date.split('.')[0]}<a name="feed-reply" href="javascript: scrollToId('feed-content')" data-username="${userInfo.name}">回复</a></div></header><div class="am-comment-bd"><span class="feed-comment">${md.render(tmp[i].comment)}</span></div></div></li>`);
       }
     }
@@ -128,14 +116,11 @@ export default new SuperCommand({
     let panel = vscode.window.createWebviewPanel(`犇犇 - ${mode}`, `犇犇 - ${mode}`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     });
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request: message = ${message.data}`)
       if (message.type === 'post') {
-        // todo: add error handling in webview
-        let cookie = cookieConfig().headers.Cookie;
-        console.log(cookie);
         await postBenben(message.data).then(
           async message=>{
             console.log("data: ",message.data)
@@ -165,26 +150,6 @@ export default new SuperCommand({
         vscode.window.showInformationMessage('重新获取犇犇中...')
           let benben = await getBenben(mode2);
           panel.webview.postMessage({ type: 'benbenUpdate', message: benben });
-        // let maxRetryTimes = 3;
-        // let retryTimes = 0;
-        // while (retryTimes <= maxRetryTimes) {
-        //   try {
-        //     vscode.window.showInformationMessage('重新获取犇犇中...')
-        //     let benben = await getBenben(mode2);
-        //     console.log(mode2);
-        //     console.log(benben);
-        //     panel.webview.postMessage({ type: 'benbennew', message: benben });        
-        //     retryTimes = maxRetryTimes + 2; 
-        //   } catch (err) {
-        //     console.error(err)
-        //     vscode.window.showErrorMessage(`获取犇犇失败，已重试 ${retryTimes} 次`);
-        //     retryTimes++
-        //     await delay(2000)
-        //   }          
-        // }
-        // if (retryTimes === maxRetryTimes + 1) {
-        //   vscode.window.showErrorMessage(`重新获取犇犇失败`);
-        // }
       } else if (message.type === 'reply') {
         // ???
         throw Error;

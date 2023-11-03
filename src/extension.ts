@@ -7,19 +7,12 @@ import luoguStatusBar from '@/views/luoguStatusBar'
 import { UserStatus } from '@/utils/shared'
 import * as files from '@/utils/files'
 import { fetchHomepage, genCookies } from '@/utils/api'
-import * as fs from 'fs'
-import * as os from 'os'
-import * as path from 'path'
-import contest from './commands/contest'
-const luoguCsrfToken = 'CsrfToken.json'
-const luoguJSONName = 'luogu.json'
-const luoguUIDName = 'uid.json'
+import path from 'path'
 const version = '4.8.0'
 
 globalThis.islogged = false
 globalThis.init = false
 globalThis.pid = ''
-globalThis.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
 
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   debug('initializing luogu-vscode.')
@@ -70,86 +63,58 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   </div>
   </html>
   `
-  if (files.getVersionFile() !== version) {
+  if (files.config.version !== version) {
     const panel = vscode.window.createWebviewPanel('更新说明', 'vscode-luogu v' + version + ' 更新说明', vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     })
     panel.webview.html = html
-    files.setVersionFile(version);
+    files.setVersion(version);
   }
-  
-  if (fs.existsSync(globalThis.luoguJSONPath)) {
+  try {
     try {
-      try {
-        const data = await fetchHomepage();
-        if (data.currentUser === undefined) {
-          vscode.window.showErrorMessage('未登录')
-          luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
-          globalThis.islogged = false
-        } else {
-          vscode.window.showInformationMessage('登录成功')
-          luoguStatusBar.updateStatusBar(UserStatus.SignedIn)
-          globalThis.islogged = true
-        }
-      } catch (err) {
-        vscode.window.showErrorMessage('获取登录信息失败')
-        vscode.window.showErrorMessage(`${err}`)
-        // vscode.window.showErrorMessage('未登录')
+      const data = await fetchHomepage();
+      if (data.currentUser === undefined) {
+        vscode.window.showErrorMessage('未登录')
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
         globalThis.islogged = false
+      } else {
+        vscode.window.showInformationMessage('登录成功')
+        luoguStatusBar.updateStatusBar(UserStatus.SignedIn)
+        globalThis.islogged = true
       }
     } catch (err) {
-      console.error(err)
-      vscode.window.showInformationMessage('未登录')
+      vscode.window.showErrorMessage('获取登录信息失败')
+      vscode.window.showErrorMessage(`${err}`)
+      // vscode.window.showErrorMessage('未登录')
       luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
       globalThis.islogged = false
     }
-  } else {
+  } catch (err) {
+    console.error(err)
     vscode.window.showInformationMessage('未登录')
     luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
     globalThis.islogged = false
   }
   if (!globalThis.islogged) genCookies();
   globalThis.init = true
-  if (!fs.existsSync(globalThis.luoguProblemPath)) {
-    try {
-      fs.mkdirSync(globalThis.luoguProblemPath)
-    } catch (err) {
-      vscode.window.showErrorMessage('创建题目保存路径失败')
-      vscode.window.showErrorMessage(`${err}`)
-      console.error(err)
-      return
-    }
-  }
   const effectiveDuration = +vscode.workspace.getConfiguration('luogu').get<'integer'>('effectiveDuration')!
   if (effectiveDuration !== -1) {
-    let files = fs.readdirSync(globalThis.luoguProblemPath);
-    console.log(files)
-    files.forEach(function (item: any) {
-      const html = fs.readFileSync(globalThis.luoguProblemPath + '\\' + item).toString()
+    files.config.savedProblem.forEach(function (item) {
+      const html = files.getSavedProblem(item);
       const savetime = +html.match(/<!-- SaveTime:(.*) -->/)![1]
-      console.log(savetime)
-      if ((+new Date() - savetime) / 1000 / 60 / 60 / 24 > effectiveDuration) {
-        const pid = html.match(/<!-- ProblemName:(.*) -->/)![1]
+      if ((+new Date() - savetime) / 1000 / 60 / 60 / 24 > effectiveDuration)
         try {
-          fs.unlinkSync(globalThis.luoguProblemPath + '\\' + item)
-          vscode.window.showInformationMessage(`删除过期题目：${pid} 成功`)
-          debug(`Delete expired problem exists in ${globalThis.luoguProblemPath + '\\' + item} successfully.`)
+          files.removeSavedProblem(item);
+          vscode.window.showInformationMessage(`删除过期题目：${item} 成功`)
+          debug(`Delete expired problem exists in ${globalThis.luoguPath + '\\' + item} successfully.`)
         } catch (err) {
           vscode.window.showErrorMessage('删除过期题目失败')
-          vscode.window.showErrorMessage(`${err}`)
-          console.log(err)
+          throw err;
         }
-      }
     })
   }
-  /*if (fs.existsSync(globalThis.luoguJSONPath)) {
- 
-  }*/
 }
 
-export function deactivate(): void {
-  // Do nothing.
-}
+export function deactivate(): void { }

@@ -1,9 +1,11 @@
 import SuperCommand from '../SuperCommand'
-import { getResourceFilePath, searchContest, getStatus, formatTime, changeTime, getRanklist } from '@/utils/api'
+import { searchContest, getStatus, changeTime, getRanklist } from '@/utils/api'
+import { getResourceFilePath } from '@/utils/html'
+import { formatTime } from '@/utils/shared'
 import * as vscode from 'vscode'
 import md from '@/utils/markdown'
 import { UserStatus, contestStyle, contestType, contestVisibility, contestVisibilityStyle, contestRated } from '@/utils/shared'
-import { getUsernameStyle, getUserSvg, getScoreColor } from '@/utils/workspaceUtils'
+import { getUsernameColor, getUserSvg, getScoreColor } from '@/utils/workspaceUtils'
 import { showProblem } from '../../utils/showProblem'
 
 export default new SuperCommand({
@@ -32,7 +34,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(cid, `比赛详情 - ${res.contest.name}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
       })
       panel.webview.onDidReceiveMessage(async message => {
         console.log(`Got ${message.type} request: message = `, message.data)
@@ -74,7 +76,7 @@ const generateRanklist = async (res: any[], ranklist: any[], nowpage: number) =>
   }
   html += '</tr>'
   for (let i = 0; i < Math.min(ranklist['scoreboard']['perPage'], ranklist['scoreboard']['count'] - 50 * (nowpage - 1)); i++) {
-    html += `<tr><td align="center" width="30px" nowrap>#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="${getUsernameStyle(ranklist['scoreboard']['result'][i]['user']['color'])}" nowrap>${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center" width="35px" nowrap>${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
+    html += `<tr><td align="center" width="30px" nowrap>#${i + 50 * (nowpage - 1) + 1}</td><td align="center" style="font-weight: bold; color: ${getUsernameColor(ranklist['scoreboard']['result'][i]['user']['color'])};" nowrap>${ranklist['scoreboard']['result'][i]['user']['name']}${getUserSvg(ranklist['scoreboard']['result'][i]['user']['ccfLevel'])}</td><td align="center" width="35px" nowrap>${ranklist['scoreboard']['result'][i]['score']}<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`
     if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
       html += `(${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24)}:${Math.floor((ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60)})`
     } else {
@@ -227,7 +229,7 @@ const generateHTML = async (webview: vscode.Webview, res: any[], ranklist: any[]
   if (contest['visibilityType'] > 3 && contest['visibilityType'] < 6) {
     html += `
                                 <span data-v-360481bd="" class="wrapper">
-                                    <span data-v-360481bd="" data-v-303bbf52="" style="${getUsernameStyle(contest['host']['color'].toLowerCase())}">
+                                    <span data-v-360481bd="" data-v-303bbf52="" style="font-weight: bold; color: ${getUsernameColor(contest['host']['color'].toLowerCase())};">
                                         ${contest['host']['name']}
                                     </span>
                                     ${getUserSvg(contest['host']['ccfLevel'])}

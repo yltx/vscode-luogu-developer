@@ -7,10 +7,6 @@ import { promptForOpenOutputChannelWithResult, DialogType } from '@/utils/uiUtil
 import { changeCookie } from '@/utils/files';
 import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs/promises';
-const luoguJSONName = 'luogu.json';
-globalThis.luoguPath = path.join(os.homedir(), '.luogu');
-globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'cookieslogin',
@@ -47,7 +43,12 @@ export default new SuperCommand({
       if (!clientID) {
         return
       }
-      changeCookie({uid,clientID});
+      try{
+        changeCookie({uid,clientID});
+      }catch (err){
+        vscode.window.showErrorMessage('写入文件时出现错误');
+        throw err;
+      }
       (async status => {
         if (status === UserStatus.SignedOut.toString()) {
           globalThis.islogged = false;
@@ -57,10 +58,6 @@ export default new SuperCommand({
           globalThis.islogged = true;
           vscode.window.showInformationMessage('登录成功');
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-          await fs.writeFile(globalThis.luoguJSONPath, JSON.stringify({ 'uid': uid, 'clientID': clientID })).catch(err=>{
-            vscode.window.showErrorMessage('写入文件时出现错误');
-            vscode.window.showErrorMessage(err);
-          })
           return;
         }
       })(await getStatus()).catch(err=>{

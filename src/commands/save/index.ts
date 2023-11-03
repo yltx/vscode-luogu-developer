@@ -1,13 +1,11 @@
-import * as os from 'os'
-import * as path from 'path'
-import * as fs from 'fs'
 import * as vscode from 'vscode'
 import SuperCommand from '../SuperCommand'
 import { parseProblemID, searchProblem } from '@/utils/api'
 import { DialogType, promptForOpenOutputChannel } from '@/utils/uiUtils'
 import Problem from '@/model/Problem'
-import { generateProblemHTML } from '@/utils/showProblem'
-globalThis.luoguProblemPath = path.join(os.homedir(), '.luoguProblems')
+import { genProblemHTML } from '@/utils/showProblem'
+import { saveProblem } from '@/utils/files';
+import * as path from 'path'
 
 export default new SuperCommand({
   onCommand: 'save',
@@ -33,30 +31,16 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel(problem.stringPID, problem.name, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     })
-    const html = generateProblemHTML(panel.webview, problem, false) + `\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`
+    panel.webview.html=genProblemHTML(panel.webview,problem,false)+`\n<!-- SaveTime:${+new Date()} -->\n<!-- ProblemName:${pid} -->`;
     panel.dispose()
-    const filename = pid + '.html'
-    globalThis.luoguProblems = path.join(globalThis.luoguProblemPath, filename)
-    if (!fs.existsSync(globalThis.luoguProblemPath)) {
-      try {
-        fs.mkdirSync(globalThis.luoguProblemPath)
-      } catch (err) {
-        vscode.window.showErrorMessage('创建题目保存路径失败')
-        vscode.window.showErrorMessage(`${err}`)
-        console.error(err)
-        return
-      }
-    }
-    try {
-      fs.writeFileSync(globalThis.luoguProblems, html)
-    } catch (err) {
+    try{
+      saveProblem(pid,panel.webview.html);
+    }catch (err){
       vscode.window.showErrorMessage('保存失败')
-      vscode.window.showErrorMessage(`${err}`)
-      console.error(err)
-      return
+      throw err
     }
-    vscode.window.showInformationMessage('保存成功\n存储路径：' + globalThis.luoguProblems)
+    vscode.window.showInformationMessage('保存成功')
   }
 })

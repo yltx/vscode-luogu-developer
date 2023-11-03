@@ -32,9 +32,9 @@
   
 ## Others
 
-Luogu图标来自[Luogu](https://www.luogu.com.cn/)，严禁商业使用
+Luogu图标来自 [Luogu](https://www.luogu.com.cn/)，严禁商业使用
 
-UI图标来自：[链接到Icons8](https://icons8.cn/)
+UI图标来自：[Icons8](https://icons8.cn/) 与 [FontAwesome](https://fontawesome.com/)
 
 用户交流群：1141066631
 

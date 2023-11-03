@@ -3,7 +3,6 @@ import * as vscode from 'vscode'
 import { searchTrainingdetail } from '@/utils/api'
 import { showTrainDetails } from '@/utils/showTrainDetails'
 import showProblem from '@/utils/showProblem'
-import * as fs from 'fs'
 
 export default new SuperCommand({
   onCommand: 'traindetails',
@@ -24,7 +23,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
       })
       const html = await showTrainDetails(panel.webview, tid)
       panel.webview.html = html

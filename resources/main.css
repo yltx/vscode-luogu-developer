@@ -1,0 +1,108 @@
+@charset "UTF-8";
+@import "./highlightjs.default.min.css";
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    display: block;
+    width: 100%;
+    overflow: auto;
+    word-break: keep-all;
+    margin: 10px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 6px 13px;
+}
+
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    border-left: 5px solid #eee;
+}
+
+a {
+    transition: all .15s;
+    color: #3498db;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #0056b3;
+}
+
+pre {
+    margin: .5em 0 !important;
+    padding: .3em .5em !important;
+    border: #ddd solid 1px !important;
+    border-radius: 3px !important;
+    overflow: auto !important;
+    position: relative;
+}
+
+code {
+    font-size: .875em !important;
+    font-family: Courier New !important;
+}
+
+.tag {
+    display: inline-block;
+    padding: 0 8px;
+    box-sizing: border-box;
+    font-weight: 400;
+    line-height: 1.5;
+    border-radius: 2px;
+    font-size: 0.875em;
+    color: white;
+    margin: 2px;
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Noto Sans", "Noto Sans CJK SC", "Noto Sans CJK", "Source Han Sans", "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+    line-height: 1.5;
+}
+
+hr {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    border: none;
+    border-bottom: solid 1px #eee;
+}
+
+.username {
+    display: inline-block;
+    align-items: center;
+}
+
+.username-name {
+    font-weight: bold;
+    font-size: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "San Francisco", "Helvetica Neue", "Noto Sans", "Noto Sans CJK SC", "Noto Sans CJK", "Source Han Sans", "PingFang SC", "Segoe UI", "Microsoft YaHei", sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.usericon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 1em;
+}
+
+vscode-button[appearance="primary"],
+vscode-button[appearance="secondary"] {
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 100px;
+    height: 28px;
+}
+vscode-button[appearance="icon"]{
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.copy-button {
+    position: absolute;
+    top: 2px;right: 5px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}

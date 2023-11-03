@@ -9,11 +9,6 @@ import * as vscode from 'vscode'
 import { DialogType, promptForOpenOutputChannelWithResult } from '@/utils/uiUtils'
 import * as os from 'os'
 import * as path from 'path'
-import * as fs from 'fs/promises'
-
-const luoguJSONName = 'luogu.json';
-globalThis.luoguPath = path.join(os.homedir(), '.luogu');
-globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'signin',
@@ -56,6 +51,12 @@ export default new SuperCommand({
         }
         await login(username, password, captcha.captchaText).then(async r1 => {
           let resp = r1;
+          try {
+            changeCookieByCookies(r1.headers['set-cookie']);
+          } catch (err) {
+            vscode.window.showErrorMessage('写入 cookie 时出现错误')
+            throw err;
+          }
           if (r1.data.locked) {
             const code = await vscode.window.showInputBox({
               placeHolder: '输入2FA验证码',
@@ -65,17 +66,10 @@ export default new SuperCommand({
               return
             }
             const r2 = await unlock(code);
-            resp = r2
+            resp = r2;
           }
-          console.log(resp)
           globalThis.init = true
           globalThis.islogged = true;
-          try {
-            changeCookieByCookies(resp.headers['set-cookie']);
-          }catch (err){
-            vscode.window.showErrorMessage('写入 cookie 时出现错误')
-            throw err;
-          }
           luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
           vscode.window.showInformationMessage('登录成功')
           flag = false

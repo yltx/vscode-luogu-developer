@@ -6,9 +6,6 @@ import * as path from 'path'
 import { getSelectedLanguage, getLanauageFromExt } from '@/utils/workspaceUtils';
 import { getStatus, parseProblemID,submitCode } from '@/utils/api'
 import showRecord from '@/utils/showRecord'
-const luoguJSONName = 'luogu.json';
-globalThis.luoguPath = path.join(os.homedir(), '.luogu');
-globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
 
 export default new SuperCommand({
   onCommand: 'sumbitCode',

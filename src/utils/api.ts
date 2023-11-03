@@ -1,14 +1,12 @@
 import _ from 'axios'
 import { UserStatus } from '@/utils/shared'
 import luoguStatusBar from '@/views/luoguStatusBar'
-import { cookieConfig, changeCookieByCookies } from '@/utils/files'
-import * as os from 'os'
-import * as path from 'path'
-import * as fs from 'fs'
+import { cookieConfig, changeCookieByCookies, loadUserIconCache, saveUserIconCache } from '@/utils/files'
 import * as vscode from 'vscode'
-const luoguJSONName = 'luogu.json';
-globalThis.luoguPath = path.join(os.homedir(), '.luogu');
-globalThis.luoguJSONPath = path.join(globalThis.luoguPath, luoguJSONName);
+import { ArticleDetails, DataResponse, List, ProblemSummary, SolutionsData } from '@/model/luogu-api'
+import { assert } from 'console'
+import Problem from '@/model/Problem'
+import exp from 'constants'
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/
 
@@ -25,6 +23,7 @@ export namespace API {
   export const LOGIN_ENDPOINT = `${apiURL}/auth/userPassLogin`
   export const SYNCLOGIN_ENDPOINT = `${apiURL}/auth/syncLogin`
   export const LOGIN_REFERER = `${baseURL}/auth/login`
+  export const UNLOCK_REFERER = `${baseURL}/auth/unlock`
   export const LOGOUT = `${apiURL}/auth/logout`
   export const FATE = `/index/ajax_punch`
   export const BENBEN = (mode: string, page: number) => `${apiURL}/feed/${mode}?page=${page}`
@@ -35,6 +34,7 @@ export namespace API {
   export const ranklist = (cid: string, page: number) => `/fe/api/contest/scoreboard/${cid}?page=${page}`
   export const TRAINLISTDETAIL = (id: any) => `${baseURL}/training/${id}?_contentOnly=1`
   export const SEARCHTRAINLIST = (channel: string, keyword: string, page: number) => `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(keyword)}&_contentOnly=1`
+  export const SOLUTION_REFERER = (pid: string) => `${baseURL}/problem/solution/${pid}`
 }
 
 export const axios = (() => {
@@ -144,36 +144,18 @@ export const searchContest = async (cid: string) =>
 
 export const searchSolution = async (pid: string) =>
   axios.get(API.SEARCH_SOLUTION(pid, 1), cookieConfig())
-    .then(res => res.data).then(async (res) => {
-      console.log(res)
-      if ((res.currentData.solutions || null) === null) { throw Error('题目不存在') }
-      const problem = res.currentData.problem;
-      res = res.currentData.solutions
-      if (res.count <= res.perPage) {
-        return {
-          solutions: res.result,
-          problem: problem
-        };
-      }
-      let result: any[] = res.result;
-      const pages = Math.ceil(res.count / res.perPage);
+    .then(res => res.data).then(async (resp) => {
+      if ((resp.currentData.solutions || null) === null) { throw Error('题目不存在') }
+      let problem = resp.currentData.problem as ProblemSummary;
+      let res = resp.currentData.solutions as List<ArticleDetails>
+      if (res.perPage === null) res.perPage = Infinity;
+      let result = Object.values(res.result);
+      let pages = Math.ceil(res.count / res.perPage);
       for (let i = 2; i <= pages; i++) {
-        const currentPage = await axios.get(API.SEARCH_SOLUTION(pid, i), cookieConfig())
-          .then(res => res.data.currentData.solutions || null).catch(err => {
-            if (err.response) {
-              throw err.response.data;
-            } else if (err.request) {
-              throw Error('请求超时，请重试')
-            } else {
-              throw err;
-            }
-          })
-        if (currentPage) {
-          currentPage.result.forEach(data => { result.push(data); })
-        } else {
-          // ???
-          // throw Error('获取题解失败');
-        }
+        const currentPage = (await axios.get(API.SEARCH_SOLUTION(pid, i), cookieConfig()))
+          .data as DataResponse<SolutionsData>
+        if (currentPage.code == 200) result.push(...Object.values(currentPage.currentData.solutions.result));
+        else throw Error('未找到题解');
       }
       return {
         solutions: result,
@@ -190,7 +172,7 @@ export const searchSolution = async (pid: string) =>
     })
 
 export const searchTraininglist = async (type: string, keyword: string, page: number) =>
-  axios.get(API.SEARCHTRAINLIST(type, keyword, page),cookieConfig())
+  axios.get(API.SEARCHTRAINLIST(type, keyword, page), cookieConfig())
     .then(res => res?.data?.currentData).then(async res => {
       // console.log(res)
       if ((res || null) === null) { throw Error('题单不存在') }
@@ -206,7 +188,7 @@ export const searchTraininglist = async (type: string, keyword: string, page: nu
     })
 
 export const searchTrainingdetail = async (id: any) =>
-  axios.get(API.TRAINLISTDETAIL(id),cookieConfig())
+  axios.get(API.TRAINLISTDETAIL(id), cookieConfig())
     .then(res => res?.data?.currentData).then(async res => {
       // console.log(res)
       if ((res || null) === null) { throw Error('题单不存在') }
@@ -228,7 +210,7 @@ export const searchTrainingdetail = async (id: any) =>
  * @param {string} password 密码
  * @param {string} captcha 验证码
  */
-export const login = async (username, password, captcha) => {
+export const login = async (username: string, password: string, captcha: string) => {
   const csrf = await csrfToken()
 
   return await axios.post(API.LOGIN_ENDPOINT, {
@@ -244,14 +226,14 @@ export const login = async (username, password, captcha) => {
   })
 }
 
-export const unlock = async (code) => {
+export const unlock = async (code: string) => {
   const csrf = await csrfToken()
 
   return await axios.post(API.UNLOCK_ENDPOINT, {
     code
   }, {
     headers: {
-      'Referer': API.LOGIN_REFERER,
+      'Referer': API.UNLOCK_REFERER,
       'X-CSRF-Token': csrf,
       ...cookieConfig().headers
     }
@@ -273,7 +255,7 @@ export const getStatus = async () => {
 }
 
 export const fetchResult = async (rid: number) =>
-  axios.get(`/record/${rid}?_contentOnly=1`,cookieConfig())
+  axios.get(`/record/${rid}?_contentOnly=1`, cookieConfig())
     .then(data => data?.data.currentData).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -285,7 +267,7 @@ export const fetchResult = async (rid: number) =>
     })
 
 export const fetchHomepage = async () =>
-  axios.get(`/user/1?_contentOnly=1`,cookieConfig())
+  axios.get(`/user/1?_contentOnly=1`, cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -313,7 +295,7 @@ export const logout = async () => axios.post(API.LOGOUT, '', {
 })
 
 export const getFate = async () =>
-  axios.get(API.FATE,cookieConfig())
+  axios.get(API.FATE, cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -325,7 +307,7 @@ export const getFate = async () =>
     })
 
 export const fetchRecords = async () =>
-  axios.get(`/record/list?_contentOnly=1`,cookieConfig())
+  axios.get(`/record/list?_contentOnly=1`, cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -337,7 +319,7 @@ export const fetchRecords = async () =>
     })
 
 export const searchUser = async (keyword: string) =>
-  axios.get(`/api/user/search?keyword=${keyword}`,cookieConfig())
+  axios.get(`/api/user/search?keyword=${keyword}`, cookieConfig())
     .then(data => data?.data).catch(err => {
       if (err.response) {
         throw err.response.data;
@@ -368,7 +350,7 @@ export const fetchBenben = async (mode: string, page: number) =>
 export const postBenben = async (benbenText: string) =>
   axios.post(API.BENBEN_POST, {
     'content': benbenText
-    }, {
+  }, {
     headers: {
       'X-CSRF-Token': await csrfToken(),
       'Referer': API.BenbenReferer,
@@ -402,21 +384,21 @@ export const deleteBenben = async (id: string) =>
   })
 
 export const userIcon = async (uid: number) =>
-  axios.get(`https://cdn.luogu.com.cn/upload/usericon/${uid}.png`, { responseType: 'arraybuffer',...cookieConfig() })
+  axios.get(`https://cdn.luogu.com.cn/upload/usericon/${uid}.png`, { responseType: 'arraybuffer', ...cookieConfig() })
     .then(resp => resp.data ? Buffer.from(resp.data, 'binary') : null)
-    .catch(() => null)
+    .catch(function (err) { console.error(err); return null; })
 
-export const postVote = async (id: number, type: number) =>
-  axios.post(`/api/blog/vote/${id}`, { 'Type': type,...cookieConfig() })
-    .then(data => data?.data)
+export const postVote = async (id: number, type: number, pid: string) =>
+  axios.post(`/api/blog/vote/${id}`, { 'Type': type, }, {
+    headers: {
+      'X-CSRF-Token': await csrfToken(),
+      'Referer': API.SOLUTION_REFERER(pid),
+      ...cookieConfig().headers
+    }
+  })
+    .then(data => data.data as { status: number; data: number | string })
     .catch(err => {
-      if (err.response) {
-        return err.response.data;
-      } else if (err.request) {
-        throw Error('请求超时，请重试')
-      } else {
-        throw err;
-      }
+      throw err;
     })
 
 export const parseProblemID = async (name: string) => {
@@ -443,38 +425,6 @@ export const parseUID = async (name: string) => {
   return '';
 }
 
-export const removeDir = (dir: any, cb: any) => {
-  fs.readdir(dir, function (err, files) {
-    if (err) {
-      console.error(err)
-      throw err
-    }
-    const next = (index: any) => {
-      if (index === files.length) {
-        return fs.rmdir(dir, cb)
-      }
-      let newPath = path.join(dir, files[index])
-      console.log(newPath)
-      fs.stat(newPath, function (err, stat) {
-        if (err) {
-          console.log(err)
-        }
-        if (stat.isDirectory()) {
-          removeDir(newPath, () => next(index + 1))
-        } else {
-          fs.unlink(newPath, function (err) {
-            if (err) {
-              console.error(err)
-            }
-            next(index + 1)
-          })
-        }
-      })
-    }
-    next(0)
-  })
-}
-
 export const prettyTime = (time: number) => {
   let mistiming = Math.round(new Date().getTime() / 1000) - time;
   const postfix = mistiming > 0 ? '前' : '后'
@@ -491,34 +441,27 @@ export const prettyTime = (time: number) => {
   return undefined
 }
 
-export const getResourceFilePath = (webview: vscode.Webview, relativePath: string) => {
-  const diskPath = vscode.Uri.file(path.join(globalThis.resourcesPath, relativePath));
-  return webview.asWebviewUri(diskPath);
-}
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
 export const loadUserIcon = async (uid: number) => {
   // tslint:disable-next-line: radix
-  if (fs.existsSync(path.join(globalThis.luoguPath, `${uid}.png`)) && fs.existsSync(path.join(globalThis.luoguPath, `${uid}`)) && ((new Date()).getTime() - parseInt(fs.readFileSync(path.join(globalThis.luoguPath, `${uid}`)).toString())) <= 21600000) {
-    return fs.readFileSync(path.join(globalThis.luoguPath, `${uid}.png`))
-  } else {
-    let image = await userIcon(uid);
+  let image = loadUserIconCache(uid);
+  if (image) return image;
+  else {
+    image = await userIcon(uid);
     let cnt = 0;
-    while (!image && cnt <= 10) {
+    while (!image && cnt <= 3) {
       await delay(200)
       image = await userIcon(uid);
       cnt++;
     }
     if (image === null) {
       vscode.window.showErrorMessage('获取用户头像失败')
-      return
+      return;
     }
-    const ret = image.toString('base64');
-    const time = (new Date()).getTime();
-    fs.writeFileSync(path.join(globalThis.luoguPath, `${uid}.png`), ret);
-    fs.writeFileSync(path.join(globalThis.luoguPath, `${uid}`), time.toString())
+    saveUserIconCache(uid, image);
     console.log(`Get usericon; uid: ${uid}`);
-    return ret
+    return image;
   }
 }
 export const formatTime = (date: Date, fmt: string) => {
@@ -548,7 +491,7 @@ export const formatTime = (date: Date, fmt: string) => {
   return fmt;
 }
 export const getRanklist = async (cid: string, page: number) => {
-  return axios.get(API.ranklist(cid, page),cookieConfig())
+  return axios.get(API.ranklist(cid, page), cookieConfig())
     .then(res => res.data).catch(err => { throw err })
 }
 export const changeTime = (x: number) => {
@@ -587,7 +530,7 @@ export const getErrorMessage = (err: unknown) => {
  *
  * @returns {number} 测评id
  */
-export async function submitCode(id: string, code: string, language = 0, enableO2 = false): Promise<any> {
+export async function submitCode(id: string, code: string, language: number = 0, enableO2: boolean = false): Promise<any> {
   const url = `/fe/api/problem/submit/${id}`;
   return axios.post(url, {
     'code': code,

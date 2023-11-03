@@ -8,7 +8,7 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel(``, `冬日绘板`, vscode.ViewColumn.One, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     })
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got ${message.type} request.`)

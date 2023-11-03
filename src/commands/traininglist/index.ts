@@ -1,8 +1,9 @@
 import SuperCommand from '../SuperCommand'
 import * as vscode from 'vscode'
-import { getResourceFilePath, searchTrainingdetail, searchTraininglist } from '@/utils/api'
+import { searchTrainingdetail, searchTraininglist } from '@/utils/api'
+import { getResourceFilePath } from '@/utils/html'
 import { showTrainDetails } from '@/utils/showTrainDetails'
-import { getUsernameStyle, getUserSvg } from '@/utils/workspaceUtils'
+import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils'
 import showProblem from '@/utils/showProblem'
 
 export default new SuperCommand({
@@ -11,7 +12,7 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel('traininglist', `题单广场`, vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     })
     panel.webview.onDidReceiveMessage(async message => {
       console.log(`Got type ${message.type} page ${message.page} request.`)
@@ -20,7 +21,7 @@ export default new SuperCommand({
         const panel2 = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
           enableScripts: true,
           retainContextWhenHidden: true,
-          localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+          localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
         })
         panel2.webview.html = await showTrainDetails(panel2.webview, message.data)
         panel2.webview.onDidReceiveMessage(async message => {
@@ -264,7 +265,7 @@ const generateSelectedListHTML = async (keyword: string, page: number) => {
     html += `          <td align="left" nowrap>${list[i - 1]['problemCount']}</td>\n`
     // html+=`          <td width="15px" align="left"></td>`
     html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
-    html += `          <td align="center" style="${getUsernameStyle(list[i - 1]['provider']['color'])}" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(list[i - 1]['provider']['ccfLevel'])}</td>\n`
+    html += `          <td align="center" style="font-weight: bold; color: ${getUsernameColor(list[i - 1]['provider']['color'])};" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(list[i - 1]['provider']['ccfLevel'])}</td>\n`
     html += '        <tr>\n'
   }
   html += '      </table>\n'

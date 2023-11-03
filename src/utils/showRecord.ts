@@ -1,7 +1,8 @@
 import * as vscode from 'vscode'
 import { Languages, resultState } from '@/utils/shared'
 import { getStatusText, getStatusColor, getScoreColor } from '@/utils/workspaceUtils';
-import { fetchResult, getResourceFilePath } from '@/utils/api'
+import { fetchResult } from '@/utils/api'
+import { getResourceFilePath } from './html';
 import { debug } from '@/utils/debug'
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t))
@@ -10,7 +11,7 @@ export const showRecord = async (rid: number) => {
   let panel = vscode.window.createWebviewPanel(`${rid}`, `R${rid} 记录详情`, vscode.ViewColumn.Two, {
     enableScripts: true,
     retainContextWhenHidden: true,
-    localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+    localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
   });
   let panelClosed = false;
   let retryTimes = 0;

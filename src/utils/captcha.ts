@@ -1,6 +1,5 @@
-import { debug } from '@/utils/debug'
-import { captcha, getResourceFilePath } from '@/utils/api'
-import * as path from 'path'
+import { captcha } from '@/utils/api'
+import { getResourceFilePath } from '@/utils/html'
 import * as vscode from 'vscode'
 import { promptForOpenOutputChannel, DialogType } from '@/utils/uiUtils'
 
@@ -36,7 +35,7 @@ export async function getUserCaptcha() {
       preserveFocus: true
     }, {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath)]
+      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
     })
     panel.webview.html = generateHTML(panel.webview, image.toString('base64'))
     captchaText = await vscode.window.showInputBox({

@@ -1,4 +1,5 @@
-import { getResourceFilePath, searchTrainingdetail } from './api'
+import { searchTrainingdetail } from './api'
+import { getResourceFilePath } from './html'
 import md from './markdown'
 import { tagsColor, tagsName } from './shared'
 import { getScoreColor } from './workspaceUtils'
