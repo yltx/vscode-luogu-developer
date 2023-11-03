@@ -1,5 +1,6 @@
 import SuperCommand from '../SuperCommand'
-import { searchContest, getStatus, changeTime, getRanklist } from '@/utils/api'
+import { searchContest, getStatus, getRanklist } from '@/utils/api'
+import { changeTime } from '@/utils/shared'
 import { getResourceFilePath } from '@/utils/html'
 import { formatTime } from '@/utils/shared'
 import * as vscode from 'vscode'

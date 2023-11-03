@@ -464,54 +464,10 @@ export const loadUserIcon = async (uid: number) => {
     return image;
   }
 }
-export const formatTime = (date: Date, fmt: string) => {
-  const o = {
-    'y+': date.getFullYear(),
-    'M+': date.getMonth() + 1,
-    'd+': date.getDate(),
-    'h+': date.getHours(),
-    'm+': date.getMinutes(),
-    's+': date.getSeconds(),
-    'q+': Math.floor((date.getMonth() + 3) / 3),
-    'S+': date.getMilliseconds()
-  };
-  for (let k in o) {
-    if (new RegExp('(' + k + ')').test(fmt)) {
-      if (k === 'y+') {
-        fmt = fmt.replace(RegExp.$1, ('' + o[k]).substr(4 - RegExp.$1.length));
-      } else if (k === 'S+') {
-        let lens = RegExp.$1.length;
-        lens = lens === 1 ? 3 : lens;
-        fmt = fmt.replace(RegExp.$1, ('00' + o[k]).substr(('' + o[k]).length - 1, lens));
-      } else {
-        fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length)));
-      }
-    }
-  }
-  return fmt;
-}
+
 export const getRanklist = async (cid: string, page: number) => {
   return axios.get(API.ranklist(cid, page), cookieConfig())
     .then(res => res.data).catch(err => { throw err })
-}
-export const changeTime = (x: number) => {
-  let res = ''
-  if (x >= 86400) {
-    res += Math.floor(x / 86400).toString() + ' 天 '
-    x -= Math.floor(x / 86400) * 86400
-  }
-  if (x >= 3600) {
-    res += Math.floor(x / 3600).toString() + ' 小时 '
-    x -= Math.floor(x / 3600) * 3600
-  }
-  if (x >= 60) {
-    res += Math.floor(x / 60).toString() + ' 分 '
-    x -= Math.floor(x / 60) * 60
-  }
-  if (x > 0) {
-    res += x.toString() + ' 秒 '
-  }
-  return res
 }
 
 export const getErrorMessage = (err: unknown) => {
