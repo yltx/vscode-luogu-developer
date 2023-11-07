@@ -18,14 +18,14 @@ const luoguJSONfileSchema = new Ajv().compile({
 globalThis.luoguPath = path.join(os.homedir(), '.luogu')
 globalThis.luoguJSONPath = path.join(globalThis.luoguPath, "luogu.json")
 
-export var config = {
+export var configFile = {
     uid: '',
     clientID: '',
     version: '',
     savedProblem: new Array<string>
 }
 
-const updateConfig = function () { fs.writeFileSync(globalThis.luoguJSONPath, JSON.stringify(config)); }
+const updateConfig = function () { fs.writeFileSync(globalThis.luoguJSONPath, JSON.stringify(configFile)); }
 
 export const initFiles = function (rootPath: string): [any, string] | null {
     globalThis.rootPath = rootPath;
@@ -36,15 +36,15 @@ export const initFiles = function (rootPath: string): [any, string] | null {
     } catch (err) { return [err, "创建配置文件失败。"]; }
     try {
         if (!fs.existsSync(globalThis.luoguJSONPath)
-            || !luoguJSONfileSchema(config = JSON.parse(fs.readFileSync(globalThis.luoguJSONPath).toString())))
+            || !luoguJSONfileSchema(configFile = JSON.parse(fs.readFileSync(globalThis.luoguJSONPath).toString())))
             fs.writeFileSync(globalThis.luoguJSONPath, JSON.stringify(
-                config = { uid: '', clientID: '', version: '', savedProblem: [] }
+                configFile = { uid: '', clientID: '', version: '', savedProblem: [] }
             ));
     } catch (err) {
         if (err instanceof SyntaxError)
             try {
                 fs.writeFileSync(globalThis.luoguJSONPath, JSON.stringify(
-                    config = { uid: '', clientID: '', version: '', savedProblem: [] }
+                    configFile = { uid: '', clientID: '', version: '', savedProblem: [] }
                 ));
             } catch (err) { return [err, "创建配置文件失败。"]; }
         else return [err, "创建配置文件失败。"];
@@ -53,11 +53,11 @@ export const initFiles = function (rootPath: string): [any, string] | null {
 }
 
 export const changeCookie = function (s: { uid: string, clientID: string }) {
-    config.uid = s.uid, config.clientID = s.clientID;
+    configFile.uid = s.uid, configFile.clientID = s.clientID;
     updateConfig();
 }
 export const changeCookieByCookies = function (cookie: string[] | undefined) {
-    let s = { uid: config.uid, clientID: config.clientID };
+    let s = { uid: configFile.uid, clientID: configFile.clientID };
     if (cookie)
         for (let cookie_info of cookie) {
             if (cookie_info.match("_uid")?.index == 0) {
@@ -71,23 +71,23 @@ export const changeCookieByCookies = function (cookie: string[] | undefined) {
         }
     changeCookie(s);
 }
-export const cookieConfig = function () { return { headers: { Cookie: `_uid=${config.uid};__client_id=${config.clientID}` } }; };
+export const cookieConfig = function () { return { headers: { Cookie: `_uid=${configFile.uid};__client_id=${configFile.clientID}` } }; };
 
 export const setVersion = function (version: string) {
-    config.version = version;
+    configFile.version = version;
     updateConfig();
 }
 
 export const saveProblem = function (pid: string, html: string) {
-    if (!config.savedProblem.includes(pid)) {
-        config.savedProblem.push(pid);
+    if (!configFile.savedProblem.includes(pid)) {
+        configFile.savedProblem.push(pid);
         updateConfig();
     }
     const filename = pid + '.html';
     fs.writeFileSync(path.join(globalThis.luoguPath, filename), html);
 }
 export const removeSavedProblem = function (pid: string) {
-    config.savedProblem.filter(p => p != pid);
+    configFile.savedProblem.filter(p => p != pid);
     let pth = path.join(globalThis.luoguPath, pid + '.html');
     if (fs.existsSync(pth))
         fs.unlinkSync(pth);

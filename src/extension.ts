@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   </div>
   </html>
   `
-  if (files.config.version !== version) {
+  if (files.configFile.version !== version) {
     const panel = vscode.window.createWebviewPanel('更新说明', 'vscode-luogu v' + version + ' 更新说明', vscode.ViewColumn.Two, {
       enableScripts: true,
       retainContextWhenHidden: true,
@@ -101,7 +101,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
   globalThis.init = true
   const effectiveDuration = +vscode.workspace.getConfiguration('luogu').get<'integer'>('effectiveDuration')!
   if (effectiveDuration !== -1) {
-    files.config.savedProblem.forEach(function (item) {
+    files.configFile.savedProblem.forEach(function (item) {
       const html = files.getSavedProblem(item);
       const savetime = +html.match(/<!-- SaveTime:(.*) -->/)![1]
       if ((+new Date() - savetime) / 1000 / 60 / 60 / 24 > effectiveDuration)
