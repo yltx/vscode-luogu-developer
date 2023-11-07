@@ -30,6 +30,8 @@
   
 - 查看、发布讨论
   
+## 如何贡献本项目
+[CONTRIBUTING.md](https://github.com/yltx/vscode-luogu-developer/blob/master/CONTRIBUTING.md)
 ## Others
 
 Luogu图标来自 [Luogu](https://www.luogu.com.cn/)，严禁商业使用
