@@ -2,7 +2,6 @@
 .vscode-test/**
 dist/test/**
 dist/**/*.map
-node_modules/
 src/**/*
 .gitignore
 tsconfig.json
@@ -16,3 +15,4 @@ tempCodeRunnerFile.ts
 .vs
 webpack.config.json
 .eslintrc.json
+.github/
