@@ -8,7 +8,7 @@ import { UserStatus } from '@/utils/shared'
 import * as files from '@/utils/files'
 import { fetchHomepage, genCookies } from '@/utils/api'
 import path from 'path'
-const version = '4.8.0'
+const version = '4.8.1'
 
 globalThis.islogged = false
 globalThis.init = false
@@ -51,12 +51,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>修复比赛赛题提交链接错误导致提交错误</li>
-            <li>删除了目前不支持的 languages</li>
-            <li>全面升级了项目依赖 languages</li>
-            <li>修复了犇犇功能 languages</li>
-            <li>增加了自动 O2 开关</li>
-            <li>增加了自动跳过题号选择开关，当文件名是正确的题目编号时跳过这一步骤</li>
+            <li>修复初次启动时配置文件创建失败错误</li>
+            <li>部分更新UI，更改了渲染LaTeX的库</li>
         </ol>
     </ul>
     </h2>
