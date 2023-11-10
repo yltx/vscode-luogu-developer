@@ -1,31 +1,29 @@
 {
-  "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
-    "target": "ES6",
-    "outDir": "dist",
-    "lib": ["DOM","ES6"],
-    "sourceMap": true,
-    "rootDir": "src",
-    "strict": true,
-    "noImplicitAny": false,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-    },
-    "esModuleInterop": true
-  },
-  "exclude": [
-    "node_modules/**/*",
-    ".vscode-test",
-    "CHANGELOG.md",
-    ".travis.yml",
-    ".gitignore",
-    ".gitattributes",
-    "CHANGELOG.md",
-    "tests"
-  ],
-  "include": [
-    "./src/**/*"
-  ]
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"target": "ES6",
+		"outDir": "dist",
+		"lib": ["DOM", "ES6"],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": true,
+		"noImplicitAny": false,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["src/*"]
+		},
+		"esModuleInterop": true
+	},
+	"exclude": [
+		"node_modules/**/*",
+		".vscode-test",
+		"CHANGELOG.md",
+		".travis.yml",
+		".gitignore",
+		".gitattributes",
+		"CHANGELOG.md",
+		"tests"
+	],
+	"include": ["./src/**/*"]
 }

@@ -1,130 +1,229 @@
-import SuperCommand from '../SuperCommand'
-import { parseProblemID, searchSolution, getStatus, loadUserIcon, postVote } from '@/utils/api'
-import { formatTime } from '@/utils/shared'
-import HTMLtemplate, { getResourceFilePath, usernameSpan } from '@/utils/html'
-import { UserStatus } from '@/utils/shared'
-import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils'
-import { ArticleDetails } from '@/model/luogu-api'
-import * as path from 'path'
-import md from '@/utils/markdown'
-import * as vscode from 'vscode'
-import { size, update } from 'lodash'
-
+import SuperCommand from '../SuperCommand';
+import {
+	parseProblemID,
+	searchSolution,
+	getStatus,
+	loadUserIcon,
+	postVote
+} from '@/utils/api';
+import { formatTime } from '@/utils/shared';
+import HTMLtemplate, { getResourceFilePath, usernameSpan } from '@/utils/html';
+import { UserStatus } from '@/utils/shared';
+import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
+import { ArticleDetails } from '@/model/luogu-api';
+import * as path from 'path';
+import md from '@/utils/markdown';
+import * as vscode from 'vscode';
+import { size, update } from 'lodash';
 
 export default new SuperCommand({
-  onCommand: 'solution',
-  handle: async () => {
-    while (!globalThis.init) { continue; }
-    try {
-      if (await getStatus() === UserStatus.SignedOut.toString()) {
-        vscode.window.showErrorMessage('未登录');
-        return;
-      }
-    } catch (err) {
-      vscode.window.showErrorMessage(`${err}`);
-      throw err;
-    }
-    const edtior = vscode.window.activeTextEditor;
-    let fileNameID = '';
-    if (edtior) {
-      fileNameID = await parseProblemID(path.parse(edtior.document.fileName).base);
-      fileNameID = fileNameID.toUpperCase();
-    }
-    const pid = (vscode.workspace.getConfiguration('luogu').get<boolean>('checkFilenameAsProblemID') && fileNameID !== '') ? fileNameID : await vscode.window.showInputBox({
-      placeHolder: '输入题号',
-      value: globalThis.pid,
-      ignoreFocusOut: true
-    }).then(res => res ? res.toUpperCase() : null);
-    if (!pid) {
-      return;
-    }
-    globalThis.pid = pid
-    try {
-      const res = await searchSolution(pid);
-      if (res.solutions.length === 0) {
-        vscode.window.showInformationMessage('该题目没有题解')
-        return
-      }
-      const panel = vscode.window.createWebviewPanel(pid, `${res.problem.pid} ${res.problem.title} 题解`, vscode.ViewColumn.Two, {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
-      })
-      let page=0;
-      panel.webview.onDidReceiveMessage(async function ({ type }: { type: string }) {
-        switch (type) {
-          case 'loaded':{
-            updatePassage(panel.webview,res.solutions[page],[page==0,page==res.solutions.length-1]);
-            break;
-          }case 'voteup': {
-            let r = (await postVote(res.solutions[page].id, res.solutions[page].currentUserVoteType == 1 ? 0 : 1, res.problem.pid)
-              .catch(function (err) {
-                vscode.window.showErrorMessage(`点赞/取消点赞失败：${err.response?.data?.errorMessage}`);
-                throw err;
-              }));
-            if (r.status != 200) {
-              vscode.window.showErrorMessage(`点赞/取消点赞失败：${r.data}`)
-              throw r;
-            }
-            res.solutions[page].thumbUp = r.data as number, res.solutions[page].currentUserVoteType = 1 - res.solutions[page].currentUserVoteType;
-            updateVote(panel.webview,res.solutions[page]);
-            break;
-          } case 'votedown': {
-            let r = (await postVote(res.solutions[page].id, res.solutions[page].currentUserVoteType == -1 ? 0 : -1, res.problem.pid)
-              .catch(function (err) {
-                vscode.window.showErrorMessage(`点踩/取消点踩失败：${err.response?.data?.errorMessage}`);
-                throw err;
-              }));
-            if (r.status != 200) {
-              vscode.window.showErrorMessage(`点踩/取消点踩失败：${r.data}`)
-              throw r;
-            }
-            res.solutions[page].thumbUp = r.data as number, res.solutions[page].currentUserVoteType = -1 - res.solutions[page].currentUserVoteType;
-            updateVote(panel.webview,res.solutions[page]);
-            break;
-          } case 'pagenext': {
-            if (page == res.solutions.length - 1) vscode.window.showErrorMessage(`已经是最后一页了`);
-            else ++page,updatePassage(panel.webview,res.solutions[page],[page==0,page==res.solutions.length-1]);
-            break;
-          } case 'pageprev': {
-            if (page == 0) vscode.window.showErrorMessage(`已经是第一页了`);
-            else --page,updatePassage(panel.webview,res.solutions[page],[page==0,page==res.solutions.length-1]);
-            break;
-          }
-        }
-      })
-      panel.webview.html = await genSolutionHTML(panel.webview, pid, res.problem.title);
-    } catch (err) {
-      vscode.window.showErrorMessage(`${err}`)
-      throw err;
-    }
-  }
-})
+	onCommand: 'solution',
+	handle: async () => {
+		while (!globalThis.init) {
+			continue;
+		}
+		try {
+			if ((await getStatus()) === UserStatus.SignedOut.toString()) {
+				vscode.window.showErrorMessage('未登录');
+				return;
+			}
+		} catch (err) {
+			vscode.window.showErrorMessage(`${err}`);
+			throw err;
+		}
+		const edtior = vscode.window.activeTextEditor;
+		let fileNameID = '';
+		if (edtior) {
+			fileNameID = await parseProblemID(
+				path.parse(edtior.document.fileName).base
+			);
+			fileNameID = fileNameID.toUpperCase();
+		}
+		const pid =
+			vscode.workspace
+				.getConfiguration('luogu')
+				.get<boolean>('checkFilenameAsProblemID') && fileNameID !== ''
+				? fileNameID
+				: await vscode.window
+						.showInputBox({
+							placeHolder: '输入题号',
+							value: globalThis.pid,
+							ignoreFocusOut: true
+						})
+						.then(res => (res ? res.toUpperCase() : null));
+		if (!pid) {
+			return;
+		}
+		globalThis.pid = pid;
+		try {
+			const res = await searchSolution(pid);
+			if (res.solutions.length === 0) {
+				vscode.window.showInformationMessage('该题目没有题解');
+				return;
+			}
+			const panel = vscode.window.createWebviewPanel(
+				pid,
+				`${res.problem.pid} ${res.problem.title} 题解`,
+				vscode.ViewColumn.Two,
+				{
+					enableScripts: true,
+					retainContextWhenHidden: true,
+					localResourceRoots: [
+						vscode.Uri.file(globalThis.resourcesPath),
+						vscode.Uri.file(globalThis.distPath)
+					]
+				}
+			);
+			let page = 0;
+			panel.webview.onDidReceiveMessage(async function ({
+				type
+			}: {
+				type: string;
+			}) {
+				switch (type) {
+					case 'loaded': {
+						updatePassage(panel.webview, res.solutions[page], [
+							page == 0,
+							page == res.solutions.length - 1
+						]);
+						break;
+					}
+					case 'voteup': {
+						let r = await postVote(
+							res.solutions[page].id,
+							res.solutions[page].currentUserVoteType == 1
+								? 0
+								: 1,
+							res.problem.pid
+						).catch(function (err) {
+							vscode.window.showErrorMessage(
+								`点赞/取消点赞失败：${err.response?.data?.errorMessage}`
+							);
+							throw err;
+						});
+						if (r.status != 200) {
+							vscode.window.showErrorMessage(
+								`点赞/取消点赞失败：${r.data}`
+							);
+							throw r;
+						}
+						(res.solutions[page].thumbUp = r.data as number),
+							(res.solutions[page].currentUserVoteType =
+								1 - res.solutions[page].currentUserVoteType);
+						updateVote(panel.webview, res.solutions[page]);
+						break;
+					}
+					case 'votedown': {
+						let r = await postVote(
+							res.solutions[page].id,
+							res.solutions[page].currentUserVoteType == -1
+								? 0
+								: -1,
+							res.problem.pid
+						).catch(function (err) {
+							vscode.window.showErrorMessage(
+								`点踩/取消点踩失败：${err.response?.data?.errorMessage}`
+							);
+							throw err;
+						});
+						if (r.status != 200) {
+							vscode.window.showErrorMessage(
+								`点踩/取消点踩失败：${r.data}`
+							);
+							throw r;
+						}
+						(res.solutions[page].thumbUp = r.data as number),
+							(res.solutions[page].currentUserVoteType =
+								-1 - res.solutions[page].currentUserVoteType);
+						updateVote(panel.webview, res.solutions[page]);
+						break;
+					}
+					case 'pagenext': {
+						if (page == res.solutions.length - 1)
+							vscode.window.showErrorMessage(`已经是最后一页了`);
+						else
+							++page,
+								updatePassage(
+									panel.webview,
+									res.solutions[page],
+									[
+										page == 0,
+										page == res.solutions.length - 1
+									]
+								);
+						break;
+					}
+					case 'pageprev': {
+						if (page == 0)
+							vscode.window.showErrorMessage(`已经是第一页了`);
+						else
+							--page,
+								updatePassage(
+									panel.webview,
+									res.solutions[page],
+									[
+										page == 0,
+										page == res.solutions.length - 1
+									]
+								);
+						break;
+					}
+				}
+			});
+			panel.webview.html = await genSolutionHTML(
+				panel.webview,
+				pid,
+				res.problem.title
+			);
+		} catch (err) {
+			vscode.window.showErrorMessage(`${err}`);
+			throw err;
+		}
+	}
+});
 
-const updatePassage=async function(webview:vscode.Webview,passage:ArticleDetails,disable:[boolean,boolean]) {
-  webview.postMessage({
-    type: "updatePassage", data: {
-      uid: passage.author.uid,
-      userIconBase64: (await loadUserIcon(passage.author.uid))?.toString("base64"),
-      userSpan: usernameSpan(passage.author),
-      timeStr: formatTime(new Date(passage.postTime * 1000), 'yyyy-MM-dd hh:mm:ss'),
-      passageHTML: md.render(passage.content),
-      disable
-    }
-  });
-  updateVote(webview,passage);
-}
-const updateVote=function(webview:vscode.Webview,passage:ArticleDetails){
-  webview.postMessage({
-    type: "updateVote", data: {
-      currentUserVoteType: passage.currentUserVoteType,
-      thumbUp: passage.thumbUp,
-    }
-  })
-}
+const updatePassage = async function (
+	webview: vscode.Webview,
+	passage: ArticleDetails,
+	disable: [boolean, boolean]
+) {
+	webview.postMessage({
+		type: 'updatePassage',
+		data: {
+			uid: passage.author.uid,
+			userIconBase64: (await loadUserIcon(passage.author.uid))?.toString(
+				'base64'
+			),
+			userSpan: usernameSpan(passage.author),
+			timeStr: formatTime(
+				new Date(passage.postTime * 1000),
+				'yyyy-MM-dd hh:mm:ss'
+			),
+			passageHTML: md.render(passage.content),
+			disable
+		}
+	});
+	updateVote(webview, passage);
+};
+const updateVote = function (webview: vscode.Webview, passage: ArticleDetails) {
+	webview.postMessage({
+		type: 'updateVote',
+		data: {
+			currentUserVoteType: passage.currentUserVoteType,
+			thumbUp: passage.thumbUp
+		}
+	});
+};
 
-const genSolutionHTML = async function (webview: vscode.Webview, pid: string, problem_title: string) {
-  return HTMLtemplate(webview, `${pid} ${problem_title} 题解`, `
+const genSolutionHTML = async function (
+	webview: vscode.Webview,
+	pid: string,
+	problem_title: string
+) {
+	return HTMLtemplate(
+		webview,
+		`${pid} ${problem_title} 题解`,
+		`
     <div id="header">
       <span id="writter">
       </span>
@@ -142,7 +241,8 @@ const genSolutionHTML = async function (webview: vscode.Webview, pid: string, pr
         <vscode-button id="pagenext_button" appearance="primary" onclick="vscode.postMessage({type:'pagenext'})">下一篇</vscode-button>
       </div>
     </div>
-  `, `
+  `,
+		`
     #header{
       display:flex;
       align-items: center;
@@ -203,7 +303,8 @@ const genSolutionHTML = async function (webview: vscode.Webview, pid: string, pr
         width:48%;
       }
     }
-  `, `
+  `,
+		`
     window.addEventListener('message',function(message){
       let type=message.data.type,data=message.data.data;
       switch(type){
@@ -224,5 +325,6 @@ const genSolutionHTML = async function (webview: vscode.Webview, pid: string, pr
         }
       }
     })
-  `)
-}
+  `
+	);
+};
