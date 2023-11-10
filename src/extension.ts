@@ -8,7 +8,7 @@ import { UserStatus } from '@/utils/shared'
 import * as files from '@/utils/files'
 import { fetchHomepage, genCookies } from '@/utils/api'
 import path from 'path'
-const version = '4.8.1'
+const version = '4.8.2'
 
 globalThis.islogged = false
 globalThis.init = false
@@ -51,8 +51,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     <h2>
     <ul>
         <ol>
-            <li>修复初次启动时配置文件创建失败错误</li>
-            <li>部分更新UI，更改了渲染LaTeX的库</li>
+            <li>改变了打包方式，修复了LaTeX渲染问题</li>
         </ol>
     </ul>
     </h2>
