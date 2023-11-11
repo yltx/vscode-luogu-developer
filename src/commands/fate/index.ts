@@ -4,29 +4,29 @@ import { UserStatus } from '@/utils/shared';
 import * as vscode from 'vscode';
 
 export default new SuperCommand({
-	onCommand: 'fate',
-	handle: async () => {
-		while (!globalThis.init) {
-			continue;
-		}
-		await getStatus()
-			.then(message => {
-				if (message === UserStatus.SignedOut.toString()) {
-					vscode.window.showErrorMessage('未登录');
-				}
-			})
-			.catch(err => {
-				console.error(err);
-				vscode.window.showErrorMessage(`${err}`);
-			});
-		await getFate()
-			.then(data => {
-				if (data.code !== 201 && data.code !== 200) {
-					vscode.window.showErrorMessage('打卡失败');
-				} else {
-					if (data.message === '') {
-						// vscode.window.showInformationMessage('打卡成功')
-						const css = `
+  onCommand: 'fate',
+  handle: async () => {
+    while (!globalThis.init) {
+      continue;
+    }
+    await getStatus()
+      .then(message => {
+        if (message === UserStatus.SignedOut.toString()) {
+          vscode.window.showErrorMessage('未登录');
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        vscode.window.showErrorMessage(`${err}`);
+      });
+    await getFate()
+      .then(data => {
+        if (data.code !== 201 && data.code !== 200) {
+          vscode.window.showErrorMessage('打卡失败');
+        } else {
+          if (data.message === '') {
+            // vscode.window.showInformationMessage('打卡成功')
+            const css = `
         .lg-punch .lg-punch-result {
           display: inline-block;
           font-size: 50px;
@@ -69,7 +69,7 @@ export default new SuperCommand({
           text-align: center!important;
         }
         `;
-						let html = `<!DOCTYPE html>
+            let html = `<!DOCTYPE html>
         <html>
         <head>
           <meta charset="UTF-8">
@@ -83,21 +83,21 @@ export default new SuperCommand({
         </body>
         </html>`;
 
-						let pannel = vscode.window.createWebviewPanel(
-							'',
-							`今日运势`,
-							vscode.ViewColumn.Two
-						);
-						// let pannelClosed = false;
-						// pannel.onDidDispose(() => pannelClosed = true)
-						pannel.webview.html = html;
-					} else {
-						vscode.window.showInformationMessage(data.message);
-					}
-				}
-			})
-			.catch(err => {
-				vscode.window.showErrorMessage(err);
-			});
-	}
+            let pannel = vscode.window.createWebviewPanel(
+              '',
+              `今日运势`,
+              vscode.ViewColumn.Two
+            );
+            // let pannelClosed = false;
+            // pannel.onDidDispose(() => pannelClosed = true)
+            pannel.webview.html = html;
+          } else {
+            vscode.window.showInformationMessage(data.message);
+          }
+        }
+      })
+      .catch(err => {
+        vscode.window.showErrorMessage(err);
+      });
+  }
 });

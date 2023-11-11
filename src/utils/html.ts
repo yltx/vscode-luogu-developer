@@ -5,23 +5,23 @@ import { getUserSvg, getUsernameColor } from './workspaceUtils';
 import EventEmitter from 'events';
 
 export const getResourceFilePath = (
-	webview: vscode.Webview,
-	relativePath: string
+  webview: vscode.Webview,
+  relativePath: string
 ) => {
-	const diskPath = vscode.Uri.file(
-		path.join(globalThis.resourcesPath, relativePath)
-	);
-	return webview.asWebviewUri(diskPath);
+  const diskPath = vscode.Uri.file(
+    path.join(globalThis.resourcesPath, relativePath)
+  );
+  return webview.asWebviewUri(diskPath);
 };
 
 const HTMLtemplate = function (
-	webview: vscode.Webview,
-	title: string,
-	body: string,
-	style: string = '',
-	script: string = ''
+  webview: vscode.Webview,
+  title: string,
+  body: string,
+  style: string = '',
+  script: string = ''
 ) {
-	return `
+  return `
         <!DOCTYPE html>
         <html lang="zh-cn">
         <head>
@@ -29,20 +29,20 @@ const HTMLtemplate = function (
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>${title}</title>
         <link rel="stylesheet" href="${getResourceFilePath(
-			webview,
-			'main.css'
-		)}">
+          webview,
+          'main.css'
+        )}">
         <script src="${webview.asWebviewUri(
-			vscode.Uri.file(path.join(globalThis.distPath, 'webview.js'))
-		)}"></script>
+          vscode.Uri.file(path.join(globalThis.distPath, 'webview.js'))
+        )}"></script>
 
         <link rel="stylesheet" href="">
         <script defer src=""></script>
         <script defer src=""></script>
         <link rel="stylesheet" href="${getResourceFilePath(
-			webview,
-			'katex/katex.min.css'
-		)}">
+          webview,
+          'katex/katex.min.css'
+        )}">
         <script>
             const $=globalThis.jquery;
         </script>
@@ -56,19 +56,19 @@ const HTMLtemplate = function (
 };
 
 export const usernameSpan = function (user: UserSummary) {
-	return `
+  return `
         <a href="https://www.luogu.com.cn/user/${
-			user.uid
-		}" class="username-span"><span class="username-name" style="color:${getUsernameColor(
-			user.color
-		)}">${user.name}</span>
+          user.uid
+        }" class="username-span"><span class="username-name" style="color:${getUsernameColor(
+          user.color
+        )}">${user.name}</span>
         ${getUserSvg(user.ccfLevel)}${
-			user.badge
-				? ` <span class="tag" style="background-color:${getUsernameColor(
-						user.color
-				  )}">${user.badge}</span>`
-				: ``
-		}</a>
+          user.badge
+            ? ` <span class="tag" style="background-color:${getUsernameColor(
+                user.color
+              )}">${user.badge}</span>`
+            : ``
+        }</a>
     `;
 };
 

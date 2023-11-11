@@ -1,37 +1,37 @@
 import * as vscode from 'vscode';
 
 class LuoguChannel implements vscode.Disposable {
-	readonly name: string = 'luogu';
-	private readonly channel: vscode.OutputChannel =
-		vscode.window.createOutputChannel('luogu');
+  readonly name: string = 'luogu';
+  private readonly channel: vscode.OutputChannel =
+    vscode.window.createOutputChannel('luogu');
 
-	public appendLine(message: string): void {
-		this.channel.appendLine(message);
-	}
+  public appendLine(message: string): void {
+    this.channel.appendLine(message);
+  }
 
-	public append(message: string): void {
-		this.channel.append(message);
-	}
+  public append(message: string): void {
+    this.channel.append(message);
+  }
 
-	public replace(message: string): void {
-		this.channel.replace(message);
-	}
+  public replace(message: string): void {
+    this.channel.replace(message);
+  }
 
-	public show(): void {
-		this.channel.show();
-	}
+  public show(): void {
+    this.channel.show();
+  }
 
-	public clear(): void {
-		this.channel.clear();
-	}
+  public clear(): void {
+    this.channel.clear();
+  }
 
-	public hide(): void {
-		this.channel.hide();
-	}
+  public hide(): void {
+    this.channel.hide();
+  }
 
-	public dispose(): void {
-		this.channel.dispose();
-	}
+  public dispose(): void {
+    this.channel.dispose();
+  }
 }
 
 export const luoguChannel = new LuoguChannel();

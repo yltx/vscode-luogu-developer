@@ -14,24 +14,24 @@ globalThis.init = false;
 globalThis.pid = '';
 
 export async function activate(
-	context: vscode.ExtensionContext
+  context: vscode.ExtensionContext
 ): Promise<void> {
-	debug('initializing luogu-vscode.');
-	RegisterCommands(context);
-	RegisterViews(context);
-	console.log('init luogu-vscode success.');
-	files.initFiles(context.extensionPath);
-	let clientID = '';
-	let uid = '';
-	let updated = true;
-	{
-		let tmp = files.initFiles(context.extensionPath);
-		if (tmp !== null) {
-			vscode.window.showInformationMessage(tmp[0]);
-			throw tmp[1];
-		}
-	}
-	const html = `
+  debug('initializing luogu-vscode.');
+  RegisterCommands(context);
+  RegisterViews(context);
+  console.log('init luogu-vscode success.');
+  files.initFiles(context.extensionPath);
+  let clientID = '';
+  let uid = '';
+  let updated = true;
+  {
+    let tmp = files.initFiles(context.extensionPath);
+    if (tmp !== null) {
+      vscode.window.showInformationMessage(tmp[0]);
+      throw tmp[1];
+    }
+  }
+  const html = `
   <!DOCTYPE html>
   <html>
   <head>
@@ -59,77 +59,72 @@ export async function activate(
   </div>
   </html>
   `;
-	if (files.configFile.version !== version) {
-		const panel = vscode.window.createWebviewPanel(
-			'更新说明',
-			'vscode-luogu v' + version + ' 更新说明',
-			vscode.ViewColumn.Two,
-			{
-				enableScripts: true,
-				retainContextWhenHidden: true,
-				localResourceRoots: [
-					vscode.Uri.file(globalThis.resourcesPath),
-					vscode.Uri.file(globalThis.distPath)
-				]
-			}
-		);
-		panel.webview.html = html;
-		files.setVersion(version);
-	}
-	try {
-		try {
-			const data = await fetchHomepage();
-			if (data.currentUser === undefined) {
-				vscode.window.showErrorMessage('未登录');
-				luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
-				globalThis.islogged = false;
-			} else {
-				vscode.window.showInformationMessage('登录成功');
-				luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
-				globalThis.islogged = true;
-			}
-		} catch (err) {
-			vscode.window.showErrorMessage('获取登录信息失败');
-			vscode.window.showErrorMessage(`${err}`);
-			// vscode.window.showErrorMessage('未登录')
-			luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
-			globalThis.islogged = false;
-		}
-	} catch (err) {
-		console.error(err);
-		vscode.window.showInformationMessage('未登录');
-		luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
-		globalThis.islogged = false;
-	}
-	if (!globalThis.islogged) genCookies();
-	globalThis.init = true;
-	const effectiveDuration = +vscode.workspace
-		.getConfiguration('luogu')
-		.get<'integer'>('effectiveDuration')!;
-	if (effectiveDuration !== -1) {
-		files.configFile.savedProblem.forEach(function (item) {
-			const html = files.getSavedProblem(item);
-			const savetime = +html.match(/<!-- SaveTime:(.*) -->/)![1];
-			if (
-				(+new Date() - savetime) / 1000 / 60 / 60 / 24 >
-				effectiveDuration
-			)
-				try {
-					files.removeSavedProblem(item);
-					vscode.window.showInformationMessage(
-						`删除过期题目：${item} 成功`
-					);
-					debug(
-						`Delete expired problem exists in ${
-							globalThis.luoguPath + '\\' + item
-						} successfully.`
-					);
-				} catch (err) {
-					vscode.window.showErrorMessage('删除过期题目失败');
-					throw err;
-				}
-		});
-	}
+  if (files.configFile.version !== version) {
+    const panel = vscode.window.createWebviewPanel(
+      '更新说明',
+      'vscode-luogu v' + version + ' 更新说明',
+      vscode.ViewColumn.Two,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [
+          vscode.Uri.file(globalThis.resourcesPath),
+          vscode.Uri.file(globalThis.distPath)
+        ]
+      }
+    );
+    panel.webview.html = html;
+    files.setVersion(version);
+  }
+  try {
+    try {
+      const data = await fetchHomepage();
+      if (data.currentUser === undefined) {
+        vscode.window.showErrorMessage('未登录');
+        luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
+        globalThis.islogged = false;
+      } else {
+        vscode.window.showInformationMessage('登录成功');
+        luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
+        globalThis.islogged = true;
+      }
+    } catch (err) {
+      vscode.window.showErrorMessage('获取登录信息失败');
+      vscode.window.showErrorMessage(`${err}`);
+      // vscode.window.showErrorMessage('未登录')
+      luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
+      globalThis.islogged = false;
+    }
+  } catch (err) {
+    console.error(err);
+    vscode.window.showInformationMessage('未登录');
+    luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
+    globalThis.islogged = false;
+  }
+  if (!globalThis.islogged) genCookies();
+  globalThis.init = true;
+  const effectiveDuration = +vscode.workspace
+    .getConfiguration('luogu')
+    .get<'integer'>('effectiveDuration')!;
+  if (effectiveDuration !== -1) {
+    files.configFile.savedProblem.forEach(function (item) {
+      const html = files.getSavedProblem(item);
+      const savetime = +html.match(/<!-- SaveTime:(.*) -->/)![1];
+      if ((+new Date() - savetime) / 1000 / 60 / 60 / 24 > effectiveDuration)
+        try {
+          files.removeSavedProblem(item);
+          vscode.window.showInformationMessage(`删除过期题目：${item} 成功`);
+          debug(
+            `Delete expired problem exists in ${
+              globalThis.luoguPath + '\\' + item
+            } successfully.`
+          );
+        } catch (err) {
+          vscode.window.showErrorMessage('删除过期题目失败');
+          throw err;
+        }
+    });
+  }
 }
 
 export function deactivate(): void {}
