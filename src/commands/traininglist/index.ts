@@ -1,64 +1,98 @@
-import SuperCommand from '../SuperCommand'
-import * as vscode from 'vscode'
-import { searchTrainingdetail, searchTraininglist } from '@/utils/api'
-import { getResourceFilePath } from '@/utils/html'
-import { showTrainDetails } from '@/utils/showTrainDetails'
-import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils'
-import showProblem from '@/utils/showProblem'
+import SuperCommand from '../SuperCommand';
+import * as vscode from 'vscode';
+import { searchTrainingdetail, searchTraininglist } from '@/utils/api';
+import { getResourceFilePath } from '@/utils/html';
+import { showTrainDetails } from '@/utils/showTrainDetails';
+import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
+import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'traininglist',
   handle: async () => {
-    const panel = vscode.window.createWebviewPanel('traininglist', `题单广场`, vscode.ViewColumn.Two, {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
-    })
+    const panel = vscode.window.createWebviewPanel(
+      'traininglist',
+      `题单广场`,
+      vscode.ViewColumn.Two,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [
+          vscode.Uri.file(globalThis.resourcesPath),
+          vscode.Uri.file(globalThis.distPath)
+        ]
+      }
+    );
     panel.webview.onDidReceiveMessage(async message => {
-      console.log(`Got type ${message.type} page ${message.page} request.`)
+      console.log(`Got type ${message.type} page ${message.page} request.`);
       if (message.type === 'open') {
-        const data = await searchTrainingdetail(message.data)
-        const panel2 = vscode.window.createWebviewPanel('题单详情', `${data['training']['title']}`, vscode.ViewColumn.Two, {
-          enableScripts: true,
-          retainContextWhenHidden: true,
-          localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
-        })
-        panel2.webview.html = await showTrainDetails(panel2.webview, message.data)
+        const data = await searchTrainingdetail(message.data);
+        const panel2 = vscode.window.createWebviewPanel(
+          '题单详情',
+          `${data['training']['title']}`,
+          vscode.ViewColumn.Two,
+          {
+            enableScripts: true,
+            retainContextWhenHidden: true,
+            localResourceRoots: [
+              vscode.Uri.file(globalThis.resourcesPath),
+              vscode.Uri.file(globalThis.distPath)
+            ]
+          }
+        );
+        panel2.webview.html = await showTrainDetails(
+          panel2.webview,
+          message.data
+        );
         panel2.webview.onDidReceiveMessage(async message => {
-          if (message.type === "open") {
-            console.log("pid:", message.data);
+          if (message.type === 'open') {
+            console.log('pid:', message.data);
             await showProblem(message.data, '');
           }
-        })
+        });
       } else if (message.type === 'request') {
         panel.webview.postMessage({
           message: {
             channel: message.channel,
-            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword, message.page) : await generateSelectedListHTML(message.keyword, message.page)
+            html:
+              message.channel === 0
+                ? await generateOfficialListHTML(message.keyword, message.page)
+                : await generateSelectedListHTML(message.keyword, message.page)
           }
-        })
+        });
       } else if (message.type === 'search') {
         panel.webview.postMessage({
           message: {
             channel: message.channel,
-            html: message.channel === 0 ? await generateOfficialListHTML(message.keyword, 1) : await generateSelectedListHTML(message.keyword, 1)
+            html:
+              message.channel === 0
+                ? await generateOfficialListHTML(message.keyword, 1)
+                : await generateSelectedListHTML(message.keyword, 1)
           }
-        })
+        });
       }
-    })
-    const html = await generategeneralHTML(panel.webview)
-    panel.webview.html = html
+    });
+    const html = await generategeneralHTML(panel.webview);
+    panel.webview.html = html;
   }
-})
+});
 
 const generategeneralHTML = async (webview: vscode.Webview) => {
   return `
   <html lang="zh">
     <head>
-      <link rel="stylesheet" href="${getResourceFilePath(webview, 'loader.css')}">
-      <link rel="stylesheet" href="${getResourceFilePath(webview, 'sweetalert.css')}">
+      <link rel="stylesheet" href="${getResourceFilePath(
+        webview,
+        'loader.css'
+      )}">
+      <link rel="stylesheet" href="${getResourceFilePath(
+        webview,
+        'sweetalert.css'
+      )}">
       <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
-      <script src="${getResourceFilePath(webview, 'sweetalert-dev.js')}"></script>
+      <script src="${getResourceFilePath(
+        webview,
+        'sweetalert-dev.js'
+      )}"></script>
       <style>
         pre {
             margin: .5em 0 !important;
@@ -170,37 +204,49 @@ const generategeneralHTML = async (webview: vscode.Webview) => {
     </div>
     </body>
   </html>
-  `
-}
+  `;
+};
 
 const generateOfficialListHTML = async (keyword: string, page: number) => {
-  const data = await searchTraininglist('official', keyword, page)
-  const list = data['trainings']['result']
-  const accepted = data['acceptedCounts']
-  console.log(data)
-  console.log(accepted)
-  let html = ''
-  html += '      <table border="0" width="100%">\n'
-  html += '        <tr>\n'
-  html += '          <th align="left" nowrap>编号</th>\n'
-  html += '          <th align="left" nowrap>名称</th>\n'
-  html += '          <th align="left" nowrap>完成度</th>\n'
-  html += '          <th nowrap>题目数</th>\n'
-  html += '          <th nowrap>收藏数</th>\n'
-  html += '        </tr>\n'
+  const data = await searchTraininglist('official', keyword, page);
+  const list = data['trainings']['result'];
+  const accepted = data['acceptedCounts'];
+  console.log(data);
+  console.log(accepted);
+  let html = '';
+  html += '      <table border="0" width="100%">\n';
+  html += '        <tr>\n';
+  html += '          <th align="left" nowrap>编号</th>\n';
+  html += '          <th align="left" nowrap>名称</th>\n';
+  html += '          <th align="left" nowrap>完成度</th>\n';
+  html += '          <th nowrap>题目数</th>\n';
+  html += '          <th nowrap>收藏数</th>\n';
+  html += '        </tr>\n';
   for (let i = 1; i <= list['length']; i++) {
-    html += '        <tr>\n'
-    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
+    html += '        <tr>\n';
+    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`;
+    html += `          <td align="left" nowrap><a href="${
+      list[i - 1]['title']
+    }" class="detail_btn" id="${list[i - 1]['id']}">${
+      list[i - 1]['title']
+    }</a></td>\n`;
     html += `          <td align="left" nowrap>\n
-            <progress value="${accepted[list[i - 1]['id']]}" max="${list[i - 1]['problemCount']}" style="height: 30px;width: 100px;" title="${accepted[list[i - 1]['id']]}/${list[i - 1]['problemCount']}"></progress>
-                     </td>\n`
+            <progress value="${accepted[list[i - 1]['id']]}" max="${
+              list[i - 1]['problemCount']
+            }" style="height: 30px;width: 100px;" title="${
+              accepted[list[i - 1]['id']]
+            }/${list[i - 1]['problemCount']}"></progress>
+                     </td>\n`;
     // html+=`          <td width="15px" align="left"></td>`
-    html += `          <td align="center" nowrap>${list[i - 1]['problemCount']}</td>\n`
-    html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
-    html += '        <tr>\n'
+    html += `          <td align="center" nowrap>${
+      list[i - 1]['problemCount']
+    }</td>\n`;
+    html += `          <td align="center" nowrap>${
+      list[i - 1]['markCount']
+    }</td>\n`;
+    html += '        <tr>\n';
   }
-  html += '      </table>\n'
+  html += '      </table>\n';
   html += `      <script>
       function turnOfficial(towards) {
         pageOfficial+=towards;
@@ -242,33 +288,45 @@ const generateOfficialListHTML = async (keyword: string, page: number) => {
             </td>
           </tr>
         </table>
-      </div>`
-  return html
-}
+      </div>`;
+  return html;
+};
 const generateSelectedListHTML = async (keyword: string, page: number) => {
-  const data = await searchTraininglist('select', keyword, page)
-  const list = data['trainings']['result']
-  console.log(data)
-  let html = ''
-  html += '      <table border="0" width="100%">\n'
-  html += '        <tr>\n'
-  html += '          <th align="left" nowrap>编号</th>\n'
-  html += '          <th align="left" nowrap>名称</th>\n'
-  html += '          <th nowrap>题目数</th>\n'
-  html += '          <th nowrap>收藏数</th>\n'
-  html += '          <th nowrap>创建者</th>\n'
-  html += '        </tr>\n'
+  const data = await searchTraininglist('select', keyword, page);
+  const list = data['trainings']['result'];
+  console.log(data);
+  let html = '';
+  html += '      <table border="0" width="100%">\n';
+  html += '        <tr>\n';
+  html += '          <th align="left" nowrap>编号</th>\n';
+  html += '          <th align="left" nowrap>名称</th>\n';
+  html += '          <th nowrap>题目数</th>\n';
+  html += '          <th nowrap>收藏数</th>\n';
+  html += '          <th nowrap>创建者</th>\n';
+  html += '        </tr>\n';
   for (let i = 1; i <= list['length']; i++) {
-    html += '        <tr>\n'
-    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`
-    html += `          <td align="left" nowrap><a href="${list[i - 1]['title']}" class="detail_btn" id="${list[i - 1]['id']}">${list[i - 1]['title']}</a></td>\n`
-    html += `          <td align="left" nowrap>${list[i - 1]['problemCount']}</td>\n`
+    html += '        <tr>\n';
+    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`;
+    html += `          <td align="left" nowrap><a href="${
+      list[i - 1]['title']
+    }" class="detail_btn" id="${list[i - 1]['id']}">${
+      list[i - 1]['title']
+    }</a></td>\n`;
+    html += `          <td align="left" nowrap>${
+      list[i - 1]['problemCount']
+    }</td>\n`;
     // html+=`          <td width="15px" align="left"></td>`
-    html += `          <td align="center" nowrap>${list[i - 1]['markCount']}</td>\n`
-    html += `          <td align="center" style="font-weight: bold; color: ${getUsernameColor(list[i - 1]['provider']['color'])};" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(list[i - 1]['provider']['ccfLevel'])}</td>\n`
-    html += '        <tr>\n'
+    html += `          <td align="center" nowrap>${
+      list[i - 1]['markCount']
+    }</td>\n`;
+    html += `          <td align="center" style="font-weight: bold; color: ${getUsernameColor(
+      list[i - 1]['provider']['color']
+    )};" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(
+      list[i - 1]['provider']['ccfLevel']
+    )}</td>\n`;
+    html += '        <tr>\n';
   }
-  html += '      </table>\n'
+  html += '      </table>\n';
   html += `      <script>
       function turnSelected(towards) {
         page+=towards;
@@ -310,6 +368,6 @@ const generateSelectedListHTML = async (keyword: string, page: number) => {
             </td>
           </tr>
         </table>
-      </div>`
-  return html
-}
+      </div>`;
+  return html;
+};

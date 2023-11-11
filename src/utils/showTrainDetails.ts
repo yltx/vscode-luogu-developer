@@ -1,100 +1,113 @@
-import { searchTrainingdetail } from './api'
-import { getResourceFilePath } from './html'
-import md from './markdown'
-import { tagsColor, tagsName } from './shared'
-import { getScoreColor } from './workspaceUtils'
-import * as vscode from 'vscode'
+import { searchTrainingdetail } from './api';
+import { getResourceFilePath } from './html';
+import md from './markdown';
+import { tagsColor, tagsName } from './shared';
+import { getScoreColor } from './workspaceUtils';
+import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {
-    return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`
+    return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`;
   } else {
     if (userScore !== -1) {
-      return `<span style="${getScoreColor(userScore)};font-weight: bold">${userScore}</span>`
+      return `<span style="${getScoreColor(
+        userScore
+      )};font-weight: bold">${userScore}</span>`;
     } else {
-      return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(122, 122, 122);"><svg data-v-1b44b3e6="" data-v-c06fccc2="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon svg-inline--fa fa-minus fa-w-14" data-v-303bbf52="" style="opacity: 0.7; width: 1em;"><path data-v-1b44b3e6="" fill="currentColor" d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" class=""></path></svg></span>`
+      return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(122, 122, 122);"><svg data-v-1b44b3e6="" data-v-c06fccc2="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon svg-inline--fa fa-minus fa-w-14" data-v-303bbf52="" style="opacity: 0.7; width: 1em;"><path data-v-1b44b3e6="" fill="currentColor" d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" class=""></path></svg></span>`;
     }
   }
-}
+};
 const getDifficultyStatus = (difficulty: number) => {
   switch (difficulty) {
     case 1:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(254, 76, 97); color: rgb(255, 255, 255);">入门</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(254, 76, 97); color: rgb(255, 255, 255);">入门</span>`;
     case 2:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(243, 156, 17); color: rgb(255, 255, 255);">普及-</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(243, 156, 17); color: rgb(255, 255, 255);">普及-</span>`;
     case 3:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(255, 193, 22); color: rgb(255, 255, 255);">普及/提高-</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(255, 193, 22); color: rgb(255, 255, 255);">普及/提高-</span>`;
     case 4:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(82, 196, 26); color: rgb(255, 255, 255);">普及+/提高</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(82, 196, 26); color: rgb(255, 255, 255);">普及+/提高</span>`;
     case 5:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(52, 152, 219); color: rgb(255, 255, 255);">提高+/省选-</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(52, 152, 219); color: rgb(255, 255, 255);">提高+/省选-</span>`;
     case 6:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(157, 61, 207); color: rgb(255, 255, 255);">省选/NOI-</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(157, 61, 207); color: rgb(255, 255, 255);">省选/NOI-</span>`;
     case 7:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(14, 29, 105); color: rgb(255, 255, 255);">NOI/NOI+/CTSC</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(14, 29, 105); color: rgb(255, 255, 255);">NOI/NOI+/CTSC</span>`;
     default:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`
+      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
   }
-}
+};
 const getTagsStatus = (tags: []) => {
-  let html = ''
+  let html = '';
   tags.forEach(index => {
-    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`
-  })
-  return html
-}
+    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`;
+  });
+  return html;
+};
 export class TrainDetals {
-  public TID = ''
-  public title = ''
-  public provider
-  public problemCount
-  public problemlist: [any[]] = [[]]
-  public description = ''
-  public userScore: [] = []
+  public TID = '';
+  public title = '';
+  public provider;
+  public problemCount;
+  public problemlist: [any[]] = [[]];
+  public description = '';
+  public userScore: [] = [];
 
-  public constructor(
-    fields?: any
-  ) {
+  public constructor(fields?: any) {
     if (!fields) {
-      return
+      return;
     }
-    this.TID = fields.pid
-    this.title = fields.title
-    this.provider = fields.provider
-    this.problemCount = fields.problemCount
-    this.problemlist = fields.problems
-    this.description = fields.description
-    this.userScore = fields.userScore
+    this.TID = fields.pid;
+    this.title = fields.title;
+    this.provider = fields.provider;
+    this.problemCount = fields.problemCount;
+    this.problemlist = fields.problems;
+    this.description = fields.description;
+    this.userScore = fields.userScore;
   }
 
   toHTML(): string {
-    let problemlist = '<div>\n'
+    let problemlist = '<div>\n';
     if (this.problemCount > 0) {
-      problemlist += '<table border="0" width="100%">\n'
-      problemlist += '  <tr>\n'
-      problemlist += '    <th nowrap>题号</th>\n'
-      problemlist += '    <th style="text-align: center;" nowrap>状态</th>\n'
-      problemlist += '    <th align="left" nowrap>题目名称</th>\n'
-      problemlist += '    <th align="left" nowrap>标签</th>\n'
-      problemlist += '    <th nowrap>难度</th>\n'
-      problemlist += '    <th nowrap>通过率</th>\n'
-      problemlist += '  </tr>\n'
+      problemlist += '<table border="0" width="100%">\n';
+      problemlist += '  <tr>\n';
+      problemlist += '    <th nowrap>题号</th>\n';
+      problemlist += '    <th style="text-align: center;" nowrap>状态</th>\n';
+      problemlist += '    <th align="left" nowrap>题目名称</th>\n';
+      problemlist += '    <th align="left" nowrap>标签</th>\n';
+      problemlist += '    <th nowrap>难度</th>\n';
+      problemlist += '    <th nowrap>通过率</th>\n';
+      problemlist += '  </tr>\n';
     }
     this.problemlist.forEach(index => {
       problemlist += `  <tr>
     <td nowrap>${index['problem']['pid']}</td>
-    <td style="text-align: center;" nowrap>${getUserScoreStatus(this.userScore ? (this.userScore['status'][index['problem']['pid']] ? this.userScore['score'][index['problem']['pid']] : -1) : -1, index['problem']['fullScore'])}</td>
-    <td align="left" nowrap><a href="${index['problem']['pid']}" class="pid" id="${index['problem']['pid']}">${md.render(index['problem']['title'])}</a></td>
+    <td style="text-align: center;" nowrap>${getUserScoreStatus(
+      this.userScore
+        ? this.userScore['status'][index['problem']['pid']]
+          ? this.userScore['score'][index['problem']['pid']]
+          : -1
+        : -1,
+      index['problem']['fullScore']
+    )}</td>
+    <td align="left" nowrap><a href="${
+      index['problem']['pid']
+    }" class="pid" id="${index['problem']['pid']}">${md.render(
+      index['problem']['title']
+    )}</a></td>
     <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
     <td nowrap>${getDifficultyStatus(index['problem']['difficulty'])}</td>
     <td nowrap>
-      <progress value="${index['problem']['totalAccepted']}" max="${index['problem']['totalSubmit']}" style="height: 30px;width: 100px;"></progress>
+      <progress value="${index['problem']['totalAccepted']}" max="${
+        index['problem']['totalSubmit']
+      }" style="height: 30px;width: 100px;"></progress>
     </td>
-</tr>`
-    })
+</tr>`;
+    });
     if (this.problemCount > 0) {
-      problemlist += '</table>\n'
+      problemlist += '</table>\n';
     }
-    problemlist += '</div>'
+    problemlist += '</div>';
     return `
     <div id="description">
     ${md.render(this.description)}\n
@@ -102,22 +115,33 @@ export class TrainDetals {
     <div style="display: none" id="problemlist">
     ${problemlist}
     </div>
-    `
+    `;
   }
 }
 export const showTrainDetails = async (webview: vscode.Webview, id: any) => {
-  const train = await searchTrainingdetail(id).then(res => new TrainDetals(res['training']))
-  return generateTrainDetailsHTML(webview, train)
-}
-export const generateTrainDetailsHTML = (webview: vscode.Webview, train: TrainDetals) => `
+  const train = await searchTrainingdetail(id).then(
+    res => new TrainDetals(res['training'])
+  );
+  return generateTrainDetailsHTML(webview, train);
+};
+export const generateTrainDetailsHTML = (
+  webview: vscode.Webview,
+  train: TrainDetals
+) => `
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${train.title}</title>
-  <link rel="stylesheet" href="${getResourceFilePath(webview, 'highlightjs.default.min.css')}">
-  <link rel="stylesheet" href="${getResourceFilePath(webview, 'katex.min.css')}">
+  <link rel="stylesheet" href="${getResourceFilePath(
+    webview,
+    'highlightjs.default.min.css'
+  )}">
+  <link rel="stylesheet" href="${getResourceFilePath(
+    webview,
+    'katex.min.css'
+  )}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
   <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
@@ -210,4 +234,4 @@ export const generateTrainDetailsHTML = (webview: vscode.Webview, train: TrainDe
 </span>
 ${train.toHTML()}
 </body>
-</html>`
+</html>`;

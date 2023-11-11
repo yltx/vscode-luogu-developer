@@ -1,107 +1,105 @@
 export interface IAPIProblem {
-  pid: string
-  tags: Tag[]
-  Type: number
-  Sample: [string[]]
-  InputFormat: string
-  OutputFormat: string
-  Name: string
-  Hint: string
-  Flag: string
-  Description: string
-  Background: string
-  Translation?: string
+  pid: string;
+  tags: Tag[];
+  Type: number;
+  Sample: [string[]];
+  InputFormat: string;
+  OutputFormat: string;
+  Name: string;
+  Hint: string;
+  Flag: string;
+  Description: string;
+  Background: string;
+  Translation?: string;
 }
 
 export interface IAPITag {
-  Id: number
-  Name: string
-  ParentId: number
+  Id: number;
+  Name: string;
+  ParentId: number;
 }
 
 export class Tag {
-  private id = 0
-  private name = ''
-  private parentId = 0
+  private id = 0;
+  private name = '';
+  private parentId = 0;
 
   constructor(fields?: IAPITag) {
     if (!fields) {
-      return
+      return;
     }
-    this.id = fields.Id
-    this.name = fields.Name
-    this.parentId = fields.ParentId
+    this.id = fields.Id;
+    this.name = fields.Name;
+    this.parentId = fields.ParentId;
   }
 
   setID(id: number) {
-    this.id = id
+    this.id = id;
   }
 
   getID() {
-    return this.id
+    return this.id;
   }
 
   setName(name: string) {
-    this.name = name
+    this.name = name;
   }
 
   getName() {
-    return this.name
+    return this.name;
   }
 
   setParentID(parentId: number) {
-    this.parentId = parentId
+    this.parentId = parentId;
   }
 
   getParentID() {
-    return this.parentId
+    return this.parentId;
   }
 }
 
 export class Problem {
-  public stringPID = ''
-  public contestID = ''
-  public tags: number[] = []
-  public type = 0
-  public sample: [string[]] = [[]]
-  public inputFormat = ''
-  public outputFormat = ''
-  public name = ''
-  public hint = ''
-  public flag = ''
-  public description = ''
-  public background = ''
-  public translation?: string
-  public timeLimit: Array<number> = []
-  public memoryLimit: Array<number> = []
-  public difficulty = 0
+  public stringPID = '';
+  public contestID = '';
+  public tags: number[] = [];
+  public type = 0;
+  public sample: [string[]] = [[]];
+  public inputFormat = '';
+  public outputFormat = '';
+  public name = '';
+  public hint = '';
+  public flag = '';
+  public description = '';
+  public background = '';
+  public translation?: string;
+  public timeLimit: Array<number> = [];
+  public memoryLimit: Array<number> = [];
+  public difficulty = 0;
 
-  public constructor(
-    fields?: any
-  ) {
+  public constructor(fields?: any) {
     if (!fields) {
-      return
+      return;
     }
-    this.stringPID = fields.pid
-    this.contestID = fields.contestid
-    this.tags = fields.tags
-    this.type = fields.type
-    this.sample = fields.samples
-    this.inputFormat = fields.inputFormat
-    this.outputFormat = fields.outputFormat
-    this.name = fields.title
-    this.hint = fields.hint
-    this.flag = fields.flag
-    this.description = fields.description
-    this.background = fields.background
-    this.translation = fields.translation
-    this.timeLimit = fields.limits.time
-    this.memoryLimit = fields.limits.memory
-    this.difficulty = fields.difficulty
+    this.stringPID = fields.pid;
+    this.contestID = fields.contestid;
+    this.tags = fields.tags;
+    this.type = fields.type;
+    this.sample = fields.samples;
+    this.inputFormat = fields.inputFormat;
+    this.outputFormat = fields.outputFormat;
+    this.name = fields.title;
+    this.hint = fields.hint;
+    this.flag = fields.flag;
+    this.description = fields.description;
+    this.background = fields.background;
+    this.translation = fields.translation;
+    this.timeLimit = fields.limits.time;
+    this.memoryLimit = fields.limits.memory;
+    this.difficulty = fields.difficulty;
   }
 
   toHTML(): string {
-    let sample = ''
+    let sample = '';
     this.sample.forEach((array, index) => {
       sample += `<strong>输入${index + 1}</strong>:
                     <p>
@@ -111,8 +109,8 @@ export class Problem {
                     <p>
                     ${array[1]}
                     </p>
-                    `
-    })
+                    `;
+    });
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -137,19 +135,37 @@ export class Problem {
             <h2>说明</h2>
             <p>${this.hint}</p>
         </article>
-        </html>`
+        </html>`;
   }
 
   toMarkDown(): string {
-
-    let sample = ''
+    let sample = '';
     this.sample.forEach((array, index) => {
-      sample += `输入${index + 1} : \n \`\`\` \n ${array[0][array[0].length - 1] === '\n' ? array[0] : array[0] + '\n'} \n \`\`\` \n 输出${index + 1} : \n \`\`\` \n ${array[1][array[1].length - 1] === '\n' ? array[1] : array[1] + '\n'} \n \`\`\` \n`
-    })
+      sample += `输入${index + 1} : \n \`\`\` \n ${
+        array[0][array[0].length - 1] === '\n' ? array[0] : array[0] + '\n'
+      } \n \`\`\` \n 输出${index + 1} : \n \`\`\` \n ${
+        array[1][array[1].length - 1] === '\n' ? array[1] : array[1] + '\n'
+      } \n \`\`\` \n`;
+    });
     // return ` # ${this.name} | [${this.stringPID}](https://www.luogu.com.cn/problem/${this.stringPID}) \n \n ${this.translation || ''} \n \n ## 题目描述 \n \n ${this.background} \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n $$<textarea id="copy">${sample}</textarea><button type="button" onclick="copyData()" class="btn btn-small">复制</button> \n \n ## 说明 \n \n ${this.hint} \n`
-    return ` # ${this.name} | [${this.stringPID}](https://www.luogu.com.cn/problem/${this.stringPID}${this.contestID}) \n \n ${this.translation ? '## 题意翻译 \n \n ' + this.translation : ''} \n \n ${this.background ? '## 题目背景 \n \n ' + this.background + ' \n \n ' : ''} ## 题目描述 \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${this.hint} \n`
-
+    return ` # ${this.name} | [${
+      this.stringPID
+    }](https://www.luogu.com.cn/problem/${this.stringPID}${
+      this.contestID
+    }) \n \n ${
+      this.translation ? '## 题意翻译 \n \n ' + this.translation : ''
+    } \n \n ${
+      this.background ? '## 题目背景 \n \n ' + this.background + ' \n \n ' : ''
+    } ## 题目描述 \n \n ${
+      this.description
+    } \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${
+      this.inputFormat
+    } \n \n **输出格式** \n \n ${
+      this.outputFormat
+    } \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${
+      this.hint
+    } \n`;
   }
 }
 
-export default Problem
+export default Problem;

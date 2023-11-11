@@ -1,18 +1,20 @@
-import SuperCommand from '../SuperCommand'
-import { UserStatus } from '@/utils/shared'
-import { fetchHomepage } from '@/utils/api'
-import * as vscode from 'vscode'
-import luoguStatusBar from '@/views/luoguStatusBar'
+import SuperCommand from '../SuperCommand';
+import { UserStatus } from '@/utils/shared';
+import { fetchHomepage } from '@/utils/api';
+import * as vscode from 'vscode';
+import luoguStatusBar from '@/views/luoguStatusBar';
 
 export default new SuperCommand({
   onCommand: 'userInfo',
   handle: async () => {
-    while (!globalThis.init) { continue; }
+    while (!globalThis.init) {
+      continue;
+    }
     try {
       const data = await fetchHomepage();
       if (data.currentUser === undefined) {
         vscode.window.showErrorMessage('未登录');
-        luoguStatusBar.updateStatusBar(UserStatus.SignedOut)
+        luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
         return;
       }
       vscode.window.showInformationMessage(data.currentUser.name);
@@ -21,4 +23,4 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
     }
   }
-})
+});

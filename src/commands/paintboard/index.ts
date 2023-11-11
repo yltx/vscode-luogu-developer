@@ -1,23 +1,33 @@
-import SuperCommand from '../SuperCommand'
-import * as vscode from 'vscode'
-import axios from '@/utils/api'
+import SuperCommand from '../SuperCommand';
+import * as vscode from 'vscode';
+import axios from '@/utils/api';
 
 export default new SuperCommand({
   onCommand: 'paintboard',
   handle: async () => {
-    const panel = vscode.window.createWebviewPanel(``, `冬日绘板`, vscode.ViewColumn.One, {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-      localResourceRoots: [vscode.Uri.file(globalThis.resourcesPath), vscode.Uri.file(globalThis.distPath)]
-    })
+    const panel = vscode.window.createWebviewPanel(
+      ``,
+      `冬日绘板`,
+      vscode.ViewColumn.One,
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [
+          vscode.Uri.file(globalThis.resourcesPath),
+          vscode.Uri.file(globalThis.distPath)
+        ]
+      }
+    );
     panel.webview.onDidReceiveMessage(async message => {
-      console.log(`Got ${message.type} request.`)
-      const paintboard = await axios.get("https://www.luogu.com.cn/paintboard/board").then(data => data?.data)
+      console.log(`Got ${message.type} request.`);
+      const paintboard = await axios
+        .get('https://www.luogu.com.cn/paintboard/board')
+        .then(data => data?.data);
       panel.webview.postMessage({
         type: 'init',
         board: paintboard
-      })
-    })
+      });
+    });
     panel.webview.html = `
     <!doctype html>
 	<html class="no-js">
@@ -330,6 +340,6 @@ export default new SuperCommand({
     </script>
     </body>
     </html>
-    `
+    `;
   }
-})
+});
