@@ -58,6 +58,13 @@ export class Tag {
   }
 }
 
+export class attachments {
+  private downloadLink = '';
+  private filename = '';
+  private id = '';
+  private size = 0;
+  private uploadTime = 0;
+}
 export class Problem {
   public stringPID = '';
   public contestID = '';
@@ -71,6 +78,7 @@ export class Problem {
   public flag = '';
   public description = '';
   public background = '';
+  public attachments: Array<attachments> = [];
   public translation?: string;
   public timeLimit: Array<number> = [];
   public memoryLimit: Array<number> = [];
@@ -92,6 +100,7 @@ export class Problem {
     this.flag = fields.flag;
     this.description = fields.description;
     this.background = fields.background;
+    this.attachments = fields.attachments;
     this.translation = fields.translation;
     this.timeLimit = fields.limits.time;
     this.memoryLimit = fields.limits.memory;
