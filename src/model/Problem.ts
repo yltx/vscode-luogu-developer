@@ -58,11 +58,11 @@ export class Tag {
   }
 }
 
-export class attachments {
-  private downloadLink = '';
-  private filename = '';
+export class attachment {
+  public downloadLink = '';
+  public filename = '';
   private id = '';
-  private size = 0;
+  public size = 0;
   private uploadTime = 0;
 }
 export class Problem {
@@ -78,7 +78,7 @@ export class Problem {
   public flag = '';
   public description = '';
   public background = '';
-  public attachments: Array<attachments> = [];
+  public attachments: Array<attachment> = [];
   public translation?: string;
   public timeLimit: Array<number> = [];
   public memoryLimit: Array<number> = [];
@@ -120,6 +120,22 @@ export class Problem {
                     </p>
                     `;
     });
+
+    let attachments_html = '';
+    this.attachments.forEach(attachment => {
+      attachments_html +=
+        '<a href="' +
+        baseUrl +
+        attachment.downloadLink +
+        '" download="' +
+        attachment.filename +
+        '">' +
+        attachment.filename +
+        '</a>' +
+        '<span class="light-text">' +
+        attachment.size +
+        '</span>';
+    });
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -143,6 +159,7 @@ export class Problem {
             ${sample}
             <h2>说明</h2>
             <p>${this.hint}</p>
+            <p>${attachments_html}</p>
         </article>
         </html>`;
   }
@@ -155,6 +172,11 @@ export class Problem {
       } \n \`\`\` \n 输出${index + 1} : \n \`\`\` \n ${
         array[1][array[1].length - 1] === '\n' ? array[1] : array[1] + '\n'
       } \n \`\`\` \n`;
+    });
+    let attachments_md = '';
+    this.attachments.forEach(attachment => {
+      console.log(attachment.downloadLink);
+      attachments_md += `[${attachment.filename} ${attachment.size}](https://www.luogu.com.cn/${attachment.downloadLink})`;
     });
     // return ` # ${this.name} | [${this.stringPID}](https://www.luogu.com.cn/problem/${this.stringPID}) \n \n ${this.translation || ''} \n \n ## 题目描述 \n \n ${this.background} \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n $$<textarea id="copy">${sample}</textarea><button type="button" onclick="copyData()" class="btn btn-small">复制</button> \n \n ## 说明 \n \n ${this.hint} \n`
     return ` # ${this.name} | [${
@@ -173,7 +195,7 @@ export class Problem {
       this.outputFormat
     } \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${
       this.hint
-    } \n`;
+    } \n \n ${this.attachments ? '## 附件 \n \n ' + attachments_md : ''}\n`;
   }
 }
 
