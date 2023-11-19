@@ -10,6 +10,7 @@ export interface IAPIProblem {
   Flag: string;
   Description: string;
   Background: string;
+  Attachments: Array<attachment>;
   Translation?: string;
 }
 
@@ -64,6 +65,14 @@ export class attachment {
   private id = '';
   public size = 0;
   private uploadTime = 0;
+
+  public constructor(field?: any) {
+    this.downloadLink = field.downloadLink;
+    this.filename = field.filename;
+    this.id = field.id;
+    this.size = field.size;
+    this.uploadTime = field.uploadTime;
+  }
 }
 export class Problem {
   public stringPID = '';
@@ -124,8 +133,7 @@ export class Problem {
     let attachments_html = '';
     this.attachments.forEach(attachment => {
       attachments_html +=
-        '<a href="' +
-        baseUrl +
+        '<a href="https://www.luogu.com.cn/' +
         attachment.downloadLink +
         '" download="' +
         attachment.filename +
@@ -175,8 +183,17 @@ export class Problem {
     });
     let attachments_md = '';
     this.attachments.forEach(attachment => {
-      console.log(attachment.downloadLink);
-      attachments_md += `[${attachment.filename} ${attachment.size}](https://www.luogu.com.cn/${attachment.downloadLink})`;
+      let fileSize = '';
+      if (attachment.size < 1024) {
+        fileSize = attachment.size + 'B';
+      } else if (attachment.size < 1024 * 1024) {
+        fileSize = (attachment.size / 1024).toFixed(2) + 'KB';
+      } else if (attachment.size < 1024 * 1024 * 1024) {
+        fileSize = (attachment.size / 1024 / 1024).toFixed(2) + 'MB';
+      } else {
+        fileSize = (attachment.size / 1024 / 1024 / 1024).toFixed(2) + 'GB';
+      }
+      attachments_md += `[${attachment.filename} ${fileSize}](https://www.luogu.com.cn/${attachment.downloadLink})`;
     });
     // return ` # ${this.name} | [${this.stringPID}](https://www.luogu.com.cn/problem/${this.stringPID}) \n \n ${this.translation || ''} \n \n ## 题目描述 \n \n ${this.background} \n \n ${this.description} \n \n ## 输入输出格式 \n \n **输入格式** \n \n ${this.inputFormat} \n \n **输出格式** \n \n ${this.outputFormat} \n \n ## 输入输出样例 \n \n $$<textarea id="copy">${sample}</textarea><button type="button" onclick="copyData()" class="btn btn-small">复制</button> \n \n ## 说明 \n \n ${this.hint} \n`
     return ` # ${this.name} | [${
