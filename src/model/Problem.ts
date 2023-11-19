@@ -212,7 +212,7 @@ export class Problem {
       this.outputFormat
     } \n \n ## 输入输出样例 \n \n ${sample} \n \n ## 说明/提示 \n \n ${
       this.hint
-    } \n \n ${this.attachments ? '## 附件 \n \n ' + attachments_md : ''}\n`;
+    } \n \n ${attachments_md ? '## 附件 \n \n ' + attachments_md : ''}\n`;
   }
 }
 
