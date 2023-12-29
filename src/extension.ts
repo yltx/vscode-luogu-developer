@@ -7,7 +7,7 @@ import luoguStatusBar from '@/views/luoguStatusBar';
 import { UserStatus } from '@/utils/shared';
 import * as files from '@/utils/files';
 import { fetchHomepage, genCookies } from '@/utils/api';
-const version = '4.8.2';
+const version = '4.8.3';
 
 globalThis.islogged = false;
 globalThis.init = false;
@@ -52,7 +52,7 @@ export async function activate(
     <h2>
     <ul>
         <ol>
-            <li>改变了打包方式，修复了LaTeX渲染问题</li>
+            <li>修复了对某些特殊题号的解析问题</li>
         </ol>
     </ul>
     </h2>
