@@ -80,11 +80,11 @@ export async function activate(
     try {
       const data = await fetchHomepage();
       if (data.currentUser === undefined) {
-        vscode.window.showErrorMessage('未登录');
+        // vscode.window.showErrorMessage('未登录');
         luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
         globalThis.islogged = false;
       } else {
-        vscode.window.showInformationMessage('登录成功');
+        // vscode.window.showInformationMessage('登录成功');
         luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
         globalThis.islogged = true;
       }
@@ -97,7 +97,7 @@ export async function activate(
     }
   } catch (err) {
     console.error(err);
-    vscode.window.showInformationMessage('未登录');
+    // vscode.window.showInformationMessage('未登录');
     luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
     globalThis.islogged = false;
   }
