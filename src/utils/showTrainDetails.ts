@@ -1,3 +1,4 @@
+import { Problem, ProblemSetDetails, UserSummary } from 'luogu-api';
 import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
@@ -37,7 +38,7 @@ const getDifficultyStatus = (difficulty: number) => {
       return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
   }
 };
-const getTagsStatus = (tags: []) => {
+const getTagsStatus = (tags: number[]) => {
   let html = '';
   tags.forEach(index => {
     html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`;
@@ -45,21 +46,23 @@ const getTagsStatus = (tags: []) => {
   return html;
 };
 export class TrainDetals {
-  public TID = '';
-  public title = '';
-  public provider;
-  public problemCount;
-  public problemlist: [any[]] = [[]];
-  public description = '';
-  public userScore: [] = [];
+  public title: string;
+  public problemCount: number;
+  public problemlist: { problem: Problem }[];
+  public description: string;
+  public userScore: {
+    user: UserSummary;
+    totalScore: number;
+    score: {
+      [pid: string]: number | null;
+    };
+    status: {
+      [pid: string]: boolean;
+    };
+  } | null;
 
-  public constructor(fields?: any) {
-    if (!fields) {
-      return;
-    }
-    this.TID = fields.pid;
+  public constructor(fields: ProblemSetDetails) {
     this.title = fields.title;
-    this.provider = fields.provider;
     this.problemCount = fields.problemCount;
     this.problemlist = fields.problems;
     this.description = fields.description;
@@ -118,7 +121,7 @@ export class TrainDetals {
     `;
   }
 }
-export const showTrainDetails = async (webview: vscode.Webview, id: any) => {
+export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
   const train = await searchTrainingdetail(id).then(
     res => new TrainDetals(res['training'])
   );

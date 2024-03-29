@@ -1,3 +1,5 @@
+import { Maybe, ProblemDetails, ProblemStatus } from 'luogu-api';
+
 export interface IAPIProblem {
   pid: string;
   tags: Tag[];
@@ -59,37 +61,29 @@ export class Tag {
 }
 
 export class Problem {
-  public stringPID = '';
-  public contestID = '';
-  public tags: number[] = [];
-  public type = 0;
-  public sample: [string[]] = [[]];
-  public inputFormat = '';
-  public outputFormat = '';
-  public name = '';
-  public hint = '';
-  public flag = '';
-  public description = '';
-  public background = '';
+  public stringPID: string;
+  public contestID?: number;
+  public tags: number[];
+  public sample: [string, string][];
+  public inputFormat: string;
+  public outputFormat: string;
+  public name: string;
+  public hint: string;
+  public description: string;
+  public background: string;
   public translation?: string;
   public timeLimit: Array<number> = [];
   public memoryLimit: Array<number> = [];
   public difficulty = 0;
 
-  public constructor(fields?: any) {
-    if (!fields) {
-      return;
-    }
+  public constructor(fields: ProblemDetails & Maybe<ProblemStatus>) {
     this.stringPID = fields.pid;
-    this.contestID = fields.contestid;
     this.tags = fields.tags;
-    this.type = fields.type;
     this.sample = fields.samples;
     this.inputFormat = fields.inputFormat;
     this.outputFormat = fields.outputFormat;
     this.name = fields.title;
     this.hint = fields.hint;
-    this.flag = fields.flag;
     this.description = fields.description;
     this.background = fields.background;
     this.translation = fields.translation;

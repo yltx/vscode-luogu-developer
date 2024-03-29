@@ -14,8 +14,8 @@ export default new SuperCommand({
     const selectedDifficulty = vscode.workspace
       .getConfiguration('luogu')
       .get<string>('defaultDifficulty')!;
-    let diff: string[] = [];
-    for (let item in difficultyID) {
+    const diff: string[] = [];
+    for (const item in difficultyID) {
       if (isNaN(Number(item))) {
         diff.push(item);
       }
@@ -34,8 +34,8 @@ export default new SuperCommand({
     const selectedProblemset = vscode.workspace
       .getConfiguration('luogu')
       .get<string>('defaultProblemSet')!;
-    let prob: string[] = [];
-    for (let item in problemset) {
+    const prob: string[] = [];
+    for (const item in problemset) {
       if (isNaN(Number(item))) {
         prob.push(item);
       }

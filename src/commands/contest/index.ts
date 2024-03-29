@@ -19,6 +19,7 @@ import {
   getScoreColor
 } from '@/utils/workspaceUtils';
 import { showProblem } from '../../utils/showProblem';
+import { ContestData, GetScoreboardResponse } from 'luogu-api';
 
 export default new SuperCommand({
   onCommand: 'contest',
@@ -30,7 +31,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage('未登录');
       return;
     }
-    let defaultID = globalThis.cid;
+    const defaultID = globalThis.cid;
     const cid = await vscode.window
       .showInputBox({
         placeHolder: '输入比赛编号',
@@ -91,8 +92,8 @@ export default new SuperCommand({
 });
 
 const generateRanklist = async (
-  res: any[],
-  ranklist: any[],
+  res: ContestData,
+  ranklist: GetScoreboardResponse,
   nowpage: number
 ) => {
   console.log(ranklist);
@@ -111,7 +112,7 @@ const generateRanklist = async (
     let i = 0;
     i <
     Math.min(
-      ranklist['scoreboard']['perPage'],
+      ranklist['scoreboard']['perPage'] || 0,
       ranklist['scoreboard']['count'] - 50 * (nowpage - 1)
     );
     i++
@@ -153,9 +154,11 @@ const generateRanklist = async (
               '<td align="center" style="font-weight: bold; color: rgb(82, 196, 26);';
             if (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
-              ranklist['firstBloodUID'][
-                res['contestProblems'][j]['problem']['pid']
-              ]
+              (ranklist['firstBloodUID']
+                ? ranklist['firstBloodUID'][
+                    res['contestProblems'][j]['problem']['pid']
+                  ]
+                : undefined)
             ) {
               html += ' background-color: rgb(217, 240, 199);';
             }
@@ -168,9 +171,11 @@ const generateRanklist = async (
             )}; font-weight: bold;`;
             if (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
-              ranklist['firstBloodUID'][
-                res['contestProblems'][j]['problem']['pid']
-              ]
+              (ranklist['firstBloodUID']
+                ? ranklist['firstBloodUID'][
+                    res['contestProblems'][j]['problem']['pid']
+                  ]
+                : undefined)
             ) {
               html += ' background-color: rgb(217, 240, 199);';
             }
@@ -199,9 +204,11 @@ const generateRanklist = async (
             html += '<td align="center"';
             if (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
-              ranklist['firstBloodUID'][
-                res['contestProblems'][j]['problem']['pid']
-              ]
+              (ranklist['firstBloodUID']
+                ? ranklist['firstBloodUID'][
+                    res['contestProblems'][j]['problem']['pid']
+                  ]
+                : undefined)
             ) {
               html += ' style="background-color: rgb(217, 240, 199);"';
             }
@@ -261,8 +268,8 @@ const generateRanklist = async (
 
 const generateHTML = async (
   webview: vscode.Webview,
-  res: any[],
-  ranklist: any[]
+  res: ContestData,
+  ranklist: GetScoreboardResponse
 ) => {
   const contest = res['contest'];
   console.log(ranklist);
@@ -414,7 +421,7 @@ const generateHTML = async (
                           contestVisibility[contest['visibilityType']]
                         }</span>
                         <span data-v-20b7d558 data-v-c0996248 class="lfe-caption tag" style="${
-                          contestRated[contest['rated']]
+                          contestRated[contest['rated'] ? 'true' : 'false']
                         }">Rated</span>
                     </div>
                     <div>

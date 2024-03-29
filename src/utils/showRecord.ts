@@ -8,11 +8,12 @@ import {
 import { fetchResult } from '@/utils/api';
 import { getResourceFilePath } from './html';
 import { debug } from '@/utils/debug';
+import { RecordData, TestCaseStatus } from 'luogu-api';
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
 export const showRecord = async (rid: number) => {
-  let panel = vscode.window.createWebviewPanel(
+  const panel = vscode.window.createWebviewPanel(
     `${rid}`,
     `R${rid} 记录详情`,
     vscode.ViewColumn.Two,
@@ -67,16 +68,17 @@ const entityMap = {
 };
 
 const escapeHtml = (data: string) => {
-  return data.replace(/[&<>"'`=\/]/g, s => entityMap[s]);
+  return data.replace(/[&<>"'`=/]/g, s => entityMap[s]);
 };
 
-const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
+const generateRecordHTML = async (
+  webview: vscode.Webview,
+  data: RecordData
+) => {
   let html = '';
   debug('Generating record html:', data);
-  const subtasks: any[] = Object.values(
-    data.record.detail.judgeResult.subtasks
-  );
-  const testCaseGroup: any[] = Object.values(data.testCaseGroup);
+  const subtasks = Object.values(data.record.detail.judgeResult.subtasks);
+  const testCaseGroup = Object.values(data.testCaseGroup);
   const subtasksID = Object.keys(data.testCaseGroup);
   const problemInfo = data.record.problem;
   debug('subtasks: ', subtasks);
@@ -92,7 +94,7 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
         <div data-v-796309f8="" data-v-327ef1ce="" class="card padding-default">
           <h3 data-v-327ef1ce="" data-v-796309f8="" class="lfe-h3">编译信息</h3>
           <blockquote data-v-327ef1ce="" data-v-796309f8="" class="compile-info">
-          ${escapeHtml(data.record.detail.compileResult.message).replace(
+          ${escapeHtml(data.record.detail.compileResult.message || '').replace(
             /\n/g,
             '<br />'
           )}
@@ -127,7 +129,7 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
         html += await generateRecordSubtaskHTML(
           subtasks[currentSubtask].testCases,
           Math.max(
-            subtasks[currentSubtask].testCases.length || 0,
+            Object.keys(subtasks[currentSubtask].testCases).length,
             testCaseGroup[currentSubtask].length
           ),
           testCaseGroup[currentSubtask],
@@ -136,7 +138,7 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
       } else {
         html += await generateRecordSubtaskHTML(
           subtasks[currentSubtask].testCases,
-          subtasks[currentSubtask].testCases.length,
+          Object.keys(subtasks[currentSubtask].testCases).length,
           testCaseGroup[currentSubtask],
           problemInfo.type
         );
@@ -145,6 +147,8 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
     }
     html += '</div></div></div>';
   }
+  if (data.record.time === null) data.record.time = 0;
+  if (data.record.memory === null) data.record.memory = 0;
   // todo: open problem in vscode
   return `
   <!DOCTYPE html>
@@ -196,8 +200,8 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
         data.record.time < 1000
           ? data.record.time.toString() + `ms`
           : data.record.time < 60000
-          ? (data.record.time / 1000).toString() + `s`
-          : (data.record.time / 60000).toString() + `min`
+            ? (data.record.time / 1000).toString() + `s`
+            : (data.record.time / 60000).toString() + `min`
       }</p>
       <br />
       <p class="info-card__desc-title">内存：${
@@ -214,10 +218,14 @@ const generateRecordHTML = async (webview: vscode.Webview, data: any) => {
 };
 
 const generateRecordSubtaskHTML = async (
-  testcases: any[],
+  testcases:
+    | TestCaseStatus[]
+    | {
+        [id: number]: TestCaseStatus;
+      },
   len: number,
-  casesid: any[],
-  type: String
+  casesid: number[],
+  type: string
 ) => {
   let html = '';
   debug('testcases: ', testcases);
@@ -236,8 +244,8 @@ const generateRecordSubtaskHTML = async (
               testcases[casesid[i]].time < 1000
                 ? testcases[casesid[i]].time.toString() + `ms`
                 : testcases[casesid[i]].time < 60000
-                ? (testcases[casesid[i]].time / 1000).toString() + `s`
-                : (testcases[casesid[i]].time / 60000).toString() + `min`
+                  ? (testcases[casesid[i]].time / 1000).toString() + `s`
+                  : (testcases[casesid[i]].time / 60000).toString() + `min`
             }/${
               testcases[casesid[i]].memory < 1000
                 ? testcases[casesid[i]].memory.toString() + `KB`
@@ -270,8 +278,8 @@ const generateRecordSubtaskHTML = async (
               testcases[i].time < 1000
                 ? testcases[i].time.toString() + `ms`
                 : testcases[i].time < 60000
-                ? (testcases[i].time / 1000).toString() + `s`
-                : (testcases[i].time / 60000).toString() + `min`
+                  ? (testcases[i].time / 1000).toString() + `s`
+                  : (testcases[i].time / 60000).toString() + `min`
             }/${
               testcases[i].memory < 1000
                 ? testcases[i].memory.toString() + `KB`

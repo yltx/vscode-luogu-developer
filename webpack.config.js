@@ -1,66 +1,152 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 //@ts-check
+'use strict';
 
-"use strict";
+const resolve = require('path').resolve;
 
-const path = require("path");
-
-//@ts-check
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
-/** @type WebpackConfig */
-const baseConfig = {
-  mode: "none", // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
-  externals: {
-    vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-    // modules added here also need to be added in the .vscodeignore file
-  },
-  resolve: {
-    extensions: [".ts", ".js"],
-    alias: {
-      '@': path.resolve(__dirname, 'src')
+/**
+ * @param { 'production' | 'development' | 'none' } mode
+ * @returns {WebpackConfig}
+ */
+function getBaseConfig(mode) {
+  return {
+    mode,
+    externals: {
+      vscode: 'commonjs vscode'
     },
-  },
-  devtool: "nosources-source-map",
-  infrastructureLogging: {
-    level: "log", // enables logging required for problem matchers
-  },
-  module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: [{ loader: "ts-loader" }],
-      },
-    ],
-  },
-};
+    devtool: mode !== 'production' ? 'source-map' : undefined,
+    infrastructureLogging: {
+      level: 'log'
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js', '.jsx'],
+      alias: {
+        '@': resolve('src'),
+        '@w': resolve('webview'),
+        'luogu-api': resolve('luogu-api-docs', 'luogu-api.d.ts')
+      }
+    }
+  };
+}
 
-// Config for extension source code (to be run in a Node-based context)
-/** @type WebpackConfig */
-const extensionConfig = {
-  ...baseConfig,
-  target: "node",
-  entry: "./src/extension.ts",
-  externals: ["vscode"],
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "extension.js",
-    libraryTarget: "commonjs2",
-  },
-};
+/**
+ * @param { 'production' | 'development' | 'none' } mode
+ * @returns {WebpackConfig}
+ */
+function getExtensionConfig(mode) {
+  return {
+    ...getBaseConfig(mode),
+    target: 'node',
+    entry: './src/extension.ts',
+    output: {
+      filename: 'extension.js',
+      path: resolve('dist'),
+      libraryTarget: 'commonjs2'
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: resolve('tsconfig.extension.json')
+              }
+            }
+          ]
+        }
+      ]
+    }
+  };
+}
 
-// Config for webview source code (to be run in a web-based context)
-/** @type WebpackConfig */
-const webviewConfig = {
-  ...baseConfig,
-  target: ["web", "es2020"],
-  entry: "./src/webview/main.ts",
-  experiments: { outputModule: true },
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "webview.js",
-    chunkFormat: "module",
-  },
-};
+/**
+ * @param { 'production' | 'development' | 'none' } mode
+ * @returns {WebpackConfig}
+ */
+function getOldWebviewConfig(mode) {
+  return {
+    ...getBaseConfig(mode),
+    target: ['web', 'es2020'],
+    entry: './src/webview/main.ts',
+    output: {
+      filename: 'webview.js',
+      path: resolve('dist')
+    },
+    module: {
+      rules: [
+        {
+          test: /\.tsx?$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: 'ts-loader',
+              options: {
+                configFile: resolve('tsconfig.json')
+              }
+            }
+          ]
+        }
+      ]
+    }
+  };
+}
 
-module.exports = [extensionConfig, webviewConfig];
+/**
+ * @param { 'production' | 'development' | 'none' } mode
+ * @param {WebpackConfig['entry']} entry
+ * @returns {WebpackConfig}
+ */
+function GetWebviewConfig(mode, entry) {
+  return {
+    ...getBaseConfig(mode),
+    entry,
+    target: ['web', 'es2020'],
+    output: {
+      filename: '[name].js',
+      path: resolve('dist')
+    },
+    module: {
+      rules: [
+        {
+          exclude: /node_modules/,
+          test: /\.tsx?$/,
+          use: {
+            loader: 'ts-loader',
+            options: {
+              configFile: resolve('tsconfig.webview.json')
+            }
+          }
+        },
+        {
+          exclude: /node_modules/,
+          test: /\.css$/,
+          use: ['style-loader', 'css-loader']
+        }
+      ]
+    }
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // plugins: [new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()]
+  };
+}
+
+module.exports =
+  /**
+   * @param {{ mode: 'production' | 'development' | 'none' | undefined; }} argv
+   * @returns { Promise<WebpackConfig[]> }
+   */
+  function (env, argv) {
+    const mode = argv.mode || 'none';
+    return Promise.all([
+      getExtensionConfig(mode),
+      getOldWebviewConfig(mode),
+      GetWebviewConfig(mode, {
+        benben: './webview/benben'
+      })
+    ]);
+  };

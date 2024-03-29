@@ -19,12 +19,12 @@
 
 - Fix:
   1. 初次启动时配置文件创建失败
-- Optimize:
-  1.部分更新UI，更改了渲染LaTeX的库
+- Optimize: 1.部分更新UI，更改了渲染LaTeX的库
 
 ## 4.8.0
 
 - Fix:
+
   1. 比赛赛题提交链接错误导致提交错误
   2. 删除了目前不支持的 languages
   3. 全面升级了项目依赖 Thanks@My.Python
@@ -48,6 +48,7 @@
 ## 4.7.1
 
 - Fix:
+
   1. 无法从题单广场打开的题单点击进入题目
 
 - Add:
@@ -71,6 +72,7 @@
 ## 4.6.2
 
 - Add:
+
   1. 支持打开 AtCoder 来源的题目
 
 - Fix:
@@ -94,6 +96,7 @@
 ## 4.5.10
 
 - Fix:
+
   1. 无法显示子任务
 
 - Add:
@@ -103,7 +106,7 @@
 
 - Fix & Add:
   1. 更新支持的语言
-   
+
 ## 4.5.8
 
 - Add:
@@ -225,13 +228,13 @@
 
 - Fix:
   1. LaTeX 字体显示
-   
+
 ## 4.3.9
 
 - Optimize user experience
 - Fix:
   1. 题目界面 LaTeX 显示
-   
+
 ## 4.3.8
 
 - Fix:
@@ -244,10 +247,9 @@
 - Add:
   1. 评测记录界面 Judging 状态显示
 - Update README.md
-   
 - Fix:
   1. UKE 状态显示
-   
+
 ## 4.3.5
 
 - Fix：
@@ -257,7 +259,7 @@
 
 - Optimize code
 - 添加部分错误处理
-  
+
 ## 4.3.3
 
 - 修复登出功能
@@ -265,12 +267,12 @@
 ## 4.3.2
 
 - 修复登录功能
-  
+
 ## 4.3.1
 
 - 使用 cookie 登录时可使用用户名
 - Optimize user experience
-  
+
 ## 4.3.0
 
 - 增加了快捷键
@@ -295,15 +297,15 @@
 ## 4.2.6
 
 - 提交代码时自动识别题号
-  
+
 ## 4.2.5
 
 - Fix bug
-  
+
 ## 4.2.4
 
 - 修复犇犇头像缓存 bug
-  
+
 ## 4.2.3
 
 - 犇犇支持回复、发布
@@ -325,7 +327,7 @@
 ## 4.1.9
 
 - Fix bug in getting fate
-  
+
 ## 4.1.8
 
 - Fix bug
@@ -341,17 +343,17 @@
 ## 4.1.5
 
 - Fix bug in subtasks
-  
+
 ## 4.1.4
 
 - Fix bug
-  
+
 ## 4.1.3
 
 - Support languages: Auto/文言/Scala/Perl/Haskell/Kotlin/PyPy2/PyPy3
 - Support to select the default language for submission
 - Fix bug
-  
+
 ## 4.1.2
 
 - Support for fate
@@ -360,7 +362,7 @@
 ## 4.1.1
 
 - Fix bug
-  
+
 ## 4.1.0
 
 - Support logout, userInfo display
@@ -446,7 +448,6 @@
 ## 0.1.9
 
 - Add info message when the token expired
-  
 - Fix bugs
 
 ## 0.1.8
@@ -480,14 +481,16 @@
 ## 0.1.2
 
 - Add
-    1. New Icon from icon8
-    2. StatusBar at bottom
+
+  1. New Icon from icon8
+  2. StatusBar at bottom
 
 - Update README.md
 
 - Fix
-    1. Repeat login on command luogu.login
-    2. Display error
+
+  1. Repeat login on command luogu.login
+  2. Display error
 
 - Update README.md
 
@@ -500,8 +503,9 @@
 ## 0.1.0
 
 - Add
-    1. Login in your luogu account
-    2. SubmitSolution
+
+  1. Login in your luogu account
+  2. SubmitSolution
 
 - Optimize user experience
 
@@ -528,9 +532,9 @@
 ## 0.0.2
 
 - Fixed bugs
-    1. fix luogu.search
-        1. highlight.js is not imported
-        2. katex is not imported
+  1. fix luogu.search
+     1. highlight.js is not imported
+     2. katex is not imported
 
 ## 0.0.1
 

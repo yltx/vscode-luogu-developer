@@ -3,7 +3,7 @@ export const isDev = true;
 
 let time = 0;
 
-export function debug(message?: any, ...optionalParams: any[]) {
+export function debug(message?: unknown, ...optionalParams: unknown[]) {
   if (isDev) {
     if (time !== 0) {
       time = Date.now() - time;

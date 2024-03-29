@@ -20,7 +20,7 @@ const generateHTML = (webview: vscode.Webview, imageEncoded: string) => `
     )}">
     <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
     <script src="${getResourceFilePath(webview, 'bootstrap.min.js')}"></script>
-    <button type="button" onclick="document.getElementById(\"cap\").innerHTML = \"data:image/jpeg;base64,${imageEncoded}\"" class="btn btn-small">更换验证码</button>
+    <button type="button" onclick="document.getElementById("cap").innerHTML = "data:image/jpeg;base64,${imageEncoded}"" class="btn btn-small">更换验证码</button>
   </body>
 </html>`;
 

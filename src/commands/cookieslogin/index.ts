@@ -8,8 +8,6 @@ import {
   DialogType
 } from '@/utils/uiUtils';
 import { changeCookie } from '@/utils/files';
-import * as os from 'os';
-import * as path from 'path';
 
 export default new SuperCommand({
   onCommand: 'cookieslogin',

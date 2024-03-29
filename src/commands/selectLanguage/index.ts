@@ -12,15 +12,15 @@ export default new SuperCommand({
       .getConfiguration()
       .get('luogu.defaultLanguage');
     console.log(defaultLanguage);
-    let langs: string[] = [];
-    for (let item in Languages) {
+    const langs: string[] = [];
+    for (const item in Languages) {
       if (isNaN(Number(item))) {
         if (item === defaultLanguage) {
           langs.push(item);
         }
       }
     }
-    for (let item in Languages) {
+    for (const item in Languages) {
       if (isNaN(Number(item))) {
         if (item !== defaultLanguage) {
           langs.push(item);

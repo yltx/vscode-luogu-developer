@@ -27,13 +27,15 @@
 - 给题解点赞/踩
 - 比赛相关功能
 - 根据题目难度及来源随机跳题
-  
+
 ## 开发中功能
-  
+
 - 查看、发布讨论
-  
+
 ## 如何贡献本项目
+
 [CONTRIBUTING.md](https://github.com/yltx/vscode-luogu-developer/blob/master/CONTRIBUTING.md)
+
 ## Others
 
 Luogu图标来自 [Luogu](https://www.luogu.com.cn/)，严禁商业使用

@@ -10,8 +10,6 @@ import {
   DialogType,
   promptForOpenOutputChannelWithResult
 } from '@/utils/uiUtils';
-import * as os from 'os';
-import * as path from 'path';
 
 export default new SuperCommand({
   onCommand: 'signin',
@@ -58,7 +56,6 @@ export default new SuperCommand({
         }
         await login(username, password, captcha.captchaText)
           .then(async r1 => {
-            let resp = r1;
             try {
               changeCookieByCookies(r1.headers['set-cookie']);
             } catch (err) {
@@ -73,8 +70,7 @@ export default new SuperCommand({
               if (!code) {
                 return;
               }
-              const r2 = await unlock(code);
-              resp = r2;
+              await unlock(code);
             }
             globalThis.init = true;
             globalThis.islogged = true;

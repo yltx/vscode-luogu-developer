@@ -936,7 +936,7 @@ export const formatTime = (date: Date, fmt: string) => {
     'q+': Math.floor((date.getMonth() + 3) / 3),
     'S+': date.getMilliseconds()
   };
-  for (let k in o) {
+  for (const k in o) {
     if (new RegExp('(' + k + ')').test(fmt)) {
       if (k === 'y+') {
         fmt = fmt.replace(RegExp.$1, ('' + o[k]).substr(4 - RegExp.$1.length));

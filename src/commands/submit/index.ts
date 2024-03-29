@@ -1,7 +1,6 @@
 import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
 import { UserStatus, Languages } from '@/utils/shared';
-import * as os from 'os';
 import * as path from 'path';
 import {
   getSelectedLanguage,
@@ -33,7 +32,7 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    let text = edtior.document.getText();
+    const text = edtior.document.getText();
     const filePath = edtior.document.fileName;
     const fileFName = path.parse(filePath).base;
     const fileExt = path.parse(filePath).ext.slice(1);
@@ -59,25 +58,25 @@ export default new SuperCommand({
     const selectedLanguage = vscode.workspace
       .getConfiguration('luogu')
       .get<string>('defaultLanguage')!;
-    let langs: string[] = [];
+    const langs: string[] = [];
     if (languages.indexOf(selectedLanguage) !== -1) {
       langs.push(selectedLanguage);
     }
-    for (let item in Languages) {
+    for (const item in Languages) {
       if (isNaN(Number(item))) {
         if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
           langs.push(item);
         }
       }
     }
-    for (let item in Languages) {
+    for (const item in Languages) {
       if (isNaN(Number(item))) {
         if (item === 'Auto' && languages.indexOf(item) === -1) {
           langs.push(item);
         }
       }
     }
-    for (let item in Languages) {
+    for (const item in Languages) {
       if (isNaN(Number(item))) {
         if (item !== 'Auto' && languages.indexOf(item) === -1) {
           langs.push(item);
@@ -98,7 +97,7 @@ export default new SuperCommand({
     if (selected === undefined) {
       return;
     }
-    let defaultID = await parseProblemID(fileFName);
+    const defaultID = await parseProblemID(fileFName);
 
     const id =
       vscode.workspace
@@ -114,23 +113,15 @@ export default new SuperCommand({
     if (!id) {
       return;
     }
-    let success = false;
-    let rid: any = 0;
+    let rid: number;
     try {
       vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
       rid = await submitCode(id, text, selected, O2);
-      if (rid !== undefined) {
-        success = true;
-      }
+      await showRecord(rid as number);
     } catch (err) {
       vscode.window.showInformationMessage('提交失败');
       vscode.window.showErrorMessage(`${err}`);
       console.error(err);
-    } finally {
-      if (success) {
-        // vscode.window.showInformationMessage('提交成功');
-        await showRecord(rid as number);
-      }
     }
   }
 });

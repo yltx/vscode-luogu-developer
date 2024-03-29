@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand';
-import { getErrorMessage, getFate, getStatus } from '@/utils/api';
+import { getFate, getStatus } from '@/utils/api';
 import { UserStatus } from '@/utils/shared';
 import * as vscode from 'vscode';
 
@@ -69,7 +69,7 @@ export default new SuperCommand({
           text-align: center!important;
         }
         `;
-            let html = `<!DOCTYPE html>
+            const html = `<!DOCTYPE html>
         <html>
         <head>
           <meta charset="UTF-8">
@@ -83,7 +83,7 @@ export default new SuperCommand({
         </body>
         </html>`;
 
-            let pannel = vscode.window.createWebviewPanel(
+            const pannel = vscode.window.createWebviewPanel(
               '',
               `今日运势`,
               vscode.ViewColumn.Two

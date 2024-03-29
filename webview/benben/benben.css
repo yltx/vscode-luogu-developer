@@ -1,0 +1,116 @@
+:root {
+  --benben-border-color: #3498db;
+  --benben-header-backgroundcolor: var(--vscode-editor-background);
+}
+body {
+  padding: 0;
+}
+.benben-main {
+  padding: 0 10px;
+}
+.benben-comment-main {
+  border: 1px solid var(--benben-border-color);
+  width: 100%;
+  position: relative;
+  word-break: break-word;
+}
+.benben-comment-primary {
+  display: flex;
+}
+.benben-comment-header {
+  padding: 5px 15px;
+  background-color: var(--benben-header-backgroundcolor);
+  position: relative;
+  word-break: break-word;
+}
+
+.benben-comment-tail {
+  position: absolute;
+  top: 5px;
+  left: -9px;
+  fill: var(--benben-header-backgroundcolor);
+  stroke: var(--benben-border-color);
+}
+.benben-comment-main::before,
+.benben-comment-main::after {
+  position: absolute;
+  top: 10px;
+  left: -8px;
+  right: 100%;
+  width: 0;
+  height: 0;
+  display: block;
+  content: ' ';
+  border-color: transparent;
+  border-style: solid solid outset;
+  border-width: 8px 8px 8px 0;
+  pointer-events: none;
+}
+.benben-comment-main::before {
+  border-right-color: var(--benben-border-color);
+  z-index: 1;
+}
+.benben-comment-main::after {
+  border-right-color: var(--benben-header-backgroundcolor);
+  margin-left: 1px;
+  z-index: 2;
+}
+.benben-comment-time {
+  color: #7f7f7f;
+  font-size: 13px;
+  display: inline-block;
+}
+.benben-comment-text {
+  padding: 0 15px;
+}
+.usericon {
+  border: 1px solid var(--benben-border-color);
+}
+.benben-comment-primary {
+  margin-top: 15px;
+}
+.benben-loading {
+  text-align: center;
+}
+.benben-loadingicon {
+  display: inline-block;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+.benben-editor {
+  padding: 5px 10px;
+  position: sticky;
+  top: 0;
+  border-bottom: 1px solid #7f7f7f;
+  z-index: 10;
+  background-color: var(--vscode-editor-background);
+  text-align: right;
+}
+.benben-editor-textarea {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.benben-editor-submit {
+  text-align: center;
+  margin-left: auto;
+  width: 150px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+@media screen and (max-width: 400px) {
+  .benben-editor-submit {
+    width: 100%;
+  }
+}
+.benben-reload {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+}
+.benben-comment-button {
+  float: right;
+  font-weight: bold;
+  color: #7f7f7f;
+  margin-left: 13px;
+}
