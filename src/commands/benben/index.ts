@@ -105,6 +105,58 @@ async function getAllBenben(page = 1) {
   );
 }
 
+async function getMode() {
+  interface PickUID extends vscode.QuickPickItem {
+    label: `用户 ${string} 的动态`;
+    id: string;
+  }
+  interface PickMe extends vscode.QuickPickItem {
+    label: '我发布的';
+  }
+  interface PickFollowed extends vscode.QuickPickItem {
+    label: '我关注的';
+  }
+  interface PickAll extends vscode.QuickPickItem {
+    label: '全网动态';
+  }
+  const input = vscode.window.createQuickPick<
+    PickMe | PickAll | PickFollowed | PickUID
+  >();
+  input.placeholder = '输入一个用户名/UID，或从下方选择一项';
+  input.items = [
+    { label: '我发布的' },
+    { label: '我关注的' },
+    { label: '全网动态' }
+  ];
+  input.onDidChangeValue(s => {
+    if (s === '')
+      input.items = [
+        { label: '我发布的' },
+        { label: '我关注的' },
+        { label: '全网动态' }
+      ];
+    else input.items = [{ label: `用户 ${s} 的动态`, id: s }];
+  });
+  return new Promise<string | 0 | 1 | 2 | undefined>(resolve => {
+    input.onDidChangeSelection(e => {
+      resolve(
+        e[0].label === '全网动态'
+          ? 0
+          : e[0].label === '我关注的'
+            ? 1
+            : e[0].label === '我发布的'
+              ? 2
+              : e[0].id
+      );
+    });
+    input.onDidHide(() => resolve(undefined));
+    input.show();
+  }).then(x => {
+    input.dispose();
+    return x;
+  });
+}
+
 export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
@@ -121,18 +173,17 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(`${err}`);
       return;
     }
-    const mode = (await vscode.window.showQuickPick(
-      ['我发布的', '我关注的', '全网动态'],
-      {
-        ignoreFocusOut: true
-      }
-    )) as '我发布的' | '我关注的' | '全网动态' | undefined;
-    if (!mode) {
+    const mode = await getMode();
+    if (mode === undefined) return;
+    const user =
+      typeof mode === 'string' ? (await searchUser(mode)).users[0] : undefined;
+    if (user === null) {
+      vscode.window.showErrorMessage('用户不存在');
       return;
     }
     const panel = vscode.window.createWebviewPanel(
       `benben`,
-      `犇犇 - ${mode}`,
+      `犇犇 - ${mode === 0 ? '全网动态' : mode === 1 ? '我关注的' : mode === 2 ? '我发布的' : `${user!.name} 的动态`}`,
       vscode.ViewColumn.Two,
       {
         enableScripts: true,
@@ -162,11 +213,10 @@ export default new SuperCommand({
     };
     useWebviewResponseHandle(panel.webview, {
       BenbenUpdate: data => {
-        if (mode === '我关注的')
-          return getFollowedBenben(data.page, userinfoCache);
-        else if (mode === '我发布的') return getUserBenben(data.page);
-        else if (mode === '全网动态') return getAllBenben(data.page);
-        else return [];
+        if (mode === 1) return getFollowedBenben(data.page, userinfoCache);
+        else if (mode === 2) return getUserBenben(data.page);
+        else if (mode === 0) return getAllBenben(data.page);
+        else return getUserBenben(data.page, user!.uid);
       },
       BenbenSend: async data => {
         try {

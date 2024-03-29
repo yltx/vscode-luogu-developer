@@ -24,10 +24,10 @@ export default new SuperCommand({
       if (!keyword) {
         return;
       }
-      let uid = await parseUID(keyword);
+      let uid: string | undefined = await parseUID(keyword);
       console.log(uid);
       if (uid.length !== keyword.length) {
-        uid = (await searchUser(keyword))['users'][0]['uid'];
+        uid = (await searchUser(keyword)).users[0]?.uid.toString();
         console.log(uid);
         if (!uid) {
           const res = await promptForOpenOutputChannelWithResult(

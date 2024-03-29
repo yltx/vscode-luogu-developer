@@ -18,7 +18,8 @@ import {
   ProblemData,
   ProblemSetData,
   RecordData,
-  SolutionsData
+  SolutionsData,
+  UserSummary
 } from 'luogu-api';
 import AgentKeepAlive from 'agentkeepalive';
 
@@ -428,7 +429,10 @@ export const fetchRecords = async () =>
 
 export const searchUser = async (keyword: string) =>
   axios
-    .get(`/api/user/search?keyword=${keyword}`, cookieConfig())
+    .get<{ users: [UserSummary | null] }>(
+      `/api/user/search?keyword=${keyword}`,
+      cookieConfig()
+    )
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
