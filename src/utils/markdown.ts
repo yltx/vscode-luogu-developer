@@ -12,15 +12,15 @@ const defaultRender = md.renderer.rules.image,
   bvidRE = /^(BV[A-Za-z0-9]{10})$/; // 匹配视频bvid格式 BV+10个大小写字母/数字
 md.renderer.rules.image = function (tokens, idx, options, env, self) {
   if (!defaultRender) throw new Error('image renderer is not defined');
-  let token = tokens[idx],
+  const token = tokens[idx],
     aIndex = token.attrIndex('src');
   if (!token.attrs) return defaultRender(tokens, idx, options, env, self);
-  let url = new URL(token.attrs[aIndex][1]); // 将视频当作 url 处理
+  const url = new URL(token.attrs[aIndex][1]); // 将视频当作 url 处理
   if (
     url.protocol == 'bilibili:' &&
     (aidRE.test(url.pathname) || bvidRE.test(url.pathname))
   ) {
-    let info: { aid?: string; bvid?: string; page: number; t: number } = {
+    const info: { aid?: string; bvid?: string; page: number; t: number } = {
       t: +(url.searchParams.get('t') || '0'),
       page: +(url.searchParams.get('page') || '1')
     }; // 若没有P号或时间标记，则默认为 0 与 1

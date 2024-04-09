@@ -1,5 +1,5 @@
 import SuperCommand from '../SuperCommand';
-import { logout, getStatus, getErrorMessage } from '@/utils/api';
+import { getStatus } from '@/utils/api';
 import { changeCookie } from '@/utils/files';
 import { UserStatus } from '@/utils/shared';
 import luoguStatusBar from '@/views/luoguStatusBar';

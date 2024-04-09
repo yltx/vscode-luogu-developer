@@ -1,8 +1,8 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import SuperCommand from '../SuperCommand';
-import { getErrorMessage, parseProblemID } from '@/utils/api';
-import { configFile, getSavedProblem } from '@/utils/files';
+import { parseProblemID } from '@/utils/api';
+import { getSavedProblem } from '@/utils/files';
 
 export default new SuperCommand({
   onCommand: 'open',

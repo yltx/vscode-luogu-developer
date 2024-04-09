@@ -24,22 +24,17 @@ import {
   tagsName
 } from '@/utils/shared';
 import HTMLtemplate from '@/utils/html';
+import { ProblemDetails } from 'luogu-api';
 
 export const showProblem = async (pid: string, cid: string) => {
-  let problemPre: Promise<Problem>;
+  let problemPre: Promise<ProblemDetails>;
   if (cid === '') {
     problemPre = searchProblem(pid);
   } else {
     problemPre = searchContestProblem(pid, cid);
   }
-  let problem = await problemPre
-    .then(res => new Problem(res))
-    .catch(err => {
-      vscode.window.showErrorMessage(err.message);
-      return;
-    });
-  if (!problem) return;
-  problem.contestID = cid;
+  const problem = await problemPre.then(res => new Problem(res));
+  if (cid !== '') problem.contestID = +cid;
   const panel = vscode.window.createWebviewPanel(
     problem.stringPID,
     problem.name,
@@ -89,7 +84,7 @@ const submit = async function (problem: Problem) {
     vscode.window.showErrorMessage(`${err}`);
     return;
   }
-  let text = edtior.document.getText();
+  const text = edtior.document.getText();
   const filePath = edtior.document.fileName;
   const fileFName = path.parse(filePath).base;
   const fileExt = path.parse(filePath).ext.slice(1);
@@ -113,25 +108,25 @@ const submit = async function (problem: Problem) {
   const selectedLanguage = vscode.workspace
     .getConfiguration('luogu')
     .get<string>('defaultLanguage')!;
-  let langs: string[] = [];
+  const langs: string[] = [];
   if (languages.indexOf(selectedLanguage) !== -1) {
     langs.push(selectedLanguage);
   }
-  for (let item in Languages) {
+  for (const item in Languages) {
     if (isNaN(Number(item))) {
       if (languages.indexOf(item) !== -1 && item !== selectedLanguage) {
         langs.push(item);
       }
     }
   }
-  for (let item in Languages) {
+  for (const item in Languages) {
     if (isNaN(Number(item))) {
       if (item === 'Auto' && languages.indexOf(item) === -1) {
         langs.push(item);
       }
     }
   }
-  for (let item in Languages) {
+  for (const item in Languages) {
     if (isNaN(Number(item))) {
       if (item !== 'Auto' && languages.indexOf(item) === -1) {
         langs.push(item);
@@ -157,10 +152,10 @@ const submit = async function (problem: Problem) {
     return;
   }
   let success = false;
-  let rid: any = 0;
+  let rid = 0;
   try {
     vscode.window.showInformationMessage(`${fileFName} 正在提交到 ${id}...`);
-    if (problem.contestID !== '') {
+    if (problem.contestID !== undefined) {
       id += `?contestId=${problem.contestID}`;
     }
     rid = await submitCode(id, text, selected, O2);
@@ -178,7 +173,7 @@ const submit = async function (problem: Problem) {
   }
 };
 const goto_cph = async function (problem: Problem) {
-  let cph_config = {
+  const cph_config = {
     batch: {
       id: 'vscode-luogu',
       size: 1
@@ -201,7 +196,7 @@ const goto_cph = async function (problem: Problem) {
       output: problem.sample[i][1]
     };
   try {
-    let res = await axios.post('http://localhost:27121/', cph_config, {
+    await axios.post('http://localhost:27121/', cph_config, {
       validateStatus: status => status < 400
     });
   } catch (err) {
@@ -244,7 +239,7 @@ export const genProblemHTML = function (
           <td class="probleminfo" style="border-bottom:1px solid;">
             <div class="probleminfo_title">时间限制</div>
             <div class="probleminfo_val">${(function () {
-              let mintime = Math.min(...problem.timeLimit),
+              const mintime = Math.min(...problem.timeLimit),
                 maxtime = Math.max(...problem.timeLimit);
               let mintimestr: string, maxtimestr: string;
               if (mintime < 1e3) mintimestr = `${mintime}ms`;
@@ -262,7 +257,7 @@ export const genProblemHTML = function (
           </td><td class="probleminfo" style="border-bottom:1px solid;">
             <div class="probleminfo_title">内存限制</div>
             <div class="probleminfo_val">${(function () {
-              let minmemory = Math.min(...problem.memoryLimit),
+              const minmemory = Math.min(...problem.memoryLimit),
                 maxmemory = Math.max(...problem.memoryLimit);
               let minmemorystr: string, maxmemorystr: string;
               if (minmemory < 2 ** 1) minmemorystr = `${minmemory}KB`;
@@ -299,7 +294,7 @@ export const genProblemHTML = function (
       </table>
       <div id="tagwindow" style="display:none;">${(function () {
         let res = '';
-        for (let i of problem.tags)
+        for (const i of problem.tags)
           res += `<span class="tag" style="background-color:${tagsColor[i]};">${tagsName[i]}</span>`;
         return res;
       })()}</div>

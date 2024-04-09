@@ -1,4 +1,3 @@
-// 'use-script'
 import * as vscode from 'vscode';
 import debug from '@/utils/debug';
 import RegisterCommands from '@/commands';
@@ -21,14 +20,10 @@ export async function activate(
   RegisterViews(context);
   console.log('init luogu-vscode success.');
   files.initFiles(context.extensionPath);
-  let clientID = '';
-  let uid = '';
-  let updated = true;
   {
-    let tmp = files.initFiles(context.extensionPath);
+    const tmp = files.initFiles(context.extensionPath);
     if (tmp !== null) {
-      vscode.window.showInformationMessage(tmp[0]);
-      throw tmp[1];
+      throw new Error(tmp[1], { cause: tmp[0] });
     }
   }
   const html = `

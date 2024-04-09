@@ -7,7 +7,7 @@ import showProblem from '@/utils/showProblem';
 export default new SuperCommand({
   onCommand: 'traindetails',
   handle: async () => {
-    let defaultID = globalThis.tid;
+    const defaultID = globalThis.tid;
     const tid = await vscode.window
       .showInputBox({
         placeHolder: '输入题单编号',
@@ -20,7 +20,7 @@ export default new SuperCommand({
     }
     globalThis.tid = tid;
     try {
-      const data = await searchTrainingdetail(tid);
+      const data = await searchTrainingdetail(+tid);
       // console.log(data)
       const panel = vscode.window.createWebviewPanel(
         '题单详情',
@@ -35,7 +35,7 @@ export default new SuperCommand({
           ]
         }
       );
-      const html = await showTrainDetails(panel.webview, tid);
+      const html = await showTrainDetails(panel.webview, +tid);
       panel.webview.html = html;
       panel.webview.onDidReceiveMessage(async message => {
         if (message.type === 'open') {

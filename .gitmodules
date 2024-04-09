@@ -1,0 +1,3 @@
+[submodule "luogu-api-docs"]
+	path = luogu-api-docs
+	url = https://github.com/0f-0b/luogu-api-docs.git

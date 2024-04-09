@@ -36,9 +36,6 @@ class UserManager extends EventEmitter {
     if (!has(this.settings, 'access_token')) {
       debug("Can't find access_token in settings.");
       this.emit('logout');
-    } else {
-      // check token expires
-      const refreshToken = this.settings.refresh_token;
     }
   }
 }

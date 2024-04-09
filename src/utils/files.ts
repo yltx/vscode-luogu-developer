@@ -18,7 +18,7 @@ const luoguJSONfileSchema = new Ajv().compile({
 globalThis.luoguPath = path.join(os.homedir(), '.luogu');
 globalThis.luoguJSONPath = path.join(globalThis.luoguPath, 'luogu.json');
 
-export var configFile = {
+export let configFile = {
   uid: '',
   clientID: '',
   version: '',
@@ -29,7 +29,7 @@ const updateConfig = function () {
   fs.writeFileSync(globalThis.luoguJSONPath, JSON.stringify(configFile));
 };
 
-export const initFiles = function (rootPath: string): [any, string] | null {
+export const initFiles = function (rootPath: string): [unknown, string] | null {
   globalThis.rootPath = rootPath;
   globalThis.resourcesPath = path.join(rootPath, 'resources');
   globalThis.distPath = path.join(rootPath, 'dist');
@@ -86,15 +86,15 @@ export const changeCookie = function (s: { uid: string; clientID: string }) {
   updateConfig();
 };
 export const changeCookieByCookies = function (cookie: string[] | undefined) {
-  let s = { uid: configFile.uid, clientID: configFile.clientID };
+  const s = { uid: configFile.uid, clientID: configFile.clientID };
   if (cookie)
-    for (let cookie_info of cookie) {
+    for (const cookie_info of cookie) {
       if (cookie_info.match('_uid')?.index == 0) {
-        let match_res = cookie_info.match('(?<==).*?(?=;)');
+        const match_res = cookie_info.match('(?<==).*?(?=;)');
         if (match_res) s.uid = match_res[0];
       }
       if (cookie_info.match('__client_id')?.index == 0) {
-        let match_res = cookie_info.match('(?<==).*?(?=;)');
+        const match_res = cookie_info.match('(?<==).*?(?=;)');
         if (match_res) s.clientID = match_res[0];
       }
     }
@@ -123,7 +123,7 @@ export const saveProblem = function (pid: string, html: string) {
 };
 export const removeSavedProblem = function (pid: string) {
   configFile.savedProblem.filter(p => p != pid);
-  let pth = path.join(globalThis.luoguPath, pid + '.html');
+  const pth = path.join(globalThis.luoguPath, pid + '.html');
   if (fs.existsSync(pth)) fs.unlinkSync(pth);
   updateConfig();
 };

@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-// @ts-ignore
 import SuperCommand from '../SuperCommand';
 import { parseProblemID } from '@/utils/api';
 import showProblem from '@/utils/showProblem';

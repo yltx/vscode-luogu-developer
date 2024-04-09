@@ -1,13 +1,13 @@
 import debug from '@/utils/debug';
 
 export default class {
-  public readonly onCommand!: string;
+  public readonly onCommand: string;
+  private handle!: () => void;
 
-  constructor(props: { onCommand: string; handle: Function }) {
-    Object.assign(this, props);
+  constructor(props: { onCommand: string; handle: () => void }) {
+    this.onCommand = props.onCommand;
+    this.handle = props.handle;
   }
-
-  private handle!: Function;
 
   public callback = () => {
     debug(`${this.onCommand} start.`);

@@ -7,14 +7,12 @@ import {
   postVote
 } from '@/utils/api';
 import { formatTime } from '@/utils/shared';
-import HTMLtemplate, { getResourceFilePath, usernameSpan } from '@/utils/html';
+import HTMLtemplate, { usernameSpan } from '@/utils/html';
 import { UserStatus } from '@/utils/shared';
-import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
-import { ArticleDetails } from '@/model/luogu-api';
+import { BlogDetails } from 'luogu-api';
 import * as path from 'path';
 import md from '@/utils/markdown';
 import * as vscode from 'vscode';
-import { size, update } from 'lodash';
 
 export default new SuperCommand({
   onCommand: 'solution',
@@ -89,7 +87,7 @@ export default new SuperCommand({
             break;
           }
           case 'voteup': {
-            let r = await postVote(
+            const r = await postVote(
               res.solutions[page].id,
               res.solutions[page].currentUserVoteType == 1 ? 0 : 1,
               res.problem.pid
@@ -110,7 +108,7 @@ export default new SuperCommand({
             break;
           }
           case 'votedown': {
-            let r = await postVote(
+            const r = await postVote(
               res.solutions[page].id,
               res.solutions[page].currentUserVoteType == -1 ? 0 : -1,
               res.problem.pid
@@ -167,7 +165,7 @@ export default new SuperCommand({
 
 const updatePassage = async function (
   webview: vscode.Webview,
-  passage: ArticleDetails,
+  passage: BlogDetails,
   disable: [boolean, boolean]
 ) {
   webview.postMessage({
@@ -188,7 +186,7 @@ const updatePassage = async function (
   });
   updateVote(webview, passage);
 };
-const updateVote = function (webview: vscode.Webview, passage: ArticleDetails) {
+const updateVote = function (webview: vscode.Webview, passage: BlogDetails) {
   webview.postMessage({
     type: 'updateVote',
     data: {

@@ -11,16 +11,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 20
-      - run: npm i @vscode/vsce -g
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
       - uses: lannonbr/vsce-action@3.0.0
         with:
-          args: "publish -p $VSCE_TOKEN --allow-star-activation"
+          args: 'publish -p $VSCE_TOKEN --allow-star-activation'
         env:
           VSCE_TOKEN: ${{ secrets.PAT }}
-          
-      

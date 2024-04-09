@@ -9,15 +9,19 @@ import {
 } from '@/utils/files';
 import * as vscode from 'vscode';
 import {
-  ArticleDetails,
+  Activity,
+  ActivityData,
+  ContestData,
   DataResponse,
+  GetScoreboardResponse,
   List,
-  ProblemSummary,
-  SolutionsData
-} from '@/model/luogu-api';
-import { assert } from 'console';
-import Problem from '@/model/Problem';
-import exp from 'constants';
+  ProblemData,
+  ProblemSetData,
+  RecordData,
+  SolutionsData,
+  UserSummary
+} from 'luogu-api';
+import AgentKeepAlive from 'agentkeepalive';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
 
@@ -25,7 +29,6 @@ export namespace API {
   export const baseURL = 'https://www.luogu.com.cn';
   export const apiURL = '/api';
   export const cookieDomain = 'luogu.com.cn';
-  // export const SEARCH_PROBLEM = (pid: string) => `${apiURL}/problem/detail/${pid}`
   export const SEARCH_PROBLEM = (pid: string) =>
     `/problem/${pid}?_contentOnly=1`;
   export const SEARCH_CONTESTPROBLEM = (pid: string, cid: string) =>
@@ -40,15 +43,17 @@ export namespace API {
   export const UNLOCK_REFERER = `${baseURL}/auth/unlock`;
   export const LOGOUT = `${apiURL}/auth/logout`;
   export const FATE = `/index/ajax_punch`;
-  export const BENBEN = (mode: string, page: number) =>
-    `${apiURL}/feed/${mode}?page=${page}`;
+  export const FOLLOWED_BENBEN = (page: number) =>
+    `${apiURL}/feed/watching?page=${page}`;
+  export const USER_BENBEN = (page: number, user?: number) =>
+    `${apiURL}/feed/list?page=${page}&user=${user !== undefined ? user : ''}`;
   export const BenbenReferer = 'https://www.luogu.com.cn/';
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
-  export const BENBEN_DELETE = (id: string) => `${apiURL}/feed/delete/${id}`;
+  export const BENBEN_DELETE = (id: number) => `${apiURL}/feed/delete/${id}`;
   export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`;
   export const ranklist = (cid: string, page: number) =>
     `/fe/api/contest/scoreboard/${cid}?page=${page}`;
-  export const TRAINLISTDETAIL = (id: any) =>
+  export const TRAINLISTDETAIL = (id: number) =>
     `${baseURL}/training/${id}?_contentOnly=1`;
   export const SEARCHTRAINLIST = (
     channel: string,
@@ -63,11 +68,17 @@ export namespace API {
 }
 
 export const axios = (() => {
+  // 使用 http keepalive，批量获取用户头像时效率显著提升。
+  const keepAliveAgent = new AgentKeepAlive({
+    timeout: 3000
+  });
   const axios = _.create({
     baseURL: API.baseURL,
     withCredentials: true,
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
-    proxy: false
+    proxy: false,
+    httpAgent: keepAliveAgent,
+    httpsAgent: keepAliveAgent
   });
 
   const defaults = axios.defaults;
@@ -89,7 +100,7 @@ export const axios = (() => {
 export default axios;
 
 export const genCookies = async function () {
-  let res = await axios.get(API.baseURL);
+  const res = await axios.get(API.baseURL);
   changeCookieByCookies(res.headers['set-cookie']);
 };
 
@@ -124,11 +135,12 @@ export const captcha = async () =>
     });
 export const searchProblem = async (pid: string) =>
   axios
-    .get(API.SEARCH_PROBLEM(pid), cookieConfig())
+    .get<DataResponse<ProblemData>>(API.SEARCH_PROBLEM(pid), cookieConfig())
     .then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
-        throw Error(res.currentData.errorMessage);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        throw Error((res.currentData as any).errorMessage || '');
       }
       return res.currentData.problem;
     })
@@ -144,11 +156,15 @@ export const searchProblem = async (pid: string) =>
 
 export const searchContestProblem = async (pid: string, cid: string) =>
   axios
-    .get(API.SEARCH_CONTESTPROBLEM(pid, cid), cookieConfig())
+    .get<DataResponse<ProblemData>>(
+      API.SEARCH_CONTESTPROBLEM(pid, cid),
+      cookieConfig()
+    )
     .then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
-        throw Error(res.currentData.errorMessage);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        throw Error((res.currentData as any).errorMessage || undefined);
       }
       return res.currentData.problem;
     })
@@ -164,7 +180,7 @@ export const searchContestProblem = async (pid: string, cid: string) =>
 
 export const searchContest = async (cid: string) =>
   axios
-    .get(API.CONTEST(cid), cookieConfig())
+    .get<DataResponse<ContestData>>(API.CONTEST(cid), cookieConfig())
     .then(res => res?.data?.currentData)
     .then(async res => {
       // console.log(res)
@@ -185,17 +201,20 @@ export const searchContest = async (cid: string) =>
 
 export const searchSolution = async (pid: string) =>
   axios
-    .get(API.SEARCH_SOLUTION(pid, 1), cookieConfig())
+    .get<DataResponse<SolutionsData>>(
+      API.SEARCH_SOLUTION(pid, 1),
+      cookieConfig()
+    )
     .then(res => res.data)
     .then(async resp => {
       if ((resp.currentData.solutions || null) === null) {
         throw Error('题目不存在');
       }
-      let problem = resp.currentData.problem as ProblemSummary;
-      let res = resp.currentData.solutions as List<ArticleDetails>;
+      const problem = resp.currentData.problem;
+      const res = resp.currentData.solutions;
       if (res.perPage === null) res.perPage = Infinity;
-      let result = Object.values(res.result);
-      let pages = Math.ceil(res.count / res.perPage);
+      const result = Object.values(res.result);
+      const pages = Math.ceil(res.count / res.perPage);
       for (let i = 2; i <= pages; i++) {
         const currentPage = (
           await axios.get(API.SEARCH_SOLUTION(pid, i), cookieConfig())
@@ -246,9 +265,9 @@ export const searchTraininglist = async (
       }
     });
 
-export const searchTrainingdetail = async (id: any) =>
+export const searchTrainingdetail = async (id: number) =>
   axios
-    .get(API.TRAINLISTDETAIL(id), cookieConfig())
+    .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id), cookieConfig())
     .then(res => res?.data?.currentData)
     .then(async res => {
       // console.log(res)
@@ -331,7 +350,10 @@ export const getStatus = async () => {
 
 export const fetchResult = async (rid: number) =>
   axios
-    .get(`/record/${rid}?_contentOnly=1`, cookieConfig())
+    .get<DataResponse<RecordData>>(
+      `/record/${rid}?_contentOnly=1`,
+      cookieConfig()
+    )
     .then(data => data?.data.currentData)
     .catch(err => {
       if (err.response) {
@@ -407,7 +429,10 @@ export const fetchRecords = async () =>
 
 export const searchUser = async (keyword: string) =>
   axios
-    .get(`/api/user/search?keyword=${keyword}`, cookieConfig())
+    .get<{ users: [UserSummary | null] }>(
+      `/api/user/search?keyword=${keyword}`,
+      cookieConfig()
+    )
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -419,9 +444,9 @@ export const searchUser = async (keyword: string) =>
       }
     });
 
-export const fetchBenben = async (mode: string, page: number) =>
+export const fetchFollowedBenben = async (page: number) =>
   axios
-    .get(API.BENBEN(mode, page), {
+    .get<{ status: number; data: ActivityData[] }>(API.FOLLOWED_BENBEN(page), {
       headers: {
         'X-CSRF-Token': await csrfToken(),
         'User-Agent':
@@ -429,20 +454,29 @@ export const fetchBenben = async (mode: string, page: number) =>
         ...cookieConfig().headers
       }
     })
-    .then(data => data?.data)
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw Error('请求超时，请重试');
-      } else {
-        throw err;
+    .then(data => data.data);
+
+export const fetchUserBenben = async (page: number, user?: number) =>
+  axios
+    .get<{ feeds: List<Activity> }>(API.USER_BENBEN(page, user), {
+      headers: {
+        'X-CSRF-Token': await csrfToken(),
+        'User-Agent':
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
+        ...cookieConfig().headers
       }
-    });
+    })
+    .then(data => data.data);
+
+// 只需要请求用户犇犇时不带 cookie 就可以获得到全网犇犇了（？）
+export const fetchAllBenben = async (page: number) =>
+  axios
+    .get<{ feeds: List<Activity> }>(API.USER_BENBEN(page))
+    .then(data => data.data);
 
 export const postBenben = async (benbenText: string) =>
   axios
-    .post(
+    .post<{ status: number; data: ActivityData }>(
       API.BENBEN_POST,
       {
         content: benbenText
@@ -466,9 +500,9 @@ export const postBenben = async (benbenText: string) =>
       }
     });
 
-export const deleteBenben = async (id: string) =>
+export const deleteBenben = async (id: number) =>
   axios
-    .post(
+    .post<{ status: number; data: [] }>(
       API.BENBEN_DELETE(id),
       {},
       {
@@ -521,7 +555,7 @@ export const postVote = async (id: number, type: number, pid: string) =>
     });
 
 export const parseProblemID = async (name: string) => {
-  const regexs = new Array(
+  const regexs = [
     /(AT_\w*)/i,
     /(CF[0-9]{1,4}[A-Z][0-9]{0,1})/i,
     /(SP[0-9]{1,5})/i,
@@ -530,7 +564,7 @@ export const parseProblemID = async (name: string) => {
     /(U[0-9]{1,6})/i,
     /(T[0-9]{1,6})/i,
     /(B[0-9]{4})/i
-  );
+  ];
   for (const regex of regexs) {
     const m = regex.exec(name);
     if (m !== null) {
@@ -579,7 +613,6 @@ export const prettyTime = (time: number) => {
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 export const loadUserIcon = async (uid: number) => {
-  // tslint:disable-next-line: radix
   let image = loadUserIconCache(uid);
   if (image) return image;
   else {
@@ -591,8 +624,7 @@ export const loadUserIcon = async (uid: number) => {
       cnt++;
     }
     if (image === null) {
-      vscode.window.showErrorMessage('获取用户头像失败');
-      return;
+      throw new Error('获取用户头像失败');
     }
     saveUserIconCache(uid, image);
     console.log(`Get usericon; uid: ${uid}`);
@@ -602,7 +634,7 @@ export const loadUserIcon = async (uid: number) => {
 
 export const getRanklist = async (cid: string, page: number) => {
   return axios
-    .get(API.ranklist(cid, page), cookieConfig())
+    .get<GetScoreboardResponse>(API.ranklist(cid, page), cookieConfig())
     .then(res => res.data)
     .catch(err => {
       throw err;
@@ -614,25 +646,15 @@ export const getErrorMessage = (err: unknown) => {
   return String(err);
 };
 
-/**
- * @api 提交代码
- * @async
- * @param {string} id 提交id
- * @param {string} code 代码
- * @param {number} language 选择语言
- * @param {boolean} enableO2 是否启用O2优化
- *
- * @returns {number} 测评id
- */
 export async function submitCode(
   id: string,
   code: string,
   language: number = 0,
   enableO2: boolean = false
-): Promise<any> {
+) {
   const url = `/fe/api/problem/submit/${id}`;
   return axios
-    .post(
+    .post<{ rid: number }>(
       url,
       {
         code: code,

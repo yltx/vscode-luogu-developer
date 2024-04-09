@@ -1,8 +1,7 @@
 import vscode from 'vscode';
 import * as path from 'path';
-import { UserSummary } from '@/model/luogu-api';
+import { UserSummary } from 'luogu-api';
 import { getUserSvg, getUsernameColor } from './workspaceUtils';
-import EventEmitter from 'events';
 
 export const getResourceFilePath = (
   webview: vscode.Webview,
@@ -10,6 +9,15 @@ export const getResourceFilePath = (
 ) => {
   const diskPath = vscode.Uri.file(
     path.join(globalThis.resourcesPath, relativePath)
+  );
+  return webview.asWebviewUri(diskPath);
+};
+export const getDistFilePath = (
+  webview: vscode.Webview,
+  relativePath: string
+) => {
+  const diskPath = vscode.Uri.file(
+    path.join(globalThis.distPath, relativePath)
   );
   return webview.asWebviewUri(diskPath);
 };

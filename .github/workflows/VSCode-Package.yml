@@ -6,20 +6,26 @@ name: VSCode Package
 on:
   push:
     branches:
-    - '**'
+      - '**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Set up Node
+        uses: actions/setup-node@v3
         with:
           node-version: 20
-      - run: npm i @vscode/vsce -g
-      - run: npm install
-      - run: vsce package --allow-star-activation -o vscode-luogu.vsix
-      - uses: actions/upload-artifact@v3
+      - name: Install dependencies
+        run: npm install
+      - name: Package
+        run: npm run pack
+      - name: Upload Package
+        uses: actions/upload-artifact@v3
         with:
           name: vscode-luogu.vsix
           path: vscode-luogu.vsix

@@ -3,7 +3,6 @@ import * as vscode from 'vscode';
 import { UserStatus } from '@/utils/shared';
 import showRecord from '@/utils/showRecord';
 import { fetchRecords, getStatus } from '@/utils/api';
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
 export default new SuperCommand({
   onCommand: 'lastRecord',
