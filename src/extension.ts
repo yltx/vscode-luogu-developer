@@ -6,7 +6,7 @@ import luoguStatusBar from '@/views/luoguStatusBar';
 import { UserStatus } from '@/utils/shared';
 import * as files from '@/utils/files';
 import { fetchHomepage, genCookies } from '@/utils/api';
-const version = '4.8.4';
+const version = '4.8.5';
 
 globalThis.islogged = false;
 globalThis.init = false;
@@ -47,7 +47,7 @@ export async function activate(
     <h2>
     <ul>
         <ol>
-            <li>修复了对P开头题号的解析问题</li>
+            <li>重写犇犇，支持查看特定用户的动态</li>
         </ol>
     </ul>
     </h2>
