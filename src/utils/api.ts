@@ -1,12 +1,6 @@
 import _ from 'axios';
 import { UserStatus } from '@/utils/shared';
-import luoguStatusBar from '@/views/luoguStatusBar';
-import {
-  cookieConfig,
-  changeCookieByCookies,
-  loadUserIconCache,
-  saveUserIconCache
-} from '@/utils/files';
+import { loadUserIconCache, saveUserIconCache } from '@/utils/files';
 import * as vscode from 'vscode';
 import {
   Activity,
@@ -15,6 +9,8 @@ import {
   DataResponse,
   GetScoreboardResponse,
   List,
+  LoginRequest,
+  LoginResponse,
   ProblemData,
   ProblemSetData,
   RecordData,
@@ -22,6 +18,8 @@ import {
   UserSummary
 } from 'luogu-api';
 import AgentKeepAlive from 'agentkeepalive';
+import { cookieString, praseCookie } from './workspaceUtils';
+import { Login } from '@/commands/login';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
 
@@ -38,7 +36,7 @@ export namespace API {
   export const CAPTCHA_IMAGE = `${apiURL}/verify/captcha`;
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`;
   export const LOGIN_ENDPOINT = `${apiURL}/auth/userPassLogin`;
-  export const SYNCLOGIN_ENDPOINT = `${apiURL}/auth/syncLogin`;
+  export const SEND_MAIL_2fa = `${apiURL}/verify/sendTwoFactorCode`;
   export const LOGIN_REFERER = `${baseURL}/auth/login`;
   export const UNLOCK_REFERER = `${baseURL}/auth/unlock`;
   export const LOGOUT = `${apiURL}/auth/logout`;
@@ -75,7 +73,7 @@ export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
     withCredentials: true,
-    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    headers: { 'X-Requested-With': 'XMLHttpRequest', Connection: 'keep-alive' },
     proxy: false,
     httpAgent: keepAliveAgent,
     httpsAgent: keepAliveAgent
@@ -94,48 +92,40 @@ export const axios = (() => {
   });
   defaults.timeout = 6000;
 
+  axios.interceptors.request.use(async config => {
+    if (config.headers.Cookie === undefined)
+      config.headers.Cookie = cookieString(await authProvider.cookie());
+    return config;
+  });
+
   return axios;
 })();
 
 export default axios;
 
-export const genCookies = async function () {
-  const res = await axios.get(API.baseURL);
-  changeCookieByCookies(res.headers['set-cookie']);
+export const genClientID = async function () {
+  const cookies = (await axios.get(API.baseURL, { headers: { Cookie: '' } }))
+    .headers['set-cookie'];
+  if (!cookies) throw new Error('Cookie not found in header');
+  const s = praseCookie(cookies).clientID;
+  if (!s) throw new Error('Cookie not found in header');
+  return s;
 };
 
-export const csrfToken = async () =>
+export const csrfToken = async (cookie?: Cookie, path: string = API.baseURL) =>
   axios
-    .get(API.baseURL, cookieConfig())
+    .get(path, {
+      headers: { Cookie: cookieString(cookie || (await authProvider.cookie())) }
+    })
     .then(res => {
       const result = CSRF_TOKEN_REGEX.exec(res.data);
-      console.log(result ? result[1].trim() : null);
       return result ? result[1].trim() : null;
     })
-    .catch(() => '');
+    .catch(() => null);
 
-export const captcha = async () =>
-  axios
-    .get(API.CAPTCHA_IMAGE, {
-      params: {
-        _t: new Date().getTime()
-      },
-      responseType: 'arraybuffer',
-      ...cookieConfig()
-    })
-    .then(resp => (resp.data ? Buffer.from(resp.data, 'binary') : null))
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
-    });
 export const searchProblem = async (pid: string) =>
   axios
-    .get<DataResponse<ProblemData>>(API.SEARCH_PROBLEM(pid), cookieConfig())
+    .get<DataResponse<ProblemData>>(API.SEARCH_PROBLEM(pid))
     .then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
@@ -156,10 +146,7 @@ export const searchProblem = async (pid: string) =>
 
 export const searchContestProblem = async (pid: string, cid: string) =>
   axios
-    .get<DataResponse<ProblemData>>(
-      API.SEARCH_CONTESTPROBLEM(pid, cid),
-      cookieConfig()
-    )
+    .get<DataResponse<ProblemData>>(API.SEARCH_CONTESTPROBLEM(pid, cid))
     .then(res => res.data)
     .then(res => {
       if (res.code !== 200) {
@@ -180,7 +167,7 @@ export const searchContestProblem = async (pid: string, cid: string) =>
 
 export const searchContest = async (cid: string) =>
   axios
-    .get<DataResponse<ContestData>>(API.CONTEST(cid), cookieConfig())
+    .get<DataResponse<ContestData>>(API.CONTEST(cid))
     .then(res => res?.data?.currentData)
     .then(async res => {
       // console.log(res)
@@ -201,10 +188,7 @@ export const searchContest = async (cid: string) =>
 
 export const searchSolution = async (pid: string) =>
   axios
-    .get<DataResponse<SolutionsData>>(
-      API.SEARCH_SOLUTION(pid, 1),
-      cookieConfig()
-    )
+    .get<DataResponse<SolutionsData>>(API.SEARCH_SOLUTION(pid, 1))
     .then(res => res.data)
     .then(async resp => {
       if ((resp.currentData.solutions || null) === null) {
@@ -216,9 +200,8 @@ export const searchSolution = async (pid: string) =>
       const result = Object.values(res.result);
       const pages = Math.ceil(res.count / res.perPage);
       for (let i = 2; i <= pages; i++) {
-        const currentPage = (
-          await axios.get(API.SEARCH_SOLUTION(pid, i), cookieConfig())
-        ).data as DataResponse<SolutionsData>;
+        const currentPage = (await axios.get(API.SEARCH_SOLUTION(pid, i)))
+          .data as DataResponse<SolutionsData>;
         if (currentPage.code == 200)
           result.push(
             ...Object.values(currentPage.currentData.solutions.result)
@@ -246,7 +229,7 @@ export const searchTraininglist = async (
   page: number
 ) =>
   axios
-    .get(API.SEARCHTRAINLIST(type, keyword, page), cookieConfig())
+    .get(API.SEARCHTRAINLIST(type, keyword, page))
     .then(res => res?.data?.currentData)
     .then(async res => {
       // console.log(res)
@@ -267,7 +250,7 @@ export const searchTraininglist = async (
 
 export const searchTrainingdetail = async (id: number) =>
   axios
-    .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id), cookieConfig())
+    .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id))
     .then(res => res?.data?.currentData)
     .then(async res => {
       // console.log(res)
@@ -286,39 +269,36 @@ export const searchTrainingdetail = async (id: number) =>
       }
     });
 
-/**
- * @api 登录
- * @async
- * @param {string} username 用户名
- * @param {string} password 密码
- * @param {string} captcha 验证码
- */
 export const login = async (
   username: string,
   password: string,
-  captcha: string
+  captcha: string,
+  cookie?: Cookie
 ) => {
-  const csrf = await csrfToken();
-
-  return await axios.post(
-    API.LOGIN_ENDPOINT,
-    {
-      username,
-      password,
-      captcha
-    },
-    {
-      headers: {
-        Referer: API.LOGIN_REFERER,
-        'X-CSRF-Token': csrf,
-        ...cookieConfig().headers
+  return await axios
+    .post<LoginResponse>(
+      API.LOGIN_ENDPOINT,
+      {
+        username,
+        password,
+        captcha
+      } as LoginRequest,
+      {
+        headers: {
+          Referer: API.LOGIN_REFERER,
+          'X-CSRF-Token': await csrfToken(cookie, API.LOGIN_REFERER),
+          Cookie: cookieString(cookie || (await authProvider.cookie()))
+        }
       }
-    }
-  );
+    )
+    .then(x => ({
+      ...x.data,
+      uid: praseCookie(x.headers['set-cookie']).uid
+    }));
 };
 
-export const unlock = async (code: string) => {
-  const csrf = await csrfToken();
+export const unlock = async (code: string, cookie?: Cookie) => {
+  const csrf = await csrfToken(cookie);
 
   return await axios.post(
     API.UNLOCK_ENDPOINT,
@@ -329,31 +309,47 @@ export const unlock = async (code: string) => {
       headers: {
         Referer: API.UNLOCK_REFERER,
         'X-CSRF-Token': csrf,
-        ...cookieConfig().headers
+        Cookie: cookieString(cookie || (await authProvider.cookie()))
       }
     }
   );
 };
 
 export const getStatus = async () => {
-  const ret = (await fetchHomepage()).currentUser;
+  const session = await authProvider.getSessions();
+  if (session.length === 0) return UserStatus.SignedOut.toString();
+  const ret = (await fetch3kHomepage()).currentUser;
   if (ret) {
     globalThis.islogged = true;
-    luoguStatusBar.updateStatusBar(UserStatus.SignedIn);
     return UserStatus.SignedIn.toString();
   } else {
     globalThis.islogged = false;
-    luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
+    authProvider.removeSession(session[0].id);
+    vscode.window
+      .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
+      .then(async c => {
+        if (c) Login();
+      });
     return UserStatus.SignedOut.toString();
   }
 };
 
+export const sendMail2fa = async (captcha: string, cookie?: Cookie) =>
+  axios.post(
+    API.SEND_MAIL_2fa,
+    { captcha, endpointType: 1 },
+    {
+      headers: {
+        Referer: API.UNLOCK_REFERER,
+        'X-CSRF-Token': await csrfToken(cookie),
+        Cookie: cookieString(cookie || (await authProvider.cookie()))
+      }
+    }
+  );
+
 export const fetchResult = async (rid: number) =>
   axios
-    .get<DataResponse<RecordData>>(
-      `/record/${rid}?_contentOnly=1`,
-      cookieConfig()
-    )
+    .get<DataResponse<RecordData>>(`/record/${rid}?_contentOnly=1`)
     .then(data => data?.data.currentData)
     .catch(err => {
       if (err.response) {
@@ -365,9 +361,9 @@ export const fetchResult = async (rid: number) =>
       }
     });
 
-export const fetchHomepage = async () =>
+export const fetch3kHomepage = async () =>
   axios
-    .get(`/user/1?_contentOnly=1`, cookieConfig())
+    .get(`/user/1?_contentOnly=1`)
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -384,8 +380,7 @@ export const logout = async () =>
       headers: {
         'X-CSRF-Token': await csrfToken(),
         Referer: API.baseURL,
-        Origin: API.baseURL,
-        ...cookieConfig().headers
+        Origin: API.baseURL
       }
     })
     .then(data => data?.data)
@@ -401,7 +396,7 @@ export const logout = async () =>
 
 export const getFate = async () =>
   axios
-    .get(API.FATE, cookieConfig())
+    .get(API.FATE)
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -415,7 +410,7 @@ export const getFate = async () =>
 
 export const fetchRecords = async () =>
   axios
-    .get(`/record/list?_contentOnly=1`, cookieConfig())
+    .get(`/record/list?_contentOnly=1`)
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -427,11 +422,15 @@ export const fetchRecords = async () =>
       }
     });
 
-export const searchUser = async (keyword: string) =>
+export const searchUser = async (keyword: string, cookie?: Cookie) =>
   axios
     .get<{ users: [UserSummary | null] }>(
       `/api/user/search?keyword=${keyword}`,
-      cookieConfig()
+      {
+        headers: {
+          Cookie: cookieString(cookie || (await authProvider.cookie()))
+        }
+      }
     )
     .then(data => data?.data)
     .catch(err => {
@@ -450,8 +449,7 @@ export const fetchFollowedBenben = async (page: number) =>
       headers: {
         'X-CSRF-Token': await csrfToken(),
         'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
-        ...cookieConfig().headers
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
       }
     })
     .then(data => data.data);
@@ -462,8 +460,7 @@ export const fetchUserBenben = async (page: number, user?: number) =>
       headers: {
         'X-CSRF-Token': await csrfToken(),
         'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
-        ...cookieConfig().headers
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
       }
     })
     .then(data => data.data);
@@ -471,7 +468,9 @@ export const fetchUserBenben = async (page: number, user?: number) =>
 // 只需要请求用户犇犇时不带 cookie 就可以获得到全网犇犇了（？）
 export const fetchAllBenben = async (page: number) =>
   axios
-    .get<{ feeds: List<Activity> }>(API.USER_BENBEN(page))
+    .get<{
+      feeds: List<Activity>;
+    }>(API.USER_BENBEN(page), { headers: { Cookie: '' } })
     .then(data => data.data);
 
 export const postBenben = async (benbenText: string) =>
@@ -484,8 +483,7 @@ export const postBenben = async (benbenText: string) =>
       {
         headers: {
           'X-CSRF-Token': await csrfToken(),
-          Referer: API.BenbenReferer,
-          ...cookieConfig().headers
+          Referer: API.BenbenReferer
         }
       }
     )
@@ -508,8 +506,7 @@ export const deleteBenben = async (id: number) =>
       {
         headers: {
           'X-CSRF-Token': await csrfToken(),
-          Referer: API.BenbenReferer,
-          ...cookieConfig().headers
+          Referer: API.BenbenReferer
         }
       }
     )
@@ -527,8 +524,7 @@ export const deleteBenben = async (id: number) =>
 export const userIcon = async (uid: number) =>
   axios
     .get(`https://cdn.luogu.com.cn/upload/usericon/${uid}.png`, {
-      responseType: 'arraybuffer',
-      ...cookieConfig()
+      responseType: 'arraybuffer'
     })
     .then(resp => (resp.data ? Buffer.from(resp.data, 'binary') : null))
     .catch(function (err) {
@@ -544,8 +540,7 @@ export const postVote = async (id: number, type: number, pid: string) =>
       {
         headers: {
           'X-CSRF-Token': await csrfToken(),
-          Referer: API.SOLUTION_REFERER(pid),
-          ...cookieConfig().headers
+          Referer: API.SOLUTION_REFERER(pid)
         }
       }
     )
@@ -595,22 +590,6 @@ export const parseUID = async (name: string) => {
   return '';
 };
 
-export const prettyTime = (time: number) => {
-  let mistiming = Math.round(new Date().getTime() / 1000) - time;
-  const postfix = mistiming > 0 ? '前' : '后';
-  mistiming = Math.abs(mistiming);
-  const arrr = ['年', '个月', '星期', '天', '小时', '分钟', '秒'];
-  const arrn = [31536000, 2592000, 604800, 86400, 3600, 60, 1];
-
-  for (let i = 0; i < 7; i++) {
-    const inm = Math.floor(mistiming / arrn[i]);
-    if (inm !== 0) {
-      return inm + arrr[i] + postfix;
-    }
-  }
-  return undefined;
-};
-
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 export const loadUserIcon = async (uid: number) => {
   let image = loadUserIconCache(uid);
@@ -634,7 +613,7 @@ export const loadUserIcon = async (uid: number) => {
 
 export const getRanklist = async (cid: string, page: number) => {
   return axios
-    .get<GetScoreboardResponse>(API.ranklist(cid, page), cookieConfig())
+    .get<GetScoreboardResponse>(API.ranklist(cid, page))
     .then(res => res.data)
     .catch(err => {
       throw err;
@@ -665,8 +644,7 @@ export async function submitCode(
       {
         headers: {
           'X-CSRF-Token': await csrfToken(),
-          Referer: `${API.baseURL}/problem/${id}`,
-          ...cookieConfig().headers
+          Referer: `${API.baseURL}/problem/${id}`
         }
       }
     )
@@ -694,3 +672,27 @@ export async function submitCode(
       throw err;
     });
 }
+export async function checkCookie(c: Cookie) {
+  const res = await axios.get('/', {
+    headers: { Cookie: cookieString(c) }
+  });
+  const cookie = res.headers['set-cookie'];
+  let flag = false;
+  if (cookie)
+    for (const cookie_info of cookie) {
+      if (cookie_info.match('_uid')?.index == 0) {
+        const match_res = cookie_info.match('(?<==).*?(?=;)');
+        if (match_res && match_res[0] === c.uid.toString()) flag = true;
+      }
+    }
+  return flag;
+}
+export const getCaptcha = async (c?: Cookie) =>
+  axios
+    .get(API.CAPTCHA_IMAGE, {
+      responseType: 'arraybuffer',
+      headers: {
+        Cookie: cookieString(c || (await authProvider.cookie()))
+      }
+    })
+    .then(x => Buffer.from(x.data, 'binary'));

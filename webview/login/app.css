@@ -1,0 +1,57 @@
+.container {
+  margin-top: 32px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+}
+.menu {
+  display: flex;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: center;
+  padding-top: 7px;
+  padding-bottom: 5px;
+  border-bottom: 2px solid #77777777;
+  text-decoration-line: none;
+  font-weight: bold;
+  color: var(--vscode-editor-foreground);
+}
+.menu-item-activate {
+  padding-bottom: 3px;
+  border-bottom: 4px solid rgb(52, 152, 219);
+}
+.luogu-logo {
+  display: block;
+  width: 160px;
+}
+.motto {
+  width: fit-content;
+  margin-bottom: 17px;
+  color: rgb(52, 152, 219);
+  font-size: 16px;
+}
+.form {
+  width: 300px;
+}
+.form-itemarea {
+  margin-bottom: 12px;
+}
+.form-itemarea-input {
+  display: flex;
+  align-items: center;
+}
+.form-itemarea-input-textfield {
+  flex-grow: 1;
+}
+.submit {
+  width: 100%;
+}

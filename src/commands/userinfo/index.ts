@@ -1,20 +1,15 @@
 import SuperCommand from '../SuperCommand';
-import { UserStatus } from '@/utils/shared';
-import { fetchHomepage } from '@/utils/api';
+import { fetch3kHomepage } from '@/utils/api';
 import * as vscode from 'vscode';
-import luoguStatusBar from '@/views/luoguStatusBar';
 
 export default new SuperCommand({
   onCommand: 'userInfo',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     try {
-      const data = await fetchHomepage();
+      const data = await fetch3kHomepage();
       if (data.currentUser === undefined) {
         vscode.window.showErrorMessage('未登录');
-        luoguStatusBar.updateStatusBar(UserStatus.SignedOut);
         return;
       }
       vscode.window.showInformationMessage(data.currentUser.name);

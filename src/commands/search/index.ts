@@ -7,7 +7,7 @@ import showProblem from '@/utils/showProblem';
 export default new SuperCommand({
   onCommand: 'searchProblem',
   handle: async () => {
-    while (!globalThis.init);
+    await globalThis.waitinit;
     const edtior = vscode.window.activeTextEditor;
     let fileNameID = '';
     if (edtior) {

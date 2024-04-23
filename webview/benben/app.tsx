@@ -1,11 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { isError } from 'lodash';
-import { BenbenData } from '@w/webviewMessage';
-import { sleep } from '@w/utils';
-import send from '@w/webviewRequest';
-import { UserIcon, UserName } from '@w/utils';
-import '@w/common.css';
-import './benben.css';
 import dateFormat from 'dateformat';
 import {
   VSCodeButton,
@@ -15,6 +8,13 @@ import {
 import md from './markdown';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { BenbenData } from '@w/webviewMessage';
+import { sleep } from '@w/utils';
+import send from '@w/webviewRequest';
+import { UserIcon, UserName } from '@w/utils';
+
+import '@w/common.css';
+import './app.css';
 
 export default function App() {
   const [text, SetText] = useState('');
@@ -96,6 +96,7 @@ function BenbenBlock({
             {`at ${dateFormat(new Date(data.time), 'yyyy-mm-dd HH:MM:ss')}`}
           </span>
           <a
+            href=""
             className="benben-comment-button"
             onClick={() => {
               SetText(
@@ -107,6 +108,7 @@ function BenbenBlock({
           </a>
           {data.user.isMe ? (
             <a
+              href=""
               className="benben-comment-button"
               onClick={async () => {
                 await send('BenbenDelete', {
@@ -183,7 +185,7 @@ function BenbenList({
               ))
             ]);
         } catch (err) {
-          if (isError(err) && err.message.includes('429'))
+          if (err instanceof Error && err.message.includes('429'))
             (tryAgain = true), await sleep(3000 - 1000);
         }
         setLoadingState(false);

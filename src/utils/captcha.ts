@@ -1,4 +1,4 @@
-import { captcha } from '@/utils/api';
+import { getCaptcha } from '@/utils/api';
 import { getResourceFilePath } from '@/utils/html';
 import * as vscode from 'vscode';
 import { promptForOpenOutputChannel, DialogType } from '@/utils/uiUtils';
@@ -28,7 +28,7 @@ export async function getUserCaptcha() {
   let captchaText: string | null = null;
   let image: Buffer | null = null;
   while (captchaText === null) {
-    image = await captcha();
+    image = await getCaptcha();
     if (!image) {
       await promptForOpenOutputChannel(
         'Failed to request captcha image',

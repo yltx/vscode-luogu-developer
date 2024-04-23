@@ -60,7 +60,12 @@ function getExtensionConfig(mode) {
           ]
         }
       ]
-    }
+    },
+    plugins: [
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
+    ]
   };
 }
 
@@ -128,10 +133,12 @@ function GetWebviewConfig(mode, entry) {
           use: ['style-loader', 'css-loader']
         }
       ]
-    }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    // plugins: [new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()]
+    },
+    plugins: [
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
+    ]
   };
 }
 
@@ -146,7 +153,8 @@ module.exports =
       getExtensionConfig(mode),
       getOldWebviewConfig(mode),
       GetWebviewConfig(mode, {
-        benben: './webview/benben'
+        benben: './webview/benben',
+        login: './webview/login'
       })
     ]);
   };

@@ -16,8 +16,17 @@ import { BenbenData } from '@w/webviewMessage';
 import { getUsernameColor } from '@/utils/workspaceUtils';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { Activity, UserSummary } from 'luogu-api';
-import { configFile } from '@/utils/files';
-import { isError } from 'lodash';
+
+function isError(x: unknown): x is Error {
+  return (
+    typeof x === 'object' &&
+    x !== null &&
+    'message' in x &&
+    'name' in x &&
+    typeof x.message === 'string' &&
+    typeof x.name === 'string'
+  );
+}
 
 async function getFollowedBenben(
   page = 1,
@@ -60,6 +69,7 @@ async function getFollowedBenben(
 }
 async function getUserBenben(page = 1, user?: number) {
   const res = (await fetchUserBenben(page, user)).feeds.result;
+  const me = (await authProvider.user()).uid;
   return await Promise.all(
     Object.keys(res)
       .sort((x, y) => +x - +y)
@@ -75,7 +85,7 @@ async function getUserBenben(page = 1, user?: number) {
           color: getUsernameColor(d.user.color),
           ccfLevel: d.user.ccfLevel,
           icon: (await loadUserIcon(d.user.uid)).toString('base64'),
-          isMe: d.user.uid === +configFile.uid
+          isMe: d.user.uid === me
         },
         id: d.id
       }))
@@ -83,6 +93,7 @@ async function getUserBenben(page = 1, user?: number) {
 }
 async function getAllBenben(page = 1) {
   const res = (await fetchAllBenben(page)).feeds.result;
+  const me = (await authProvider.user()).uid;
   return await Promise.all(
     Object.keys(res)
       .sort((x, y) => +x - +y)
@@ -98,7 +109,7 @@ async function getAllBenben(page = 1) {
           color: getUsernameColor(d.user.color),
           ccfLevel: d.user.ccfLevel,
           icon: (await loadUserIcon(d.user.uid)).toString('base64'),
-          isMe: d.user.uid === +configFile.uid
+          isMe: d.user.uid === me
         },
         id: d.id
       }))
@@ -160,9 +171,7 @@ async function getMode() {
 export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     try {
       if ((await getStatus()) === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');
@@ -226,8 +235,8 @@ export default new SuperCommand({
           vscode.window.showErrorMessage(
             `发送犇犇失败：${(err as unknown as { message: string }).message}`
           );
-          throw new Error((err as unknown as { message: string }).message, {
-            cause: isError(err) ? err : undefined
+          throw new Error(isError(err) ? err.message : 'Unknown error', {
+            cause: err
           });
         }
       },
@@ -239,8 +248,8 @@ export default new SuperCommand({
           vscode.window.showErrorMessage(
             `发送犇犇失败：${(err as unknown as { message: string }).message}`
           );
-          throw new Error((err as unknown as { message: string }).message, {
-            cause: isError(err) ? err : undefined
+          throw new Error(isError(err) ? err.message : 'Unknown error', {
+            cause: err
           });
         }
       }

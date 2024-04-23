@@ -1,12 +1,14 @@
+import { UUID } from 'crypto';
+
 export type WebviewRequestMessage<T extends string, D> = {
   type: T;
   data: D;
-  uuid: string;
+  uuid: UUID;
 };
 export type WebviewResponseMessage<D> = {
   data: D;
   error?: string;
-  uuid: string;
+  uuid: UUID;
 };
 export type WebviewMessage<
   REQ extends WebviewRequestMessage<string, unknown>,
@@ -53,9 +55,46 @@ type BenbenDeleteMessageType = WebviewMessage<
   WebviewRequestMessage<'BenbenDelete', { id: number }>,
   WebviewResponseMessage<void>
 >;
+type PasswordLoginMessageType = WebviewMessage<
+  WebviewRequestMessage<
+    'PasswordLogin',
+    { username: string; password: string; captcha: string }
+  >,
+  WebviewResponseMessage<{ type: 'error' | '2fa' | undefined }>
+>;
+type NeedCaptchaMessageType = WebviewMessage<
+  WebviewRequestMessage<'NeedCaptcha', void>,
+  WebviewResponseMessage<{ captchaImage: string }>
+>;
+type CookieLoginMessageType = WebviewMessage<
+  WebviewRequestMessage<'CookieLogin', Cookie>,
+  WebviewResponseMessage<{ type: 'error' | undefined }>
+>;
+type SendMailCodeMessageType = WebviewMessage<
+  WebviewRequestMessage<'SendMailCode', { captcha: string }>,
+  WebviewResponseMessage<{ type: 'error' | undefined }>
+>;
+type Login2faMessageType = WebviewMessage<
+  WebviewRequestMessage<'2fa', { code: string }>,
+  WebviewResponseMessage<{ type: 'error' | undefined }>
+>;
+type clearLoginCookieMessageType = WebviewMessage<
+  WebviewRequestMessage<'clearLoginCookie', void>,
+  WebviewResponseMessage<void>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
-  [BenbenUpdateMessageType, BenbenSendMessageType, BenbenDeleteMessageType]
+  [
+    BenbenUpdateMessageType,
+    BenbenSendMessageType,
+    BenbenDeleteMessageType,
+    NeedCaptchaMessageType,
+    PasswordLoginMessageType,
+    CookieLoginMessageType,
+    SendMailCodeMessageType,
+    Login2faMessageType,
+    clearLoginCookieMessageType
+  ]
 >;
 export default MessageTypes;

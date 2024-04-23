@@ -73,3 +73,20 @@ export async function sleep(ms: number): Promise<void> {
     setTimeout(() => resolve(), ms);
   });
 }
+export const cookieString = (c: Cookie) =>
+  `_uid=${c.uid};__client_id=${c.clientID}`;
+export function praseCookie(cookie: string[] | undefined) {
+  const s: { uid?: number; clientID?: string } = {};
+  if (cookie)
+    for (const cookie_info of cookie) {
+      if (cookie_info.match('_uid')?.index == 0) {
+        const match_res = cookie_info.match('(?<==).*?(?=;)');
+        if (match_res) s.uid = +match_res[0];
+      }
+      if (cookie_info.match('__client_id')?.index == 0) {
+        const match_res = cookie_info.match('(?<==).*?(?=;)');
+        if (match_res) s.clientID = match_res[0];
+      }
+    }
+  return s;
+}

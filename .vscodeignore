@@ -16,3 +16,4 @@ tempCodeRunnerFile.ts
 webpack.config.json
 .eslintrc.json
 .github/
+node_modules/

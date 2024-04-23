@@ -17,9 +17,7 @@ import * as vscode from 'vscode';
 export default new SuperCommand({
   onCommand: 'solution',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     try {
       if ((await getStatus()) === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');

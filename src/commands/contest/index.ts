@@ -24,9 +24,7 @@ import { ContestData, GetScoreboardResponse } from 'luogu-api';
 export default new SuperCommand({
   onCommand: 'contest',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     if ((await getStatus()) === UserStatus.SignedOut.toString()) {
       vscode.window.showErrorMessage('未登录');
       return;
