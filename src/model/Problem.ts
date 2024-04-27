@@ -145,7 +145,7 @@ export class Problem {
     return ` # ${this.name} | [${
       this.stringPID
     }](https://www.luogu.com.cn/problem/${this.stringPID}${
-      this.contestID
+      this.contestID !== undefined ? '?contestId=' + this.contestID : ''
     }) \n \n ${
       this.translation ? '## 题意翻译 \n \n ' + this.translation : ''
     } \n \n ${
