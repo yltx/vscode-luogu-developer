@@ -106,23 +106,8 @@
         "category": "Luogu"
       },
       {
-        "command": "luogu.save",
-        "title": "保存题目至本地(Save problem)",
-        "category": "Luogu"
-      },
-      {
-        "command": "luogu.open",
-        "title": "查看本地保存题目(Show local problem)",
-        "category": "Luogu"
-      },
-      {
         "command": "luogu.lastRecord",
         "title": "查看最近一次评测(Show last record)",
-        "category": "Luogu"
-      },
-      {
-        "command": "luogu.cookieslogin",
-        "title": "使用cookie登录(Signin by cookies)",
         "category": "Luogu"
       },
       {
@@ -197,10 +182,6 @@
         "key": "Ctrl+Alt+G O"
       },
       {
-        "command": "luogu.cookieslogin",
-        "key": "Ctrl+Alt+G Ctrl+Alt+C"
-      },
-      {
         "command": "luogu.contest",
         "key": "Ctrl+Alt+G C"
       },
@@ -236,17 +217,6 @@
           "command": "luogu.signin",
           "when": "view == luoguExplorer",
           "group": "navigation@0"
-        },
-        {
-          "command": "luogu.searchProblem",
-          "when": "view == luoguExplorer",
-          "group": "navigation@1",
-          "icon": "resources/search.svg"
-        },
-        {
-          "command": "luogu.benben",
-          "when": "view == luoguExplorer",
-          "group": "navigation@2"
         }
       ],
       "explorer/context": [
@@ -314,12 +284,6 @@
             "default": true,
             "scope": "window",
             "description": "Continue to submit / open problem when your filename is a valid problem ID."
-          },
-          "luogu.effectiveDuration": {
-            "type": "integer",
-            "default": 3,
-            "scope": "window",
-            "description": "Effective duration for problem show. (days,set it as -1 to store forever)."
           },
           "luogu.defaultWaitingTime": {
             "type": "integer",
@@ -391,7 +355,6 @@
     "@types/dateformat": "^5.0.2",
     "@types/jquery": "^3.5.25",
     "@types/katex": "^0.16.5",
-    "@types/lodash": "^4.14.200",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
     "@types/react": "^18.2.67",
@@ -400,7 +363,7 @@
     "@types/ws": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
-    "@vscode/vsce": "^2.24.0",
+    "@vscode/vsce": "^2.26.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "css-loader": "^6.10.0",
     "eslint": "^8.50.0",
@@ -419,13 +382,11 @@
     "@fortawesome/free-brands-svg-icons": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
-    "@mdit/plugin-katex": "^0.6.5",
+    "@vscode/markdown-it-katex": "^1.0.3",
     "agentkeepalive": "^4.5.0",
     "axios": "^1.6.0",
     "dateformat": "^5.0.3",
     "jquery": "^3.7.1",
-    "katex": "^0.16.9",
-    "lodash": "^4.17.21",
     "markdown-it": "^13.0.2",
     "markdown-it-highlightjs": "^4.0.1",
     "react": "^18.2.0",

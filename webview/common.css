@@ -82,14 +82,6 @@ hr {
   margin-right: 1em;
 }
 
-vscode-button[appearance='primary'],
-vscode-button[appearance='secondary'] {
-  margin-left: 2px;
-  margin-right: 2px;
-  width: 100px;
-  height: 28px;
-}
-
 vscode-button[appearance='icon'] {
   margin-left: 15px;
   margin-right: 15px;
@@ -101,4 +93,9 @@ vscode-button[appearance='icon'] {
   right: 5px;
   border-top-left-radius: 0px;
   border-bottom-right-radius: 0px;
+}
+
+.captcha{
+  width: 90px;
+  height: 35px;
 }

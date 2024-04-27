@@ -7,9 +7,7 @@ import { fetchRecords, getStatus } from '@/utils/api';
 export default new SuperCommand({
   onCommand: 'lastRecord',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     try {
       if ((await getStatus()) === UserStatus.SignedOut.toString()) {
         vscode.window.showErrorMessage('未登录');

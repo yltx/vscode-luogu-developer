@@ -12,9 +12,7 @@ import showRecord from '@/utils/showRecord';
 export default new SuperCommand({
   onCommand: 'sumbitCode',
   handle: async () => {
-    while (!globalThis.init) {
-      continue;
-    }
+    await globalThis.waitinit;
     const edtior = vscode.window.activeTextEditor;
     if (!edtior) {
       vscode.window.showErrorMessage(

@@ -1,10 +1,8 @@
 import MarkdownIt from 'markdown-it';
-import { katex, MarkdownItKatexOptions } from '@mdit/plugin-katex';
+import katex from '@vscode/markdown-it-katex';
 import markdownItHighlight from 'markdown-it-highlightjs';
 
-const md = MarkdownIt()
-  .use(markdownItHighlight)
-  .use<MarkdownItKatexOptions>(katex, { allowInlineWithSpace: true });
+const md = MarkdownIt().use(markdownItHighlight).use(katex);
 
 // 将 luogu markdown 中嵌入的 bilibili 视频转换为指向视频的链接。Reference: https://www.luogu.com.cn/paste/l9faoe0v
 const defaultRender = md.renderer.rules.image,

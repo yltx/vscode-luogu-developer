@@ -2,18 +2,14 @@ import MessageTypes, {
   WebviewRequestMessage,
   WebviewResponseMessage
 } from '@w/webviewMessage';
+import { UUID } from 'crypto';
 
 declare function acquireVsCodeApi(): {
   postMessage<T extends WebviewRequestMessage<string, unknown>>(data: T): void;
 };
 const vscode = acquireVsCodeApi();
 
-const p = new Map<string, [(data: unknown) => void, (err: string) => void]>();
-
-const randomUUID = () =>
-  Array.from({ length: 16 }, () =>
-    Math.floor(Math.random() * 16).toString(16)
-  ).join('');
+const p = new Map<UUID, [(data: unknown) => void, (err: string) => void]>();
 
 /**
  * 重新封装 vscode webview message，方便在需要以类似 http 的形式获取返回值的形式使用。这是用于发送请求的服务。
@@ -26,7 +22,7 @@ export default function send<K extends keyof MessageTypes>(
   data: MessageTypes[K]['request']['data']
 ) {
   type R = MessageTypes[K]['response']['data'];
-  const uuid = randomUUID();
+  const uuid = crypto.randomUUID();
   vscode.postMessage({ type, data, uuid });
   return new Promise<R>((resolve, reject) =>
     p.set(uuid, [data => resolve(data as R), err => reject(new Error(err))])

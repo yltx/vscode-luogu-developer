@@ -1,17 +1,17 @@
-import debug from '@/utils/debug';
+import * as vscode from 'vscode';
 
 export default class {
   public readonly onCommand: string;
-  private handle!: () => void;
+  readonly handle: () => void;
+  readonly onactivate?: (context: vscode.ExtensionContext) => void;
 
-  constructor(props: { onCommand: string; handle: () => void }) {
+  constructor(props: {
+    onCommand: string;
+    handle: () => void;
+    onactivate?: (context: vscode.ExtensionContext) => void;
+  }) {
     this.onCommand = props.onCommand;
     this.handle = props.handle;
+    this.onactivate = props.onactivate;
   }
-
-  public callback = () => {
-    debug(`${this.onCommand} start.`);
-    this.handle();
-    debug(`${this.onCommand} end.`);
-  };
 }
