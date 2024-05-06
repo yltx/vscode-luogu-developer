@@ -4,7 +4,6 @@ import RegisterCommands from '@/commands';
 import { getStatus } from '@/utils/api';
 import path from 'path';
 
-globalThis.islogged = false;
 globalThis.pid = '';
 let initFinish: () => void;
 globalThis.waitinit = new Promise(resolve => (initFinish = () => resolve()));

@@ -1,22 +1,11 @@
 import SuperCommand from '../SuperCommand';
-import { getFate, getStatus } from '@/utils/api';
-import { UserStatus } from '@/utils/shared';
+import { getFate } from '@/utils/api';
 import * as vscode from 'vscode';
 
 export default new SuperCommand({
   onCommand: 'fate',
   handle: async () => {
     await globalThis.waitinit;
-    await getStatus()
-      .then(message => {
-        if (message === UserStatus.SignedOut.toString()) {
-          vscode.window.showErrorMessage('未登录');
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        vscode.window.showErrorMessage(`${err}`);
-      });
     await getFate()
       .then(data => {
         if (data.code !== 201 && data.code !== 200) {

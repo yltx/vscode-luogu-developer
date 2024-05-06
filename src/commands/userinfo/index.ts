@@ -1,5 +1,6 @@
 import SuperCommand from '../SuperCommand';
 import { fetch3kHomepage } from '@/utils/api';
+import { needLogin } from '@/utils/uiUtils';
 import * as vscode from 'vscode';
 
 export default new SuperCommand({
@@ -9,7 +10,7 @@ export default new SuperCommand({
     try {
       const data = await fetch3kHomepage();
       if (data.currentUser === undefined) {
-        vscode.window.showErrorMessage('未登录');
+        needLogin();
         return;
       }
       vscode.window.showInformationMessage(data.currentUser.name);

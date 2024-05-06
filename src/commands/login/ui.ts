@@ -27,8 +27,8 @@ export default async function showLoginView() {
       ]
     }
   );
-  let uid = 0;
-  let clientID = await genClientID();
+  let uid = 0,
+    clientID = await genClientID();
   let successful = false;
   useWebviewResponseHandle(panel.webview, {
     NeedCaptcha: async () => ({

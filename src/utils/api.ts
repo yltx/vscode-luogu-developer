@@ -1,4 +1,4 @@
-import _ from 'axios';
+import _, { isAxiosError } from 'axios';
 import { UserStatus } from '@/utils/shared';
 import { loadUserIconCache, saveUserIconCache } from '@/utils/files';
 import * as vscode from 'vscode';
@@ -20,6 +20,7 @@ import {
 import AgentKeepAlive from 'agentkeepalive';
 import { cookieString, praseCookie } from './workspaceUtils';
 import { Login } from '@/commands/login';
+import { needLogin } from './uiUtils';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
 
@@ -65,6 +66,16 @@ export namespace API {
     `${baseURL}/problem/solution/${pid}`;
 }
 
+declare module 'axios' {
+  export interface AxiosRequestConfig<
+    // eslint-disable-next-line
+    D = any
+  > {
+    myInterceptors_cookie?: Cookie | null | undefined;
+    myInterceptors_notCheckCookie?: boolean;
+  }
+}
+
 export const axios = (() => {
   // 使用 http keepalive，批量获取用户头像时效率显著提升。
   const keepAliveAgent = new AgentKeepAlive({
@@ -76,7 +87,14 @@ export const axios = (() => {
     headers: { 'X-Requested-With': 'XMLHttpRequest', Connection: 'keep-alive' },
     proxy: false,
     httpAgent: keepAliveAgent,
-    httpsAgent: keepAliveAgent
+    httpsAgent: keepAliveAgent,
+    timeout: 6000,
+    beforeRedirect: (options, { headers, statusCode }) => {
+      if (statusCode === 302 && headers.location === '/auth/login') {
+        needLogin();
+        throw new Error('未登录');
+      }
+    }
   });
 
   const defaults = axios.defaults;
@@ -90,13 +108,61 @@ export const axios = (() => {
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36';
     return data;
   });
-  defaults.timeout = 6000;
 
   axios.interceptors.request.use(async config => {
-    if (config.headers.Cookie === undefined)
-      config.headers.Cookie = cookieString(await authProvider.cookie());
+    if (config.method !== 'get' && config.headers['X-CSRF-Token'] === undefined)
+      config.headers['X-CSRF-Token'] = await csrfToken(
+        config.myInterceptors_cookie || undefined
+      ).catch(err => console.error(err));
     return config;
   });
+  axios.interceptors.request.use(async config => {
+    if (config.myInterceptors_cookie === null) return config;
+    if (config.myInterceptors_cookie === undefined)
+      config.myInterceptors_cookie = await authProvider.cookie();
+    config.headers.cookie = cookieString(config.myInterceptors_cookie);
+    return config;
+  });
+  axios.interceptors.response.use(
+    res => {
+      if (res.config.myInterceptors_notCheckCookie) return res;
+      if (res.config.myInterceptors_cookie?.uid) {
+        const get = praseCookie(res.headers['set-cookie']);
+        if (
+          get.uid !== undefined &&
+          get.uid != res.config.myInterceptors_cookie.uid
+        )
+          throw Error('UnknownCookie');
+      }
+      return res;
+    },
+    async err => {
+      if (!isAxiosError(err) || !err.response) throw err;
+      if (err.response.data.errorMessage === '未登录') {
+        needLogin();
+        throw err;
+      }
+      if (err.config?.myInterceptors_notCheckCookie) throw err;
+      if (err.config?.myInterceptors_cookie?.uid) {
+        const get = praseCookie(err.response.headers['set-cookie']);
+        if (
+          get.uid !== undefined &&
+          get.uid != err.config.myInterceptors_cookie.uid
+        ) {
+          const sessions = await authProvider.getSessions();
+          if (sessions.length > 0) {
+            authProvider.removeSession(sessions[0].id);
+            vscode.window
+              .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
+              .then(async c => {
+                if (c) Login();
+              });
+          }
+        }
+      }
+      throw err;
+    }
+  );
 
   return axios;
 })();
@@ -104,8 +170,12 @@ export const axios = (() => {
 export default axios;
 
 export const genClientID = async function () {
-  const cookies = (await axios.get(API.baseURL, { headers: { Cookie: '' } }))
-    .headers['set-cookie'];
+  const cookies = (
+    await axios.get(API.baseURL, {
+      myInterceptors_notCheckCookie: true,
+      myInterceptors_cookie: null
+    })
+  ).headers['set-cookie'];
   if (!cookies) throw new Error('Cookie not found in header');
   const s = praseCookie(cookies).clientID;
   if (!s) throw new Error('Cookie not found in header');
@@ -115,13 +185,12 @@ export const genClientID = async function () {
 export const csrfToken = async (cookie?: Cookie, path: string = API.baseURL) =>
   axios
     .get(path, {
-      headers: { Cookie: cookieString(cookie || (await authProvider.cookie())) }
+      myInterceptors_cookie: cookie
     })
     .then(res => {
       const result = CSRF_TOKEN_REGEX.exec(res.data);
       return result ? result[1].trim() : null;
-    })
-    .catch(() => null);
+    });
 
 export const searchProblem = async (pid: string) =>
   axios
@@ -285,10 +354,10 @@ export const login = async (
       } as LoginRequest,
       {
         headers: {
-          Referer: API.LOGIN_REFERER,
-          'X-CSRF-Token': await csrfToken(cookie, API.LOGIN_REFERER),
-          Cookie: cookieString(cookie || (await authProvider.cookie()))
-        }
+          Referer: API.LOGIN_REFERER
+        },
+        myInterceptors_cookie: cookie,
+        myInterceptors_notCheckCookie: true
       }
     )
     .then(x => ({
@@ -298,8 +367,6 @@ export const login = async (
 };
 
 export const unlock = async (code: string, cookie?: Cookie) => {
-  const csrf = await csrfToken(cookie);
-
   return await axios.post(
     API.UNLOCK_ENDPOINT,
     {
@@ -308,9 +375,9 @@ export const unlock = async (code: string, cookie?: Cookie) => {
     {
       headers: {
         Referer: API.UNLOCK_REFERER,
-        'X-CSRF-Token': csrf,
-        Cookie: cookieString(cookie || (await authProvider.cookie()))
-      }
+        'X-CSRF-Token': await csrfToken(cookie, '/auth/login')
+      },
+      myInterceptors_cookie: cookie
     }
   );
 };
@@ -318,12 +385,12 @@ export const unlock = async (code: string, cookie?: Cookie) => {
 export const getStatus = async () => {
   const session = await authProvider.getSessions();
   if (session.length === 0) return UserStatus.SignedOut.toString();
-  const ret = (await fetch3kHomepage()).currentUser;
-  if (ret) {
-    globalThis.islogged = true;
+  const status = await authProvider
+    .cookie()
+    .then(x => (x.uid !== 0 ? checkCookie(x) : false));
+  if (status) {
     return UserStatus.SignedIn.toString();
   } else {
-    globalThis.islogged = false;
     authProvider.removeSession(session[0].id);
     vscode.window
       .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
@@ -340,10 +407,9 @@ export const sendMail2fa = async (captcha: string, cookie?: Cookie) =>
     { captcha, endpointType: 1 },
     {
       headers: {
-        Referer: API.UNLOCK_REFERER,
-        'X-CSRF-Token': await csrfToken(cookie),
-        Cookie: cookieString(cookie || (await authProvider.cookie()))
-      }
+        Referer: API.UNLOCK_REFERER
+      },
+      myInterceptors_cookie: cookie
     }
   );
 
@@ -378,7 +444,6 @@ export const logout = async () =>
   axios
     .post(API.LOGOUT, '', {
       headers: {
-        'X-CSRF-Token': await csrfToken(),
         Referer: API.baseURL,
         Origin: API.baseURL
       }
@@ -427,9 +492,7 @@ export const searchUser = async (keyword: string, cookie?: Cookie) =>
     .get<{ users: [UserSummary | null] }>(
       `/api/user/search?keyword=${keyword}`,
       {
-        headers: {
-          Cookie: cookieString(cookie || (await authProvider.cookie()))
-        }
+        myInterceptors_cookie: cookie
       }
     )
     .then(data => data?.data)
@@ -445,24 +508,15 @@ export const searchUser = async (keyword: string, cookie?: Cookie) =>
 
 export const fetchFollowedBenben = async (page: number) =>
   axios
-    .get<{ status: number; data: ActivityData[] }>(API.FOLLOWED_BENBEN(page), {
-      headers: {
-        'X-CSRF-Token': await csrfToken(),
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
-      }
-    })
+    .get<{
+      status: number;
+      data: ActivityData[];
+    }>(API.FOLLOWED_BENBEN(page))
     .then(data => data.data);
 
 export const fetchUserBenben = async (page: number, user?: number) =>
   axios
-    .get<{ feeds: List<Activity> }>(API.USER_BENBEN(page, user), {
-      headers: {
-        'X-CSRF-Token': await csrfToken(),
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36'
-      }
-    })
+    .get<{ feeds: List<Activity> }>(API.USER_BENBEN(page, user))
     .then(data => data.data);
 
 // 只需要请求用户犇犇时不带 cookie 就可以获得到全网犇犇了（？）
@@ -470,7 +524,10 @@ export const fetchAllBenben = async (page: number) =>
   axios
     .get<{
       feeds: List<Activity>;
-    }>(API.USER_BENBEN(page), { headers: { Cookie: '' } })
+    }>(API.USER_BENBEN(page), {
+      myInterceptors_notCheckCookie: true,
+      myInterceptors_cookie: null
+    })
     .then(data => data.data);
 
 export const postBenben = async (benbenText: string) =>
@@ -482,20 +539,12 @@ export const postBenben = async (benbenText: string) =>
       },
       {
         headers: {
-          'X-CSRF-Token': await csrfToken(),
           Referer: API.BenbenReferer
         }
       }
     )
-    .then(data => data?.data)
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
+    .then(data => {
+      return data.data.data;
     });
 
 export const deleteBenben = async (id: number) =>
@@ -505,7 +554,6 @@ export const deleteBenben = async (id: number) =>
       {},
       {
         headers: {
-          'X-CSRF-Token': await csrfToken(),
           Referer: API.BenbenReferer
         }
       }
@@ -539,7 +587,6 @@ export const postVote = async (id: number, type: number, pid: string) =>
       { Type: type },
       {
         headers: {
-          'X-CSRF-Token': await csrfToken(),
           Referer: API.SOLUTION_REFERER(pid)
         }
       }
@@ -643,7 +690,6 @@ export async function submitCode(
       },
       {
         headers: {
-          'X-CSRF-Token': await csrfToken(),
           Referer: `${API.baseURL}/problem/${id}`
         }
       }
@@ -651,9 +697,6 @@ export async function submitCode(
     .then(res => {
       if (res.status === 200) {
         return res.data.rid;
-      } else if (res.status === 401) {
-        vscode.window.showErrorMessage('您没有登录');
-        throw Error('您没有登录');
       } else {
         throw res.data;
       }
@@ -674,7 +717,8 @@ export async function submitCode(
 }
 export async function checkCookie(c: Cookie) {
   const res = await axios.get('/', {
-    headers: { Cookie: cookieString(c) }
+    myInterceptors_notCheckCookie: true,
+    myInterceptors_cookie: c
   });
   const cookie = res.headers['set-cookie'];
   let flag = false;
@@ -691,8 +735,6 @@ export const getCaptcha = async (c?: Cookie) =>
   axios
     .get(API.CAPTCHA_IMAGE, {
       responseType: 'arraybuffer',
-      headers: {
-        Cookie: cookieString(c || (await authProvider.cookie()))
-      }
+      myInterceptors_cookie: c
     })
     .then(x => Buffer.from(x.data, 'binary'));

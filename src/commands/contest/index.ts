@@ -1,12 +1,11 @@
 import SuperCommand from '../SuperCommand';
-import { searchContest, getStatus, getRanklist } from '@/utils/api';
+import { searchContest, getRanklist } from '@/utils/api';
 import { changeTime } from '@/utils/shared';
 import { getResourceFilePath } from '@/utils/html';
 import { formatTime } from '@/utils/shared';
 import * as vscode from 'vscode';
 import md from '@/utils/markdown';
 import {
-  UserStatus,
   contestStyle,
   contestType,
   contestVisibility,
@@ -25,10 +24,6 @@ export default new SuperCommand({
   onCommand: 'contest',
   handle: async () => {
     await globalThis.waitinit;
-    if ((await getStatus()) === UserStatus.SignedOut.toString()) {
-      vscode.window.showErrorMessage('未登录');
-      return;
-    }
     const defaultID = globalThis.cid;
     const cid = await vscode.window
       .showInputBox({

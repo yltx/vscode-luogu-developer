@@ -38,7 +38,7 @@ function getBaseConfig(mode) {
 function getExtensionConfig(mode) {
   return {
     ...getBaseConfig(mode),
-    target: 'node',
+    target: ['node', 'es2020'],
     entry: './src/extension.ts',
     output: {
       filename: 'extension.js',

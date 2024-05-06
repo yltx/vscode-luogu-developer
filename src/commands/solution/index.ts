@@ -2,13 +2,11 @@ import SuperCommand from '../SuperCommand';
 import {
   parseProblemID,
   searchSolution,
-  getStatus,
   loadUserIcon,
   postVote
 } from '@/utils/api';
 import { formatTime } from '@/utils/shared';
 import HTMLtemplate, { usernameSpan } from '@/utils/html';
-import { UserStatus } from '@/utils/shared';
 import { BlogDetails } from 'luogu-api';
 import * as path from 'path';
 import md from '@/utils/markdown';
@@ -18,15 +16,6 @@ export default new SuperCommand({
   onCommand: 'solution',
   handle: async () => {
     await globalThis.waitinit;
-    try {
-      if ((await getStatus()) === UserStatus.SignedOut.toString()) {
-        vscode.window.showErrorMessage('未登录');
-        return;
-      }
-    } catch (err) {
-      vscode.window.showErrorMessage(`${err}`);
-      throw err;
-    }
     const edtior = vscode.window.activeTextEditor;
     let fileNameID = '';
     if (edtior) {
