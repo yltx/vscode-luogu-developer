@@ -38,6 +38,7 @@ const updateStatus = (data: RecordData) => {
     statusBar.backgroundColor = new ThemeColor(
       `statusBarItem.warningBackground`
     );
+  else statusBar.backgroundColor = undefined;
   statusBar.show();
   if (status > 1)
     setTimeout(() => {
@@ -79,7 +80,7 @@ export const showRecord = async (rid: number) => {
       if (!(status >= 0 && status <= 1)) {
         break;
       }
-      await delay(1000);
+      await delay(500);
     } catch (err) {
       console.error(err);
       vscode.window.showErrorMessage(
