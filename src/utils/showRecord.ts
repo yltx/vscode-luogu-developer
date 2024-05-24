@@ -28,9 +28,9 @@ const updateStatus = (data: RecordData) => {
     statusBar = vscode.window.createStatusBarItem(StatusBarAlignment.Left);
   }
 
-  if (status < 2) statusBar.text = `$(loading~spin)` + statusText;
-  else if (status === 12) statusBar.text = `$(check-all)` + statusText;
-  else statusBar.text = `$(warning)` + statusText;
+  if (status < 2) statusBar.text = `$(loading~spin) ` + statusText;
+  else if (status === 12) statusBar.text = `$(check-all) ` + statusText;
+  else statusBar.text = `$(warning) ` + statusText;
 
   if (status > 1 && status !== 12)
     statusBar.backgroundColor = new ThemeColor(`statusBarItem.errorBackground`);
