@@ -64,6 +64,7 @@ export const showRecord = async (rid: number) => {
         }
       )
     : null;
+  let panelClosed = false;
   let retryTimes = 0;
   const maxRetryTimes = 2;
   panel?.onDidDispose(() => (panelClosed = true));
