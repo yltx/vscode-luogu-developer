@@ -30,7 +30,7 @@ export const showRecord = async (rid: number) => {
   let retryTimes = 0;
   const maxRetryTimes = 2;
   panel.onDidDispose(() => (panelClosed = true));
-  while (!panelClosed && globalThis.islogged && retryTimes <= maxRetryTimes) {
+  while (!panelClosed && retryTimes <= maxRetryTimes) {
     try {
       console.log(rid);
       const result = await fetchResult(rid);

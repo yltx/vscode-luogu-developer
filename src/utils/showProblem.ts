@@ -1,15 +1,14 @@
 import * as vscode from 'vscode';
+import axios from 'axios';
 import {
-  axios,
   searchProblem,
-  getStatus,
   searchContestProblem,
   getErrorMessage,
   submitCode
 } from '@/utils/api';
 import Problem from '@/model/Problem';
 import md from '@/utils/markdown';
-import { UserStatus, Languages } from '@/utils/shared';
+import { Languages } from '@/utils/shared';
 import * as path from 'path';
 import {
   getSelectedLanguage,
@@ -74,16 +73,7 @@ const submit = async function (problem: Problem) {
     vscode.window.showErrorMessage('您没有打开任何文件，请打开一个文件后重试');
     return;
   }
-  try {
-    if ((await getStatus()) === UserStatus.SignedOut.toString()) {
-      vscode.window.showErrorMessage('您没有登录，请先登录');
-      return;
-    }
-  } catch (err) {
-    console.error(err);
-    vscode.window.showErrorMessage(`${err}`);
-    return;
-  }
+
   const text = edtior.document.getText();
   const filePath = edtior.document.fileName;
   const fileFName = path.parse(filePath).base;

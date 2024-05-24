@@ -58,7 +58,7 @@ export default new SuperCommand({
       .then(res => res.data)
       .then(async res => {
         if (res.code !== 200) {
-          throw Error(res.currentData.errorMessage);
+          throw new Error(res.currentData.errorMessage);
         }
         console.log(res);
         const problemCount = res['currentData']['problems']['count'];
@@ -72,7 +72,7 @@ export default new SuperCommand({
           .then(res => res.data)
           .then(async res => {
             if (res.code !== 200) {
-              throw Error(res.currentData.errorMessage);
+              throw new Error(res.currentData.errorMessage);
             }
             const randNum = Math.floor(
               Math.random() * Math.min(problemCount - 50 * (randPage - 1), 50)
@@ -92,7 +92,7 @@ export default new SuperCommand({
         if (err.response) {
           throw err.response.data;
         } else if (err.request) {
-          throw Error('请求超时，请重试');
+          throw new Error('请求超时，请重试');
         } else {
           throw err;
         }

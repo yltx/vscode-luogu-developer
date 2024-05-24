@@ -1,12 +1,12 @@
 import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
-import { UserStatus, Languages } from '@/utils/shared';
+import { Languages } from '@/utils/shared';
 import * as path from 'path';
 import {
   getSelectedLanguage,
   getLanauageFromExt
 } from '@/utils/workspaceUtils';
-import { getStatus, parseProblemID, submitCode } from '@/utils/api';
+import { parseProblemID, submitCode } from '@/utils/api';
 import showRecord from '@/utils/showRecord';
 
 export default new SuperCommand({
@@ -18,16 +18,6 @@ export default new SuperCommand({
       vscode.window.showErrorMessage(
         '您没有打开任何文件，请打开一个文件后重试'
       );
-      return;
-    }
-    try {
-      if ((await getStatus()) === UserStatus.SignedOut.toString()) {
-        vscode.window.showErrorMessage('您没有登录，请先登录');
-        return;
-      }
-    } catch (err) {
-      console.error(err);
-      vscode.window.showErrorMessage(`${err}`);
       return;
     }
     const text = edtior.document.getText();

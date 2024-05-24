@@ -2,7 +2,6 @@ import SuperCommand from '../SuperCommand';
 import {
   searchUser,
   fetchFollowedBenben,
-  getStatus,
   loadUserIcon,
   fetchUserBenben,
   fetchAllBenben,
@@ -10,12 +9,12 @@ import {
   deleteBenben
 } from '@/utils/api';
 import { getDistFilePath } from '@/utils/html';
-import { UserStatus } from '@/utils/shared';
 import * as vscode from 'vscode';
 import { BenbenData } from '@w/webviewMessage';
 import { getUsernameColor } from '@/utils/workspaceUtils';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { Activity, UserSummary } from 'luogu-api';
+import { needLogin } from '@/utils/uiUtils';
 
 function isError(x: unknown): x is Error {
   return (
@@ -39,7 +38,7 @@ async function getFollowedBenben(
       const d =
         userinfoCache?.get(x.uid) ||
         (await searchUser(x.uid.toString())).users[0];
-      if (!d) throw Error('Load userinfo failed.');
+      if (!d) throw new Error('Load userinfo failed.');
       return d;
     })
   );
@@ -70,6 +69,10 @@ async function getFollowedBenben(
 async function getUserBenben(page = 1, user?: number) {
   const res = (await fetchUserBenben(page, user)).feeds.result;
   const me = (await authProvider.user()).uid;
+  if (me === 0) {
+    needLogin();
+    throw new Error('未登录');
+  }
   return await Promise.all(
     Object.keys(res)
       .sort((x, y) => +x - +y)
@@ -172,16 +175,6 @@ export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
     await globalThis.waitinit;
-    try {
-      if ((await getStatus()) === UserStatus.SignedOut.toString()) {
-        vscode.window.showErrorMessage('未登录');
-        return;
-      }
-    } catch (err) {
-      console.error(err);
-      vscode.window.showErrorMessage(`${err}`);
-      return;
-    }
     const mode = await getMode();
     if (mode === undefined) return;
     const user =
@@ -229,8 +222,7 @@ export default new SuperCommand({
       },
       BenbenSend: async data => {
         try {
-          const res = await postBenben(data.comment);
-          if (res.status !== 200) throw res;
+          await postBenben(data.comment);
         } catch (err) {
           vscode.window.showErrorMessage(
             `发送犇犇失败：${(err as unknown as { message: string }).message}`

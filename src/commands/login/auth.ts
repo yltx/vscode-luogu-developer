@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import showLoginView from './ui';
 import { randomUUID } from 'crypto';
+import { checkCookie, genClientID, logout } from '@/utils/api';
 
 class LuoguSession implements vscode.AuthenticationSession {
   readonly id = randomUUID();
@@ -20,14 +21,23 @@ export default class LuoguAuthProvider
   static readonly SecretKey = 'luogu-auth';
   private _sessionChangeEmitter =
     new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
-  private cache: LuoguSession | undefined;
+  private cache: LuoguSession;
   private cacheLock: Promise<void>;
+  private status: boolean = false;
   constructor(private readonly secretStorage: vscode.SecretStorage) {
     let finishlock = () => {};
+    this.cache = {} as LuoguSession;
     this.cacheLock = new Promise(resolve => (finishlock = resolve));
-    this.secretStorage
-      .get(LuoguAuthProvider.SecretKey)
-      .then(x => ((this.cache = x ? JSON.parse(x) : undefined), finishlock()));
+    this.secretStorage.get(LuoguAuthProvider.SecretKey).then(async x => {
+      if (x) (this.cache = JSON.parse(x)), (this.status = true);
+      else
+        this.cache = new LuoguSession({
+          uid: 0,
+          clientID: await genClientID(),
+          name: ''
+        });
+      finishlock();
+    });
     this.secretStorage.onDidChange(async e => {
       let finishlock = () => {};
       this.cacheLock = new Promise(resolve => (finishlock = resolve));
@@ -45,7 +55,11 @@ export default class LuoguAuthProvider
           changed: [],
           removed: [this.cache]
         }),
-          (this.cache = undefined);
+          (this.cache = new LuoguSession({
+            uid: 0,
+            clientID: await genClientID(),
+            name: ''
+          }));
       finishlock();
     });
   }
@@ -54,35 +68,46 @@ export default class LuoguAuthProvider
   }
   async createSession(): Promise<vscode.AuthenticationSession> {
     await this.cacheLock;
-    if (this.cache) return this.cache;
+    if (this.status) return this.cache;
     const user = await showLoginView();
     const session = new LuoguSession(user);
     await this.secretStorage.store(
       LuoguAuthProvider.SecretKey,
       JSON.stringify(session)
     );
+    this.status = true;
     return session;
   }
   async getSessions(): Promise<readonly vscode.AuthenticationSession[]> {
     await this.cacheLock;
-    return this.cache ? [this.cache] : [];
+    return this.status ? [this.cache] : [];
   }
   async removeSession(sessionId: string) {
     await this.cacheLock;
-    if (this.cache) {
+    if (this.status) {
       if (this.cache.id === sessionId) {
-        await this.secretStorage.delete(LuoguAuthProvider.SecretKey);
+        await this.cookie()
+          .then(c => checkCookie(c))
+          .then(x => (x ? logout() : undefined))
+          .catch(err => {
+            vscode.window.showErrorMessage(
+              `注销失败${err instanceof Error ? `：${err.message}` : `。`}`
+            );
+            console.error(err);
+            throw err;
+          });
+        await this.secretStorage
+          .delete(LuoguAuthProvider.SecretKey)
+          .then(() => (this.status = false));
       }
     }
   }
   async user() {
-    const t = await this.getSessions();
-    if (t.length === 0) throw new Error('not logged in');
-    return { uid: +t[0].account.id, name: t[0].account.label };
+    await this.cacheLock;
+    return { uid: +this.cache.account.id, name: this.cache.account.label };
   }
   async cookie(): Promise<Cookie> {
-    const t = await this.getSessions();
-    if (t.length === 0) throw new Error('not logged in');
-    return { uid: +t[0].account.id, clientID: t[0].accessToken };
+    await this.cacheLock;
+    return { uid: +this.cache.account.id, clientID: this.cache.accessToken };
   }
 }

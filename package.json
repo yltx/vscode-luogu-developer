@@ -174,14 +174,6 @@
         "key": "Ctrl+Alt+G Ctrl+Alt+S"
       },
       {
-        "command": "luogu.save",
-        "key": "Ctrl+Alt+G V"
-      },
-      {
-        "command": "luogu.open",
-        "key": "Ctrl+Alt+G O"
-      },
-      {
         "command": "luogu.contest",
         "key": "Ctrl+Alt+G C"
       },
@@ -207,7 +199,7 @@
       "luogu": [
         {
           "id": "luoguExplorer",
-          "name": "Problems"
+          "name": "洛谷"
         }
       ]
     },
@@ -363,7 +355,7 @@
     "@types/ws": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
-    "@vscode/vsce": "^2.26.0",
+    "@vscode/vsce": "^2.26.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "css-loader": "^6.10.0",
     "eslint": "^8.50.0",
