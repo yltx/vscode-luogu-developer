@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { StatusBarItem, StatusBarAlignment, ThemeColor } from 'vscode';
 import { Languages, resultState } from '@/utils/shared';
 import {
   getStatusText,
@@ -12,37 +13,75 @@ import { RecordData, TestCaseStatus } from 'luogu-api';
 
 const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
 
+let statusBar!: StatusBarItem;
+
+const updateStatus = (data: RecordData) => {
+  const status = data.record.status,
+    score =
+      data.record.score === undefined || data.record.score === null
+        ? 0
+        : data.record.score,
+    fullScore = data.record.problem.fullScore;
+  const statusText = getStatusText(status) + ` (${score}/${fullScore})`;
+
+  if (!statusBar) {
+    statusBar = vscode.window.createStatusBarItem(StatusBarAlignment.Left);
+  }
+
+  if (status < 2) statusBar.text = `$(loading~spin) ` + statusText;
+  else if (status === 12) statusBar.text = `$(check-all) ` + statusText;
+  else statusBar.text = `$(warning) ` + statusText;
+
+  if (status > 1 && status !== 12)
+    statusBar.backgroundColor = new ThemeColor(`statusBarItem.errorBackground`);
+  else if (status === 12)
+    statusBar.backgroundColor = new ThemeColor(
+      `statusBarItem.warningBackground`
+    );
+  else statusBar.backgroundColor = undefined;
+  statusBar.show();
+  if (status > 1)
+    setTimeout(() => {
+      statusBar.hide();
+    }, 10000);
+};
+
 export const showRecord = async (rid: number) => {
-  const panel = vscode.window.createWebviewPanel(
-    `${rid}`,
-    `R${rid} 记录详情`,
-    vscode.ViewColumn.Two,
-    {
-      enableScripts: true,
-      retainContextWhenHidden: true,
-      localResourceRoots: [
-        vscode.Uri.file(globalThis.resourcesPath),
-        vscode.Uri.file(globalThis.distPath)
-      ]
-    }
-  );
-  let panelClosed = false;
+  const panel = vscode.workspace
+    .getConfiguration('luogu')
+    .get<boolean>('showRecordPanel')
+    ? vscode.window.createWebviewPanel(
+        `${rid}`,
+        `R${rid} 记录详情`,
+        vscode.ViewColumn.Two,
+        {
+          enableScripts: true,
+          retainContextWhenHidden: true,
+          localResourceRoots: [
+            vscode.Uri.file(globalThis.resourcesPath),
+            vscode.Uri.file(globalThis.distPath)
+          ]
+        }
+      )
+    : null;
   let retryTimes = 0;
   const maxRetryTimes = 2;
-  panel.onDidDispose(() => (panelClosed = true));
+  panel?.onDidDispose(() => (panelClosed = true));
   while (!panelClosed && retryTimes <= maxRetryTimes) {
     try {
       console.log(rid);
       const result = await fetchResult(rid);
+      updateStatus(result);
       const status = result.record.status;
       debug('Get result: ', result.record);
-      panel.webview.html = await generateRecordHTML(panel.webview, result);
+      if (panel)
+        panel.webview.html = await generateRecordHTML(panel.webview, result);
       retryTimes = 0;
       console.log('status: ', status);
       if (!(status >= 0 && status <= 1)) {
         break;
       }
-      await delay(1000);
+      await delay(500);
     } catch (err) {
       console.error(err);
       vscode.window.showErrorMessage(
@@ -53,6 +92,7 @@ export const showRecord = async (rid: number) => {
     }
   }
   if (retryTimes === maxRetryTimes + 1) {
+    if (statusBar) statusBar.hide();
     vscode.window.showErrorMessage(`获取记录详情失败`);
   }
 };

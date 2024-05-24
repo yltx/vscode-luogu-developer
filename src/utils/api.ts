@@ -133,6 +133,46 @@ export const axios = (() => {
           get.uid !== undefined &&
           get.uid != res.config.myInterceptors_cookie.uid
         )
+          throw Error('UnknownCookie');
+      }
+      return res;
+    },
+    async err => {
+      if (!isAxiosError(err) || !err.response) throw err;
+      if (err.response.data.errorMessage === '未登录') {
+        needLogin();
+        throw err;
+      }
+      if (err.config?.myInterceptors_notCheckCookie) throw err;
+      if (err.config?.myInterceptors_cookie?.uid) {
+        const get = praseCookie(err.response.headers['set-cookie']);
+        if (
+          get.uid !== undefined &&
+          get.uid != err.config.myInterceptors_cookie.uid
+        ) {
+          const sessions = await authProvider.getSessions();
+          if (sessions.length > 0) {
+            authProvider.removeSession(sessions[0].id);
+            vscode.window
+              .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
+              .then(async c => {
+                if (c) Login();
+              });
+          }
+        }
+      }
+      throw err;
+    }
+  );
+  axios.interceptors.response.use(
+    res => {
+      if (res.config.myInterceptors_notCheckCookie) return res;
+      if (res.config.myInterceptors_cookie?.uid) {
+        const get = praseCookie(res.headers['set-cookie']);
+        if (
+          get.uid !== undefined &&
+          get.uid != res.config.myInterceptors_cookie.uid
+        )
           throw new Error('UnknownCookie');
       }
       return res;
