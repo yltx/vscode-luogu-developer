@@ -34,10 +34,6 @@ const updateStatus = (data: RecordData) => {
 
   if (status > 1 && status !== 12)
     statusBar.backgroundColor = new ThemeColor(`statusBarItem.errorBackground`);
-  else if (status === 12)
-    statusBar.backgroundColor = new ThemeColor(
-      `statusBarItem.warningBackground`
-    );
   else statusBar.backgroundColor = undefined;
   statusBar.show();
   if (status > 1)
