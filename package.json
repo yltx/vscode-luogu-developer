@@ -49,11 +49,6 @@
         }
       },
       {
-        "command": "luogu.signout",
-        "title": "退出洛谷账号(Signout)",
-        "category": "Luogu"
-      },
-      {
         "command": "luogu.sumbitCode",
         "title": "提交当前文档代码(Submit this code)",
         "category": "Luogu"
@@ -134,16 +129,37 @@
         "command": "luogu.traindetails",
         "title": "查看题单详情(Show training details)",
         "category": "Luogu"
+      },
+      {
+        "command": "luogu.myarticle.refresh",
+        "title": "刷新文章列表",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "luogu.myarticle.setShowMode",
+        "title": "显示/隐藏文章"
+      },
+      {
+        "command": "luogu.myarticle.rename",
+        "title": "修改标题"
+      },
+      {
+        "command": "luogu.myarticle.setCategory",
+        "title": "修改文章分类"
+      },
+      {
+        "command": "luogu.myarticle.delete",
+        "title": "删除文章"
+      },
+      {
+        "command": "luogu.myarticle.setPromoteStatus",
+        "title": "申请/撤回全站推荐"
       }
     ],
     "keybindings": [
       {
         "command": "luogu.signin",
         "key": "Ctrl+Alt+G L"
-      },
-      {
-        "command": "luogu.signout",
-        "key": "Ctrl+Alt+G Ctrl+Alt+O"
       },
       {
         "command": "luogu.searchProblem",
@@ -190,7 +206,7 @@
       "activitybar": [
         {
           "id": "luogu",
-          "title": "Luogu",
+          "title": "洛谷",
           "icon": "resources/img/luogu-very-small.png"
         }
       ]
@@ -198,30 +214,82 @@
     "views": {
       "luogu": [
         {
-          "id": "luoguExplorer",
-          "name": "洛谷"
+          "id": "luogu.unloginSidebar",
+          "name": "未登录",
+          "when": "!luoguLoginStatus"
+        },
+        {
+          "id": "luogu.myarticle",
+          "name": "我的专栏",
+          "when": "luoguLoginStatus"
         }
       ]
     },
+    "viewsWelcome": [
+      {
+        "view": "luogu.unloginSidebar",
+        "contents": "你需要登录你的洛谷账号。\n[登录](command:luogu.signin)"
+      }
+    ],
     "menus": {
       "view/title": [
         {
-          "command": "luogu.signin",
-          "when": "view == luoguExplorer",
-          "group": "navigation@0"
+          "command": "luogu.myarticle.refresh",
+          "when": "view == luogu.myarticle",
+          "group": "navigation"
         }
       ],
-      "explorer/context": [
+      "view/item/context": [
         {
-          "command": "luogu.sumbitCode",
-          "when": "explorerResourceIsFolder == false",
-          "group": "luogu@1"
+          "command": "luogu.myarticle.rename",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@3"
+        },
+        {
+          "command": "luogu.myarticle.setShowMode",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@5"
+        },
+        {
+          "command": "luogu.myarticle.setCategory",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@4"
+        },
+        {
+          "command": "luogu.myarticle.delete",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@9"
+        },
+        {
+          "command": "luogu.myarticle.setPromoteStatus",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@6"
         }
       ],
-      "editor/context": [
+      "commandPalette": [
         {
-          "command": "luogu.sumbitCode",
-          "group": "luogu@1"
+          "command": "luogu.myarticle.refresh",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.rename",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.setShowMode",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.setCategory",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.delete",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.setPromoteStatus",
+"when": "false"
         }
       ]
     },
@@ -355,6 +423,7 @@
     "@types/katex": "^0.16.5",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
+    "@types/picomatch": "^2.3.4",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
     "@types/vscode": "^1.25.0",
@@ -364,6 +433,7 @@
     "@vscode/vsce": "^2.26.1",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "css-loader": "^6.10.0",
+    "css-minimizer-webpack-plugin": "^7.0.0",
     "eslint": "^8.50.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.34.1",
@@ -391,5 +461,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "author": ""
+  "author": "",
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

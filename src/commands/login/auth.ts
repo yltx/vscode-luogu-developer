@@ -29,13 +29,25 @@ export default class LuoguAuthProvider
     this.cache = {} as LuoguSession;
     this.cacheLock = new Promise(resolve => (finishlock = resolve));
     this.secretStorage.get(LuoguAuthProvider.SecretKey).then(async x => {
-      if (x) (this.cache = JSON.parse(x)), (this.status = true);
+      if (x)
+        (this.cache = JSON.parse(x)),
+          (this.status = true),
+          vscode.commands.executeCommand(
+            'setContext',
+            'luoguLoginStatus',
+            true
+          );
       else
-        this.cache = new LuoguSession({
+        (this.cache = new LuoguSession({
           uid: 0,
           clientID: await genClientID(),
           name: ''
-        });
+        })),
+          vscode.commands.executeCommand(
+            'setContext',
+            'luoguLoginStatus',
+            false
+          );
       finishlock();
     });
     this.secretStorage.onDidChange(async e => {
@@ -48,7 +60,12 @@ export default class LuoguAuthProvider
           added: [(this.cache = JSON.parse(x))],
           removed: [],
           changed: []
-        });
+        }),
+          vscode.commands.executeCommand(
+            'setContext',
+            'luoguLoginStatus',
+            true
+          );
       else if (this.cache)
         this._sessionChangeEmitter.fire({
           added: [],
@@ -59,7 +76,12 @@ export default class LuoguAuthProvider
             uid: 0,
             clientID: await genClientID(),
             name: ''
-          }));
+          })),
+          vscode.commands.executeCommand(
+            'setContext',
+            'luoguLoginStatus',
+            false
+          );
       finishlock();
     });
   }

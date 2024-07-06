@@ -925,7 +925,11 @@ export const tagsName = [
   'Ynoi'
 ];
 
-export const formatTime = (date: Date, fmt: string) => {
+export const formatTime = (
+  date: Date | number,
+  fmt: string = 'yyyy-MM-dd hh:mm:ss'
+) => {
+  if (typeof date == 'number') date = new Date(date);
   const o = {
     'y+': date.getFullYear(),
     'M+': date.getMonth() + 1,
@@ -979,3 +983,14 @@ export const changeTime = (x: number) => {
   }
   return res;
 };
+
+export const ArticleCategory = [
+  '个人记录',
+  '题解',
+  '科技·工程',
+  '算法·理论',
+  '生活·游记',
+  '学习·文化课',
+  '休闲·娱乐',
+  '闲话'
+] as const;

@@ -3,6 +3,7 @@ import debug from '@/utils/debug';
 import RegisterCommands from '@/commands';
 import { getStatus } from '@/utils/api';
 import path from 'path';
+import registerFeatures from './features';
 
 globalThis.pid = '';
 let initFinish: () => void;
@@ -18,6 +19,7 @@ export async function activate(
   globalThis.resourcesPath = path.join(context.extensionPath, 'resources');
   globalThis.distPath = path.join(context.extensionPath, 'dist');
   getStatus();
+  registerFeatures(context);
   initFinish();
 }
 

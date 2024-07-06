@@ -5,8 +5,11 @@ import * as vscode from 'vscode';
 import {
   Activity,
   ActivityData,
+  ArticleDetails,
+  ArticleListData,
   ContestData,
   DataResponse,
+  EditArticleRequest,
   GetScoreboardResponse,
   List,
   LoginRequest,
@@ -65,6 +68,16 @@ export namespace API {
     )}&_contentOnly=1`;
   export const SOLUTION_REFERER = (pid: string) =>
     `${baseURL}/problem/solution/${pid}`;
+  export const MYARTICLE = `/article/mine?_contentOnly`;
+  export const DELETE_ARTICLE = (lid: string) =>
+    `${apiURL}/article/delete/${lid}`;
+  export const EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`;
+  export const GET_MYARTICLE = (lid: string) =>
+    `/article/${lid}/edit?_contentOnly`;
+  export const REQUEST_PROMOTION = (lid: string) =>
+    `/api/article/requestPromotion/${lid}`;
+  export const WITHDRAW_PROMOTION = (lid: string) =>
+    `/api/article/withdrawPromotion/${lid}`;
 }
 
 declare module 'axios' {
@@ -80,7 +93,7 @@ declare module 'axios' {
 export const axios = (() => {
   // 使用 http keepalive，批量获取用户头像时效率显著提升。
   const keepAliveAgent = new AgentKeepAlive({
-    timeout: 3000
+    timeout: 30000
   });
   const axios = _.create({
     baseURL: API.baseURL,
@@ -770,3 +783,51 @@ export const getCaptcha = async (c?: Cookie) =>
       myInterceptors_cookie: c
     })
     .then(x => Buffer.from(x.data, 'binary'));
+
+export const listMyArticles = async (params: {
+    type?: 'all' | 'promotion';
+    page?: number;
+  }) =>
+    axios
+      .get<DataResponse<ArticleListData>>(API.MYARTICLE, {
+        params
+      })
+      .then(x => x.data),
+  listMyAllArticles = async (type?: 'all' | 'promotion') =>
+    listMyArticles({ type }).then(async res => [
+      ...Object.values(res.currentData.articles.result),
+      ...(
+        await Promise.all(
+          Array.from(
+            {
+              length:
+                Math.ceil(
+                  res.currentData.articles.count /
+                    (res.currentData.articles.perPage ||
+                      res.currentData.articles.count)
+                ) - 1
+            },
+            (_, i) =>
+              listMyArticles({ type, page: i + 2 }).then(x =>
+                Object.values(x.currentData.articles.result)
+              )
+          )
+        )
+      ).flat()
+    ]),
+  deleteArticle = async (lid: string) =>
+    axios.post(API.DELETE_ARTICLE(lid)).then(x => x.data),
+  editArticle = async (lid: string, data: EditArticleRequest) =>
+    axios
+      .post<{ article: ArticleDetails }>(API.EDIT_ARTICLE(lid), data)
+      .then(x => x.data),
+  getMyArticle = async (lid: string) =>
+    axios
+      .get<
+        DataResponse<{ article: ArticleDetails; isAdmin: false }>
+      >(API.GET_MYARTICLE(lid))
+      .then(x => x.data),
+  requestPromotion = async (lid: string) =>
+    axios.post<void>(API.REQUEST_PROMOTION(lid)).then(x => x.data),
+  withdrawPromotion = async (lid: string) =>
+    axios.post<void>(API.WITHDRAW_PROMOTION(lid)).then(x => x.data);

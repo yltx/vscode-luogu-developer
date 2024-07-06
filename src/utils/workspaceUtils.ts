@@ -8,7 +8,8 @@ import {
   colorStyle,
   fileExtention,
   difficultyID,
-  problemset
+  problemset,
+  ArticleCategory
 } from '@/utils/shared';
 
 export function getSelectedLanguage(
@@ -89,4 +90,8 @@ export function praseCookie(cookie: string[] | undefined) {
       }
     }
   return s;
+}
+
+export function getArticleCategory(x: number) {
+  return ArticleCategory[x - 1];
 }
