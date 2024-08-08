@@ -1,11 +1,12 @@
 import {
+  createArticle,
   deleteArticle as deleteArticle,
   editArticle,
   getMyArticle,
   listMyAllArticles
 } from '@/utils/api';
 import { isAxiosError } from 'axios';
-import { Article } from 'luogu-api';
+import { Article, EditArticleRequest } from 'luogu-api';
 import * as vscode from 'vscode';
 
 export default class myArticleFsProvider
@@ -127,5 +128,12 @@ export default class myArticleFsProvider
       query: article.lid,
       path: `/${article.title}.md`
     });
+  }
+  async create(data: EditArticleRequest) {
+    const x = await createArticle(data);
+    this._onDidChangeFile.fire([
+      { type: vscode.FileChangeType.Created, uri: this.getUri(x) }
+    ]);
+    return x;
   }
 }

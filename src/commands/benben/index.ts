@@ -54,13 +54,7 @@ async function getFollowedBenben(
         color: getUsernameColor(users[i].color),
         badge: users[i].badge || undefined
       },
-      time: (time => {
-        // from UTF-8 to local time
-        const t = new Date(time);
-        return (
-          t.getTime() - 8 * 60 * 60 * 1000 + t.getTimezoneOffset() * 60 * 1000
-        );
-      })(res.data[i].time.date),
+      time: Date.parse(res.data[i].time.date + ' +0800'),
       comment: res.data[i].comment,
       id: -1
     })

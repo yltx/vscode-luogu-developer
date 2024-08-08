@@ -154,6 +154,11 @@
       {
         "command": "luogu.myarticle.setPromoteStatus",
         "title": "申请/撤回全站推荐"
+      },
+      {
+        "command": "luogu.myarticle.new",
+        "title": "创建文章",
+        "icon": "$(add)"
       }
     ],
     "keybindings": [
@@ -236,7 +241,12 @@
         {
           "command": "luogu.myarticle.refresh",
           "when": "view == luogu.myarticle",
-          "group": "navigation"
+          "group": "navigation@4"
+        },
+        {
+          "command": "luogu.myarticle.new",
+          "when": "view == luogu.myarticle",
+          "group": "navigation@6"
         }
       ],
       "view/item/context": [
@@ -289,6 +299,10 @@
         },
         {
           "command": "luogu.myarticle.setPromoteStatus",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.new",
           "when": "false"
         }
       ]

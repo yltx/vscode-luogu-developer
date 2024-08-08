@@ -68,16 +68,14 @@ export namespace API {
     )}&_contentOnly=1`;
   export const SOLUTION_REFERER = (pid: string) =>
     `${baseURL}/problem/solution/${pid}`;
-  export const MYARTICLE = `/article/mine?_contentOnly`;
-  export const DELETE_ARTICLE = (lid: string) =>
-    `${apiURL}/article/delete/${lid}`;
-  export const EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`;
-  export const GET_MYARTICLE = (lid: string) =>
-    `/article/${lid}/edit?_contentOnly`;
-  export const REQUEST_PROMOTION = (lid: string) =>
-    `/api/article/requestPromotion/${lid}`;
-  export const WITHDRAW_PROMOTION = (lid: string) =>
-    `/api/article/withdrawPromotion/${lid}`;
+  export const MYARTICLE = `/article/mine?_contentOnly`,
+    DELETE_ARTICLE = (lid: string) => `${apiURL}/article/delete/${lid}`,
+    EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`,
+    GET_MYARTICLE = (lid: string) => `/article/${lid}/edit?_contentOnly`,
+    REQUEST_PROMOTION = (lid: string) => `/api/article/requestPromotion/${lid}`,
+    WITHDRAW_PROMOTION = (lid: string) =>
+      `/api/article/withdrawPromotion/${lid}`,
+    CREATE_ARTICLE = '/api/article/new';
 }
 
 declare module 'axios' {
@@ -830,4 +828,8 @@ export const listMyArticles = async (params: {
   requestPromotion = async (lid: string) =>
     axios.post<void>(API.REQUEST_PROMOTION(lid)).then(x => x.data),
   withdrawPromotion = async (lid: string) =>
-    axios.post<void>(API.WITHDRAW_PROMOTION(lid)).then(x => x.data);
+    axios.post<void>(API.WITHDRAW_PROMOTION(lid)).then(x => x.data),
+  createArticle = async (data: EditArticleRequest) =>
+    axios
+      .post<{ article: ArticleDetails }>(API.CREATE_ARTICLE, data)
+      .then(x => x.data.article);
