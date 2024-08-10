@@ -76,8 +76,7 @@ export default new SuperCommand({
           case 'voteup': {
             const r = await postVote(
               res.solutions[page].id,
-              res.solutions[page].currentUserVoteType == 1 ? 0 : 1,
-              res.problem.pid
+              res.solutions[page].currentUserVoteType == 1 ? 0 : 1
             ).catch(function (err) {
               vscode.window.showErrorMessage(
                 `点赞/取消点赞失败：${err.response?.data?.errorMessage}`
@@ -97,8 +96,7 @@ export default new SuperCommand({
           case 'votedown': {
             const r = await postVote(
               res.solutions[page].id,
-              res.solutions[page].currentUserVoteType == -1 ? 0 : -1,
-              res.problem.pid
+              res.solutions[page].currentUserVoteType == -1 ? 0 : -1
             ).catch(function (err) {
               vscode.window.showErrorMessage(
                 `点踩/取消点踩失败：${err.response?.data?.errorMessage}`

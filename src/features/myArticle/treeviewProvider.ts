@@ -61,7 +61,17 @@ export default class MyArticleTreeviewProvider
   }
   getChildren(element?: Article | undefined): vscode.ProviderResult<Article[]> {
     if (element) return [];
-    return listMyAllArticles();
+    return (async () => {
+      try {
+        return await listMyAllArticles();
+      } catch (e) {
+        vscode.window.showErrorMessage(
+          'Error when fetch article list: ' +
+            (e instanceof Error ? e.message : String(e))
+        );
+        console.error('Error when fetch article list: ', e);
+      }
+    })();
   }
   private _onDidChangeTreeData = new vscode.EventEmitter<
     void | Article | Article[] | null | undefined

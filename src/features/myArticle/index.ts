@@ -5,7 +5,7 @@ import { Article } from 'luogu-api';
 import { ArticleCategory } from '@/utils/shared';
 import {
   editArticle,
-  getMyArticle,
+  getArticle,
   requestPromotion,
   withdrawPromotion
 } from '@/utils/api';
@@ -53,7 +53,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
             )
           ) + 1;
         if (x === 0) return;
-        const res = (await getMyArticle(item.lid)).currentData.article;
+        const res = (await getArticle(item.lid)).data.article;
         let solutionFor = res.solutionFor?.pid ?? null;
         if (x == 2)
           solutionFor =
@@ -83,7 +83,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           vscode.window.showErrorMessage('该文章已经申请推荐，无法隐藏。');
           return;
         }
-        const res = (await getMyArticle(item.lid)).currentData.article;
+        const res = (await getArticle(item.lid)).data.article;
         const choice = await vscode.window.showQuickPick(['显示', '隐藏']);
         if (!choice) return;
         await editArticle(item.lid, {
@@ -103,7 +103,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'luogu.myarticle.rename',
       async (item: Article) => {
-        const res = (await getMyArticle(item.lid)).currentData.article;
+        const res = (await getArticle(item.lid)).data.article;
         const name = await vscode.window.showInputBox({ value: res.title });
         if (!name) return;
         await editArticle(item.lid, {

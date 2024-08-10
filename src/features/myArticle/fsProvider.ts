@@ -2,7 +2,7 @@ import {
   createArticle,
   deleteArticle as deleteArticle,
   editArticle,
-  getMyArticle,
+  getArticle,
   listMyAllArticles
 } from '@/utils/api';
 import { isAxiosError } from 'axios';
@@ -41,7 +41,7 @@ export default class myArticleFsProvider
     if (uri.query === '')
       return { type: vscode.FileType.Directory, size: 0, ctime: 0, mtime: 0 };
     try {
-      const res = (await getMyArticle(uri.query)).currentData.article;
+      const res = (await getArticle(uri.query)).data.article;
       return {
         type: vscode.FileType.File,
         size: res.content.length,
@@ -67,7 +67,7 @@ export default class myArticleFsProvider
   async readFile(uri: vscode.Uri) {
     try {
       return new TextEncoder().encode(
-        (await getMyArticle(uri.query)).currentData.article.content
+        (await getArticle(uri.query)).data.article.content
       );
     } catch (e) {
       throw Object.assign(
@@ -86,7 +86,7 @@ export default class myArticleFsProvider
     if (uri.query === '') throw vscode.FileSystemError.FileIsADirectory(uri);
     if (!options.overwrite) return;
     try {
-      const res = (await getMyArticle(uri.query)).currentData.article;
+      const res = (await getArticle(uri.query)).data.article;
       if (res.promoteStatus === 2)
         if (
           (await vscode.window.showWarningMessage(

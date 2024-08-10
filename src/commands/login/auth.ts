@@ -113,7 +113,7 @@ export default class LuoguAuthProvider
           .then(x => (x ? logout() : undefined))
           .catch(err => {
             vscode.window.showErrorMessage(
-              `注销失败${err instanceof Error ? `：${err.message}` : `。`}`
+              `注销失败 ${err instanceof Error ? `：${err.message}` : `。`}将直接删除存储的 cookie 信息。`
             );
             console.error(err);
             throw err;
