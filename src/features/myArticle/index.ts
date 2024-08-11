@@ -173,7 +173,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         status: status === '公开' ? 2 : 1
       })
         .then(res =>
-          vscode.commands.executeCommand('vscode.open', [fs.getUri(res)])
+          vscode.commands.executeCommand('vscode.open', fs.getUri(res))
         )
         .catch(x => {
           if (isAxiosError(x) && x.response?.data)
