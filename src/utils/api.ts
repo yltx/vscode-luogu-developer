@@ -5,12 +5,14 @@ import * as vscode from 'vscode';
 import {
   Activity,
   ActivityData,
+  ArticleData,
   ArticleDetails,
   ArticleListData,
   ContestData,
   DataResponse,
   EditArticleRequest,
   GetScoreboardResponse,
+  LentilleDataResponse,
   List,
   LoginRequest,
   LoginResponse,
@@ -27,7 +29,7 @@ import { needLogin } from './uiUtils';
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
 
 export namespace API {
-  export const baseURL = 'https://www.luogu.com.cn';
+  export const baseURL = 'https://www.luogu.com.cn/';
   export const apiURL = '/api';
   export const cookieDomain = 'luogu.com.cn';
   export const SEARCH_PROBLEM = (pid: string) =>
@@ -36,13 +38,11 @@ export namespace API {
     `/problem/${pid}?contestId=${cid}&_contentOnly=1`;
   export const SEARCH_SOLUTION = (pid: string, page: number) =>
     `/problem/solution/${pid}?page=${page}&_contentOnly=1`;
-  export const INDEX = `${baseURL}/`;
-  export const CAPTCHA_IMAGE = `${apiURL}/verify/captcha`;
+  export const INDEX = `/`;
+  export const LOGIN_CAPTCHA_IMAGE = `/lg4/captcha`;
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`;
-  export const LOGIN_ENDPOINT = `${apiURL}/auth/userPassLogin`;
+  export const LOGIN_ENDPOINT = `/do-auth/password`;
   export const SEND_MAIL_2fa = `${apiURL}/verify/sendTwoFactorCode`;
-  export const LOGIN_REFERER = `${baseURL}/auth/login`;
-  export const UNLOCK_REFERER = `${baseURL}/auth/unlock`;
   export const LOGOUT = `${apiURL}/auth/logout`;
   export const FATE = `/index/ajax_punch`;
   export const FOLLOWED_BENBEN = (page: number) =>
@@ -52,31 +52,28 @@ export namespace API {
   export const BenbenReferer = 'https://www.luogu.com.cn/';
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
   export const BENBEN_DELETE = (id: number) => `${apiURL}/feed/delete/${id}`;
-  export const UNLOCK_ENDPOINT = `${apiURL}/auth/unlock`;
+  export const UNLOCK_ENDPOINT = `/do-auth/totp`;
   export const ranklist = (cid: string, page: number) =>
     `/fe/api/contest/scoreboard/${cid}?page=${page}`;
   export const TRAINLISTDETAIL = (id: number) =>
-    `${baseURL}/training/${id}?_contentOnly=1`;
+    `/training/${id}?_contentOnly=1`;
   export const SEARCHTRAINLIST = (
     channel: string,
     keyword: string,
     page: number
   ) =>
-    `${baseURL}/training/list?type=${channel}&page=${page}&keyword=${encodeURI(
+    `/training/list?type=${channel}&page=${page}&keyword=${encodeURI(
       keyword
     )}&_contentOnly=1`;
-  export const SOLUTION_REFERER = (pid: string) =>
-    `${baseURL}/problem/solution/${pid}`;
-  export const MYARTICLE = `/article/mine?_contentOnly`;
-  export const DELETE_ARTICLE = (lid: string) =>
-    `${apiURL}/article/delete/${lid}`;
-  export const EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`;
-  export const GET_MYARTICLE = (lid: string) =>
-    `/article/${lid}/edit?_contentOnly`;
-  export const REQUEST_PROMOTION = (lid: string) =>
-    `/api/article/requestPromotion/${lid}`;
-  export const WITHDRAW_PROMOTION = (lid: string) =>
-    `/api/article/withdrawPromotion/${lid}`;
+  export const SOLUTION_REFERER = (pid: string) => `/problem/solution/${pid}`;
+  export const MYARTICLE = `/article/mine?_contentOnly`,
+    DELETE_ARTICLE = (lid: string) => `${apiURL}/article/delete/${lid}`,
+    EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`,
+    GET_ARTICLE = (lid: string) => `/article/${lid}?_contentOnly`,
+    REQUEST_PROMOTION = (lid: string) => `/api/article/requestPromotion/${lid}`,
+    WITHDRAW_PROMOTION = (lid: string) =>
+      `/api/article/withdrawPromotion/${lid}`,
+    CREATE_ARTICLE = '/api/article/new';
 }
 
 declare module 'axios' {
@@ -210,6 +207,14 @@ export const axios = (() => {
       throw err;
     }
   );
+  axios.interceptors.request.use(config => {
+    const url = new URL(config.url ?? '', config.baseURL);
+    for (const [key, value] of Object.entries(config.params ?? {}))
+      url.searchParams.set(key, String(value));
+    if (url.searchParams.has('_contentOnly'))
+      config.headers['x-lentille-request'] = 'content-only';
+    return config;
+  });
 
   return axios;
 })();
@@ -391,9 +396,6 @@ export const login = async (
         captcha
       } as LoginRequest,
       {
-        headers: {
-          Referer: API.LOGIN_REFERER
-        },
         myInterceptors_cookie: cookie,
         myInterceptors_notCheckCookie: true
       }
@@ -405,14 +407,13 @@ export const login = async (
 };
 
 export const unlock = async (code: string, cookie?: Cookie) => {
-  return await axios.post(
+  return await axios.post<void>(
     API.UNLOCK_ENDPOINT,
     {
       code
     },
     {
       headers: {
-        Referer: API.UNLOCK_REFERER,
         'X-CSRF-Token': await csrfToken(cookie, '/auth/login')
       },
       myInterceptors_cookie: cookie
@@ -444,9 +445,6 @@ export const sendMail2fa = async (captcha: string, cookie?: Cookie) =>
     API.SEND_MAIL_2fa,
     { captcha, endpointType: 1 },
     {
-      headers: {
-        Referer: API.UNLOCK_REFERER
-      },
       myInterceptors_cookie: cookie
     }
   );
@@ -480,9 +478,6 @@ export const fetch3kHomepage = async () =>
     });
 export const logout = async () =>
   axios.post<void>(API.LOGOUT, undefined, {
-    headers: {
-      Referer: API.INDEX
-    },
     myInterceptors_notCheckCookie: true,
     maxRedirects: 0,
     validateStatus: status => (200 <= status && status < 300) || status === 302
@@ -561,32 +556,16 @@ export const fetchAllBenben = async (page: number) =>
 
 export const postBenben = async (benbenText: string) =>
   axios
-    .post<{ status: number; data: ActivityData }>(
-      API.BENBEN_POST,
-      {
-        content: benbenText
-      },
-      {
-        headers: {
-          Referer: API.BenbenReferer
-        }
-      }
-    )
+    .post<{ status: number; data: ActivityData }>(API.BENBEN_POST, {
+      content: benbenText
+    })
     .then(data => {
       return data.data.data;
     });
 
 export const deleteBenben = async (id: number) =>
   axios
-    .post<{ status: number; data: [] }>(
-      API.BENBEN_DELETE(id),
-      {},
-      {
-        headers: {
-          Referer: API.BenbenReferer
-        }
-      }
-    )
+    .post<{ status: number; data: [] }>(API.BENBEN_DELETE(id), {})
     .then(data => data?.data)
     .catch(err => {
       if (err.response) {
@@ -609,17 +588,9 @@ export const userIcon = async (uid: number) =>
       return null;
     });
 
-export const postVote = async (id: number, type: number, pid: string) =>
+export const postVote = async (id: number, type: number) =>
   axios
-    .post(
-      `/api/blog/vote/${id}`,
-      { Type: type },
-      {
-        headers: {
-          Referer: API.SOLUTION_REFERER(pid)
-        }
-      }
-    )
+    .post(`/api/blog/vote/${id}`, { Type: type })
     .then(data => data.data as { status: number; data: number | string })
     .catch(err => {
       throw err;
@@ -709,20 +680,12 @@ export async function submitCode(
 ) {
   const url = `/fe/api/problem/submit/${id}`;
   return axios
-    .post<{ rid: number }>(
-      url,
-      {
-        code: code,
-        lang: language,
-        enableO2: enableO2,
-        verify: ''
-      },
-      {
-        headers: {
-          Referer: `${API.baseURL}/problem/${id}`
-        }
-      }
-    )
+    .post<{ rid: number }>(url, {
+      code: code,
+      lang: language,
+      enableO2: enableO2,
+      verify: ''
+    })
     .then(res => {
       if (res.status === 200) {
         return res.data.rid;
@@ -760,9 +723,9 @@ export async function checkCookie(c: Cookie) {
     }
   return flag;
 }
-export const getCaptcha = async (c?: Cookie) =>
+export const getLoginCaptcha = async (c?: Cookie) =>
   axios
-    .get(API.CAPTCHA_IMAGE, {
+    .get(API.LOGIN_CAPTCHA_IMAGE, {
       responseType: 'arraybuffer',
       myInterceptors_cookie: c
     })
@@ -773,45 +736,46 @@ export const listMyArticles = async (params: {
     page?: number;
   }) =>
     axios
-      .get<DataResponse<ArticleListData>>(API.MYARTICLE, {
+      .get<LentilleDataResponse<ArticleListData>>(API.MYARTICLE, {
         params
       })
       .then(x => x.data),
   listMyAllArticles = async (type?: 'all' | 'promotion') =>
     listMyArticles({ type }).then(async res => [
-      ...Object.values(res.currentData.articles.result),
+      ...Object.values(res.data.articles.result),
       ...(
         await Promise.all(
           Array.from(
             {
               length:
                 Math.ceil(
-                  res.currentData.articles.count /
-                    (res.currentData.articles.perPage ||
-                      res.currentData.articles.count)
+                  res.data.articles.count /
+                    (res.data.articles.perPage || res.data.articles.count)
                 ) - 1
             },
             (_, i) =>
               listMyArticles({ type, page: i + 2 }).then(x =>
-                Object.values(x.currentData.articles.result)
+                Object.values(x.data.articles.result)
               )
           )
         )
       ).flat()
     ]),
   deleteArticle = async (lid: string) =>
-    axios.post(API.DELETE_ARTICLE(lid)).then(x => x.data),
+    axios.post<{ lid: string }>(API.DELETE_ARTICLE(lid)).then(x => x.data),
   editArticle = async (lid: string, data: EditArticleRequest) =>
     axios
       .post<{ article: ArticleDetails }>(API.EDIT_ARTICLE(lid), data)
       .then(x => x.data),
-  getMyArticle = async (lid: string) =>
+  getArticle = async (lid: string) =>
     axios
-      .get<
-        DataResponse<{ article: ArticleDetails; isAdmin: false }>
-      >(API.GET_MYARTICLE(lid))
+      .get<LentilleDataResponse<ArticleData>>(API.GET_ARTICLE(lid))
       .then(x => x.data),
   requestPromotion = async (lid: string) =>
     axios.post<void>(API.REQUEST_PROMOTION(lid)).then(x => x.data),
   withdrawPromotion = async (lid: string) =>
-    axios.post<void>(API.WITHDRAW_PROMOTION(lid)).then(x => x.data);
+    axios.post<void>(API.WITHDRAW_PROMOTION(lid)).then(x => x.data),
+  createArticle = async (data: EditArticleRequest) =>
+    axios
+      .post<{ article: ArticleDetails }>(API.CREATE_ARTICLE, data)
+      .then(x => x.data.article);

@@ -4,7 +4,7 @@ import useWebviewResponseHandle from '@/utils/webviewResponse';
 import {
   checkCookie,
   genClientID,
-  getCaptcha,
+  getLoginCaptcha,
   login,
   searchUser,
   sendMail2fa,
@@ -32,7 +32,7 @@ export default async function showLoginView() {
   let successful = false;
   useWebviewResponseHandle(panel.webview, {
     NeedCaptcha: async () => ({
-      captchaImage: (await getCaptcha({ uid: uid, clientID })).toString(
+      captchaImage: (await getLoginCaptcha({ uid: uid, clientID })).toString(
         'base64'
       )
     }),
@@ -54,9 +54,12 @@ export default async function showLoginView() {
         .catch(err => {
           if (isAxiosError(err) && err.response)
             vscode.window.showErrorMessage(err.response.data.errorMessage);
-          else
-            console.error('Login Failed', err),
-              vscode.window.showErrorMessage('出现未知错误。');
+          else {
+            console.error('Login failed', err);
+            if (err instanceof Error)
+              vscode.window.showErrorMessage('Login failed', err.message);
+            else vscode.window.showErrorMessage('Login failed');
+          }
           return { type: 'error' };
         }),
     CookieLogin: async data => {
@@ -84,9 +87,14 @@ export default async function showLoginView() {
       await unlock(code, { uid, clientID })
         .then(() => ((successful = true), panel.dispose(), { type: undefined }))
         .catch(err => {
-          if (!isAxiosError(err) || !err.response)
-            throw new Error('Unknown Error', { cause: err });
-          vscode.window.showErrorMessage(err.response.data.errorMessage);
+          if (isAxiosError(err) && err.response)
+            vscode.window.showErrorMessage(err.response.data.errorMessage);
+          else {
+            console.error('Check 2fa failed', err);
+            if (err instanceof Error)
+              vscode.window.showErrorMessage('Check 2fa failed', err.message);
+            else vscode.window.showErrorMessage('Check 2fa failed');
+          }
           return { type: 'error' };
         })
   });

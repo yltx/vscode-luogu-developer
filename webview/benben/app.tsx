@@ -6,7 +6,7 @@ import {
   VSCodeTextArea
 } from '@vscode/webview-ui-toolkit/react';
 import md from './markdown';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BenbenData } from '@w/webviewMessage';
 import { sleep } from '@w/utils';

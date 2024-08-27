@@ -3,6 +3,7 @@
 'use strict';
 
 const resolve = require('path').resolve;
+const terser = require('terser-webpack-plugin');
 
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
@@ -16,10 +17,7 @@ function getBaseConfig(mode) {
     externals: {
       vscode: 'commonjs vscode'
     },
-    devtool: mode !== 'production' ? 'source-map' : undefined,
-    infrastructureLogging: {
-      level: 'log'
-    },
+    devtool: mode === 'development' && 'inline-source-map',
     resolve: {
       extensions: ['.ts', '.tsx', '.js', '.jsx'],
       alias: {
@@ -27,7 +25,29 @@ function getBaseConfig(mode) {
         '@w': resolve('webview'),
         'luogu-api': resolve('luogu-api-docs', 'luogu-api.d.ts')
       }
-    }
+    },
+    optimization:
+      mode == 'production'
+        ? {
+            minimize: true,
+            usedExports: true,
+            innerGraph: true,
+            minimizer: [
+              new terser({
+                parallel: true,
+                terserOptions: {
+                  format: { comments: false }
+                },
+                extractComments: false
+              })
+            ]
+          }
+        : {},
+    plugins: [
+      // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)({
+      //   analyzerPort: 'auto'
+      // })
+    ]
   };
 }
 
@@ -133,12 +153,7 @@ function GetWebviewConfig(mode, entry) {
           use: ['style-loader', 'css-loader']
         }
       ]
-    },
-    plugins: [
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
-    ]
+    }
   };
 }
 
