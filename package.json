@@ -478,7 +478,6 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@vscode/markdown-it-katex": "^1.0.3",
-    "agentkeepalive": "^4.5.0",
     "axios": "^1.6.0",
     "dateformat": "^5.0.3",
     "jquery": "^3.7.1",

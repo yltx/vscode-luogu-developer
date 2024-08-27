@@ -22,7 +22,6 @@ import {
   SolutionsData,
   UserSummary
 } from 'luogu-api';
-import AgentKeepAlive from 'agentkeepalive';
 import { cookieString, praseCookie } from './workspaceUtils';
 import { Login } from '@/commands/login';
 import { needLogin } from './uiUtils';
@@ -88,21 +87,11 @@ declare module 'axios' {
 }
 
 export const axios = (() => {
-  // 使用 http keepalive，批量获取用户头像时效率显著提升。
-  const keepAliveAgent = new AgentKeepAlive({
-    timeout: 30000
-  });
   const axios = _.create({
     baseURL: API.baseURL,
     withCredentials: true,
-    headers: {
-      'X-Requested-With': 'XMLHttpRequest',
-      Connection: 'keep-alive',
-      Referer: API.baseURL
-    },
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
     proxy: false,
-    httpAgent: keepAliveAgent,
-    httpsAgent: keepAliveAgent,
     timeout: 6000,
     beforeRedirect: (options, { headers, statusCode }) => {
       if (statusCode === 302 && headers.location === '/auth/login') {
@@ -265,15 +254,6 @@ export const searchProblem = async (pid: string) =>
         throw new Error((res.currentData as any).errorMessage || '');
       }
       return res.currentData.problem;
-    })
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
     });
 
 export const searchContestProblem = async (pid: string, cid: string) =>
