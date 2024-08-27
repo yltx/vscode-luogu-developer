@@ -156,6 +156,10 @@
         "title": "申请/撤回全站推荐"
       },
       {
+        "command": "luogu.myarticle.setSolutionFor",
+        "title": "修改关联的题目"
+      },
+      {
         "command": "luogu.myarticle.new",
         "title": "创建文章",
         "icon": "$(add)"
@@ -274,6 +278,11 @@
           "command": "luogu.myarticle.setPromoteStatus",
           "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
           "group": "navigation@6"
+        },
+        {
+          "command": "luogu.myarticle.setSolutionFor",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@5"
         }
       ],
       "commandPalette": [
@@ -303,6 +312,10 @@
         },
         {
           "command": "luogu.myarticle.new",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.setSolutionFor",
           "when": "false"
         }
       ]

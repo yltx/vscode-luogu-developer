@@ -112,6 +112,13 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           category: res.category,
           status: res.status,
           content: res.content
+        }).catch(x => {
+          if (isAxiosError(x) && x.response?.data)
+            vscode.window.showErrorMessage(x.response.data.errorMessage);
+          else if (x instanceof Error)
+            vscode.window.showErrorMessage(x.message);
+          else vscode.window.showErrorMessage(x);
+          console.error('Error when create article: ', x);
         });
         view.refresh();
       }
@@ -121,10 +128,13 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
       async (item: Article) => {
         await (item.promoteStatus === 0 ? requestPromotion : withdrawPromotion)(
           item.lid
-        ).catch(e => {
-          if (isAxiosError(e) && e.response)
-            vscode.window.showErrorMessage(e.response.data.errorMessage);
-          else throw e;
+        ).catch(x => {
+          if (isAxiosError(x) && x.response?.data)
+            vscode.window.showErrorMessage(x.response.data.errorMessage);
+          else if (x instanceof Error)
+            vscode.window.showErrorMessage(x.message);
+          else vscode.window.showErrorMessage(x);
+          console.error('Error when create article: ', x);
         });
         view.refresh();
       }
@@ -183,6 +193,33 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           else vscode.window.showErrorMessage(x);
           console.error('Error when create article: ', x);
         });
-    })
+    }),
+    vscode.commands.registerCommand(
+      'luogu.myarticle.setSolutionFor',
+      async (item: Article) => {
+        const res = (await getArticle(item.lid)).data.article;
+        const problem = await vscode.window.showInputBox({
+          value: res.solutionFor?.pid,
+          ignoreFocusOut: true,
+          prompt: '输入题号，允许留空。注意，在你完成文章后还需手动申请推荐。'
+        });
+        if (problem === undefined) return;
+        await editArticle(item.lid, {
+          title: res.title,
+          solutionFor: problem || null,
+          category: res.category,
+          status: res.status,
+          content: res.content
+        }).catch(x => {
+          if (isAxiosError(x) && x.response?.data)
+            vscode.window.showErrorMessage(x.response.data.errorMessage);
+          else if (x instanceof Error)
+            vscode.window.showErrorMessage(x.message);
+          else vscode.window.showErrorMessage(x);
+          console.error('Error when create article: ', x);
+        });
+        view.refresh();
+      }
+    )
   );
 }
