@@ -62,8 +62,12 @@ type PasswordLoginMessageType = WebviewMessage<
   >,
   WebviewResponseMessage<{ type: 'error' | '2fa' | undefined }>
 >;
-type NeedCaptchaMessageType = WebviewMessage<
-  WebviewRequestMessage<'NeedCaptcha', void>,
+type Need2faCaptchaMessageType = WebviewMessage<
+  WebviewRequestMessage<'Need2faCaptcha', void>,
+  WebviewResponseMessage<{ captchaImage: string }>
+>;
+type NeedLoginCaptchaMessageType = WebviewMessage<
+  WebviewRequestMessage<'NeedLoginCaptcha', void>,
   WebviewResponseMessage<{ captchaImage: string }>
 >;
 type CookieLoginMessageType = WebviewMessage<
@@ -89,7 +93,8 @@ type MessageTypes = MessageTypesBase<
     BenbenUpdateMessageType,
     BenbenSendMessageType,
     BenbenDeleteMessageType,
-    NeedCaptchaMessageType,
+    Need2faCaptchaMessageType,
+    NeedLoginCaptchaMessageType,
     PasswordLoginMessageType,
     CookieLoginMessageType,
     SendMailCodeMessageType,

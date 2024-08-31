@@ -25,13 +25,6 @@ const DefaultCaptchaImage =
 export default function App() {
   const [page, setPage] = useState<'password' | 'captcha'>('password');
   const [need2fa, setNeed2fa] = useState(false);
-  const [captchaImage, setCaptchaImage] = useState(DefaultCaptchaImage);
-  const changeCaptchaImage = async () =>
-    setCaptchaImage(
-      'data:image/png;base64,' +
-        (await send('NeedCaptcha', undefined)).captchaImage
-    );
-  useEffect(() => void changeCaptchaImage(), []);
   return (
     <div className="container">
       <img
@@ -61,40 +54,31 @@ export default function App() {
           </a>
         </div>
         <div style={{ display: page === 'password' ? 'block' : 'none' }}>
-          <PasswordLogin
-            set2fa={setNeed2fa}
-            captchaImage={captchaImage}
-            changeCaptchaImage={changeCaptchaImage}
-          />
+          <PasswordLogin set2fa={setNeed2fa} />
         </div>
         <div style={{ display: page === 'captcha' ? 'block' : 'none' }}>
           <CookieLogin />
         </div>
       </div>
       <div style={{ display: need2fa ? 'block' : 'none' }}>
-        <Check2fa
-          set2fa={setNeed2fa}
-          captchaImage={captchaImage}
-          changeCaptchaImage={changeCaptchaImage}
-        />
+        <Check2fa set2fa={setNeed2fa} />
       </div>
     </div>
   );
 }
 
-function PasswordLogin({
-  set2fa,
-  captchaImage,
-  changeCaptchaImage
-}: {
-  set2fa: (data: boolean) => void;
-  captchaImage: string;
-  changeCaptchaImage: () => Promise<void>;
-}) {
+function PasswordLogin({ set2fa }: { set2fa: (data: boolean) => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [captcha, setCaptchaInput] = useState('');
   const [disableState, setDisableState] = useState(false);
+  const [captchaImage, setCaptchaImage] = useState(DefaultCaptchaImage);
+  const changeCaptchaImage = async () =>
+    setCaptchaImage(
+      'data:image/png;base64,' +
+        (await send('NeedLoginCaptcha', undefined)).captchaImage
+    );
+  useEffect(() => void changeCaptchaImage(), []);
   return (
     <form
       onSubmit={async e => {
@@ -206,18 +190,17 @@ function CookieLogin() {
   );
 }
 
-function Check2fa({
-  set2fa,
-  captchaImage,
-  changeCaptchaImage
-}: {
-  set2fa: (data: boolean) => void;
-  captchaImage: string;
-  changeCaptchaImage: () => Promise<void>;
-}) {
+function Check2fa({ set2fa }: { set2fa: (data: boolean) => void }) {
   const [code, setCode] = useState('');
   const [captcha, setCaptchaInput] = useState('');
   const [disableState, setDisableState] = useState(false);
+  const [captchaImage, setCaptchaImage] = useState(DefaultCaptchaImage);
+  const changeCaptchaImage = async () =>
+    setCaptchaImage(
+      'data:image/png;base64,' +
+        (await send('Need2faCaptcha', undefined)).captchaImage
+    );
+  useEffect(() => void changeCaptchaImage(), []);
   return (
     <>
       <p>请使用两步验证码解锁您的账户。</p>

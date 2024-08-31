@@ -39,11 +39,12 @@ export namespace API {
   export const SEARCH_SOLUTION = (pid: string, page: number) =>
     `/problem/solution/${pid}?page=${page}&_contentOnly=1`;
   export const INDEX = `/`;
+  export const CAPTCHA_IMAGE = '/api/verify/captcha';
   export const LOGIN_CAPTCHA_IMAGE = `/lg4/captcha`;
   export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`;
   export const LOGIN_ENDPOINT = `/do-auth/password`;
   export const SEND_MAIL_2fa = `${apiURL}/verify/sendTwoFactorCode`;
-  export const LOGOUT = `${apiURL}/auth/logout`;
+  export const LOGOUT = `/auth/logout`;
   export const FATE = `/index/ajax_punch`;
   export const FOLLOWED_BENBEN = (page: number) =>
     `${apiURL}/feed/watching?page=${page}`;
@@ -90,7 +91,10 @@ export const axios = (() => {
   const axios = _.create({
     baseURL: API.baseURL,
     withCredentials: true,
-    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      Referer: 'https://www.luogu.com.cn/'
+    },
     proxy: false,
     timeout: 6000,
     beforeRedirect: (options, { headers, statusCode }) => {
@@ -724,12 +728,19 @@ export async function checkCookie(c: Cookie) {
   return flag;
 }
 export const getLoginCaptcha = async (c?: Cookie) =>
-  axios
-    .get(API.LOGIN_CAPTCHA_IMAGE, {
-      responseType: 'arraybuffer',
-      myInterceptors_cookie: c
-    })
-    .then(x => Buffer.from(x.data, 'binary'));
+    axios
+      .get(API.LOGIN_CAPTCHA_IMAGE, {
+        responseType: 'arraybuffer',
+        myInterceptors_cookie: c
+      })
+      .then(x => Buffer.from(x.data, 'binary')),
+  getCaptcha = async (c?: Cookie) =>
+    axios
+      .get(API.CAPTCHA_IMAGE, {
+        responseType: 'arraybuffer',
+        myInterceptors_cookie: c
+      })
+      .then(x => Buffer.from(x.data, 'binary'));
 
 export const listMyArticles = async (params: {
     type?: 'all' | 'promotion';

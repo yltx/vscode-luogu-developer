@@ -4,6 +4,7 @@ import useWebviewResponseHandle from '@/utils/webviewResponse';
 import {
   checkCookie,
   genClientID,
+  getCaptcha,
   getLoginCaptcha,
   login,
   searchUser,
@@ -31,8 +32,13 @@ export default async function showLoginView() {
     clientID = await genClientID();
   let successful = false;
   useWebviewResponseHandle(panel.webview, {
-    NeedCaptcha: async () => ({
+    NeedLoginCaptcha: async () => ({
       captchaImage: (await getLoginCaptcha({ uid: uid, clientID })).toString(
+        'base64'
+      )
+    }),
+    Need2faCaptcha: async () => ({
+      captchaImage: (await getCaptcha({ uid: uid, clientID })).toString(
         'base64'
       )
     }),
@@ -74,13 +80,20 @@ export default async function showLoginView() {
       void ((uid = 0), (clientID = await genClientID())),
     SendMailCode: async ({ captcha }) =>
       sendMail2fa(captcha, { uid, clientID })
-        .then(() => ({
-          type: undefined
-        }))
+        .then(
+          () => (
+            vscode.window.showInformationMessage('发送成功'),
+            {
+              type: undefined
+            }
+          )
+        )
         .catch(err => {
           if (!isAxiosError(err) || !err.response)
             throw new Error('Unknown Error', { cause: err });
-          vscode.window.showErrorMessage(err.response.data.errorMessage);
+          vscode.window.showErrorMessage(
+            '发送验证码时出现错误：' + err.response.data.errorMessage
+          );
           return { type: 'error' };
         }),
     '2fa': async ({ code }) =>
