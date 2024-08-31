@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.9.0",
+  "version": "4.9.1",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -463,7 +463,7 @@
     "css-minimizer-webpack-plugin": "^7.0.0",
     "eslint": "^8.50.0",
     "eslint-plugin-prettier": "^5.0.1",
-    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react": "^7.35.0",
     "prettier": "^3.2.5",
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
@@ -486,5 +486,6 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
-  "author": ""
+  "author": "",
+  "packageManager": "npm@*"
 }
