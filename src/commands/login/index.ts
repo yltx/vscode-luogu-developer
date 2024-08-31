@@ -8,7 +8,7 @@ export const Login = async () => {
     [],
     { createIfNone: true }
   );
-  vscode.window.showInformationMessage(`${session.account.label} 登陆成功。`);
+  vscode.window.showInformationMessage(`${session.account.label} 登录成功。`);
 };
 
 export default new SuperCommand({
