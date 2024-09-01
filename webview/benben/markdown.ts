@@ -1,10 +1,11 @@
-import MarkdownIt from 'markdown-it';
-import { faBilibili } from '@fortawesome/free-brands-svg-icons/faBilibili';
-import { icon } from '@fortawesome/fontawesome-svg-core';
-import {
-  provideVSCodeDesignSystem,
-  vsCodeLink
-} from '@vscode/webview-ui-toolkit';
+const { default: MarkdownIt } = await import('markdown-it');
+const { faBilibili } = await import(
+  '@fortawesome/free-brands-svg-icons/faBilibili'
+);
+const { icon } = await import('@fortawesome/fontawesome-svg-core');
+const { provideVSCodeDesignSystem, vsCodeLink } = await import(
+  '@vscode/webview-ui-toolkit'
+);
 
 provideVSCodeDesignSystem().register(vsCodeLink());
 

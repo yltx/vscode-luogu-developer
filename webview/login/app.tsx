@@ -1,9 +1,8 @@
-import {
-  VSCodeButton,
-  VSCodeTextField
-} from '@vscode/webview-ui-toolkit/react';
-import send from '@w/webviewRequest';
-import React, { useEffect, useState } from 'react';
+const { VSCodeButton, VSCodeTextField } = await import(
+  '@vscode/webview-ui-toolkit/react'
+);
+const { default: send } = await import('@w/webviewRequest');
+const { default: React, useEffect, useState } = await import('react');
 
 import '@w/common.css';
 import './app.css';

@@ -1,5 +1,6 @@
-import React from 'react';
 import { UserInfo } from '@w/webviewMessage';
+
+const { default: React } = await import('react');
 
 export function Tag({
   color,

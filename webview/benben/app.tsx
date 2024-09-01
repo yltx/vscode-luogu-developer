@@ -1,17 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
-import dateFormat from 'dateformat';
-import {
-  VSCodeButton,
-  VSCodeProgressRing,
-  VSCodeTextArea
-} from '@vscode/webview-ui-toolkit/react';
-import md from './markdown';
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { BenbenData } from '@w/webviewMessage';
-import { sleep } from '@w/utils';
-import send from '@w/webviewRequest';
-import { UserIcon, UserName } from '@w/utils';
+
+const { default: React, useState, useRef, useEffect } = await import('react');
+const { default: dateFormat } = await import('dateformat');
+const { VSCodeButton, VSCodeProgressRing, VSCodeTextArea } = await import(
+  '@vscode/webview-ui-toolkit/react'
+);
+const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
+const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
+const { sleep, UserIcon, UserName } = await import('@w/utils');
+const { default: send } = await import('@w/webviewRequest');
+import md from './markdown';
 
 import '@w/common.css';
 import './app.css';
