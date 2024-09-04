@@ -163,6 +163,14 @@
         "command": "luogu.myarticle.new",
         "title": "创建文章",
         "icon": "$(add)"
+      },
+      {
+        "command": "luogu.myarticle.copyLink",
+        "title": "复制链接"
+      },
+      {
+        "command": "luogu.myarticle.openInBrowser",
+        "title": "在浏览器中打开"
       }
     ],
     "keybindings": [
@@ -272,7 +280,7 @@
         {
           "command": "luogu.myarticle.delete",
           "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
-          "group": "navigation@9"
+          "group": "navigation@7"
         },
         {
           "command": "luogu.myarticle.setPromoteStatus",
@@ -283,6 +291,16 @@
           "command": "luogu.myarticle.setSolutionFor",
           "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
           "group": "navigation@5"
+        },
+        {
+          "command": "luogu.myarticle.copyLink",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@8"
+        },
+        {
+          "command": "luogu.myarticle.openInBrowser",
+          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "group": "navigation@9"
         }
       ],
       "commandPalette": [
@@ -316,6 +334,14 @@
         },
         {
           "command": "luogu.myarticle.setSolutionFor",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.copyLink",
+          "when": "false"
+        },
+        {
+          "command": "luogu.myarticle.openInBrowser",
           "when": "false"
         }
       ]
@@ -446,6 +472,7 @@
     "prettier": "npx prettier . -w"
   },
   "devDependencies": {
+    "@types/copy-paste": "^1.1.33",
     "@types/dateformat": "^5.0.2",
     "@types/jquery": "^3.5.25",
     "@types/katex": "^0.16.5",
@@ -481,6 +508,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.6.0",
+    "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
     "jquery": "^3.7.1",
     "markdown-it": "^13.0.2",

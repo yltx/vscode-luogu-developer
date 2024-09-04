@@ -220,6 +220,27 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         });
         view.refresh();
       }
+    ),
+    vscode.commands.registerCommand(
+      'luogu.myarticle.copyLink',
+      async ({ lid }: Article) => {
+        (await import('copy-paste')).copy(
+          `https://www.luogu.com/article/${lid}`,
+          err => {
+            if (err)
+              vscode.window.showErrorMessage(`复制失败：${err.message}`),
+                console.error('Error when copy article link: ', err);
+            else vscode.window.showInformationMessage('复制成功');
+          }
+        );
+      }
+    ),
+    vscode.commands.registerCommand(
+      'luogu.myarticle.openInBrowser',
+      ({ lid }: Article) =>
+        void vscode.env.openExternal(
+          vscode.Uri.parse(`https://www.luogu.com/article/${lid}`)
+        )
     )
   );
 }
