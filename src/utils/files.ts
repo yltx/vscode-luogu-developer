@@ -8,7 +8,7 @@ const luoguPath = path.resolve(os.homedir(), '.luogu');
 fs.rm(path.resolve(luoguPath, 'luogu.json'), () => {});
 
 export const saveUserIconCache = function (uid: number, image: Buffer) {
-  fs.writeFileSync(path.join(luoguPath, `${uid}.jpg`), image);
+  fs.writeFileSync(path.join(luoguPath, `${uid}.jpg`), Uint8Array.from(image));
   fs.writeFileSync(
     path.join(luoguPath, `${uid}.savetime.txt`),
     new Date().getTime().toString()

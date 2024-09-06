@@ -9,13 +9,13 @@
   "engines": {
     "vscode": "^1.25.0"
   },
-  "homepage": "https://github.com/yltx/vscode-luogu/blob/master/README.md",
+  "homepage": "https://github.com/yltx/vscode-luogu-developer/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yltx/vscode-luogu.git"
+    "url": "https://github.com/yltx/vscode-luogu-developer.git"
   },
   "bugs": {
-    "url": "https://github.com/yltx/vscode-luogu/issues",
+    "url": "https://github.com/yltx/vscode-luogu-developer/issues",
     "email": "mvp.bxbl@gmail.com"
   },
   "categories": [
