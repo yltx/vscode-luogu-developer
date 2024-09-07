@@ -52,7 +52,7 @@ const HTMLtemplate = function (
           'katex/katex.min.css'
         )}">
         <script>
-            const $=globalThis.jquery;
+            const $=globalThis.luogu.jquery;
         </script>
         <style>${style}</style>
         <script type="text/javascript">${script}</script>

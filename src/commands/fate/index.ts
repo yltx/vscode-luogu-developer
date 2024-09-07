@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 export default new SuperCommand({
   onCommand: 'fate',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     await getFate()
       .then(data => {
         if (data.code !== 201 && data.code !== 200) {

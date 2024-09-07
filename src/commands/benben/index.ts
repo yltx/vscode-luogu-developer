@@ -62,7 +62,7 @@ async function getFollowedBenben(
 }
 async function getUserBenben(page = 1, user?: number) {
   const res = (await fetchUserBenben(page, user)).feeds.result;
-  const me = (await authProvider.user()).uid;
+  const me = (await globalThis.luogu.authProvider.user()).uid;
   if (me === 0) {
     needLogin();
     throw new Error('未登录');
@@ -90,7 +90,7 @@ async function getUserBenben(page = 1, user?: number) {
 }
 async function getAllBenben(page = 1) {
   const res = (await fetchAllBenben(page)).feeds.result;
-  const me = (await authProvider.user()).uid;
+  const me = (await globalThis.luogu.authProvider.user()).uid;
   return await Promise.all(
     Object.keys(res)
       .sort((x, y) => +x - +y)
@@ -168,7 +168,7 @@ async function getMode() {
 export default new SuperCommand({
   onCommand: 'benben',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const mode = await getMode();
     if (mode === undefined) return;
     const user =

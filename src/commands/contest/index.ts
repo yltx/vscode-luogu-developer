@@ -23,7 +23,7 @@ import { ContestData, GetScoreboardResponse } from 'luogu-api';
 export default new SuperCommand({
   onCommand: 'contest',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const defaultID = globalThis.cid;
     const cid = await vscode.window
       .showInputBox({

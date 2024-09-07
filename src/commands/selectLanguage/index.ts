@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 export default new SuperCommand({
   onCommand: 'selectLanguage',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const defaultLanguage = vscode.workspace
       .getConfiguration()
       .get('luogu.defaultLanguage');

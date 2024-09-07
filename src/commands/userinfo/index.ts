@@ -6,7 +6,7 @@ import * as vscode from 'vscode';
 export default new SuperCommand({
   onCommand: 'userInfo',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     try {
       const data = await fetch3kHomepage();
       if (data.currentUser === undefined) {

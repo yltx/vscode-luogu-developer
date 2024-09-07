@@ -12,7 +12,7 @@ import showRecord from '@/utils/showRecord';
 export default new SuperCommand({
   onCommand: 'sumbitCode',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const edtior = vscode.window.activeTextEditor;
     if (!edtior) {
       vscode.window.showErrorMessage(

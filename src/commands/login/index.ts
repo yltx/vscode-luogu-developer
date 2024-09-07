@@ -19,7 +19,7 @@ export default new SuperCommand({
       vscode.authentication.registerAuthenticationProvider(
         LuoguAuthProvider.ProviderId,
         'Luogu',
-        (globalThis.authProvider = new LuoguAuthProvider(context.secrets))
+        (globalThis.luogu.authProvider = new LuoguAuthProvider(context.secrets))
       )
     );
   }

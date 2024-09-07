@@ -73,9 +73,7 @@ export default class MyArticleTreeviewProvider
       }
     })();
   }
-  private _onDidChangeTreeData = new vscode.EventEmitter<
-    void | Article | Article[] | null | undefined
-  >();
+  private _onDidChangeTreeData = new vscode.EventEmitter<void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
   refresh() {
     this._onDidChangeTreeData.fire();

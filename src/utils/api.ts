@@ -127,7 +127,8 @@ export const axios = (() => {
   axios.interceptors.request.use(async config => {
     if (config.myInterceptors_cookie === null) return config;
     if (config.myInterceptors_cookie === undefined)
-      config.myInterceptors_cookie = await authProvider.cookie();
+      config.myInterceptors_cookie =
+        await globalThis.luogu.authProvider.cookie();
     config.headers.cookie = cookieString(config.myInterceptors_cookie);
     return config;
   });
@@ -157,9 +158,9 @@ export const axios = (() => {
           get.uid !== undefined &&
           get.uid != err.config.myInterceptors_cookie.uid
         ) {
-          const sessions = await authProvider.getSessions();
+          const sessions = await globalThis.luogu.authProvider.getSessions();
           if (sessions.length > 0) {
-            authProvider.removeSession(sessions[0].id);
+            globalThis.luogu.authProvider.removeSession(sessions[0].id);
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
@@ -197,9 +198,9 @@ export const axios = (() => {
           get.uid !== undefined &&
           get.uid != err.config.myInterceptors_cookie.uid
         ) {
-          const sessions = await authProvider.getSessions();
+          const sessions = await globalThis.luogu.authProvider.getSessions();
           if (sessions.length > 0) {
-            authProvider.removeSession(sessions[0].id);
+            globalThis.luogu.authProvider.removeSession(sessions[0].id);
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
@@ -426,15 +427,15 @@ export const unlock = async (code: string, cookie?: Cookie) => {
 };
 
 export const getStatus = async () => {
-  const session = await authProvider.getSessions();
+  const session = await globalThis.luogu.authProvider.getSessions();
   if (session.length === 0) return UserStatus.SignedOut.toString();
-  const status = await authProvider
+  const status = await globalThis.luogu.authProvider
     .cookie()
     .then(x => (x.uid !== 0 ? checkCookie(x) : false));
   if (status) {
     return UserStatus.SignedIn.toString();
   } else {
-    authProvider.removeSession(session[0].id);
+    globalThis.luogu.authProvider.removeSession(session[0].id);
     vscode.window
       .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
       .then(async c => {

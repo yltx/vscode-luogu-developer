@@ -236,6 +236,11 @@
           "when": "!luoguLoginStatus"
         },
         {
+          "id": "luogu.history",
+          "name": "最近浏览",
+          "when": "luoguLoginStatus"
+        },
+        {
           "id": "luogu.myarticle",
           "name": "我的专栏",
           "when": "luoguLoginStatus"
@@ -455,6 +460,11 @@
             "default": true,
             "scope": "window",
             "description": "Show record Webview panel when opening a record."
+          },
+          "luogu.historyLength": {
+            "type": "integer",
+            "default": "256",
+            "description": "最近浏览记录的最大长度，过长的将自动删除"
           }
         }
       }

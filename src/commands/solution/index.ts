@@ -15,7 +15,7 @@ import * as vscode from 'vscode';
 export default new SuperCommand({
   onCommand: 'solution',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const edtior = vscode.window.activeTextEditor;
     let fileNameID = '';
     if (edtior) {
