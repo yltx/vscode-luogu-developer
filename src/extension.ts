@@ -7,7 +7,6 @@ import registerFeatures from './features';
 
 globalThis.pid = '';
 let initFinish: () => void;
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-expect-error
 globalThis.luogu = {};
 globalThis.luogu.waitinit = new Promise(

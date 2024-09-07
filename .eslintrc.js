@@ -29,6 +29,7 @@ module.exports = {
   rules: {
     'prettier/prettier': 'error',
     '@typescript-eslint/no-namespace': 'off',
-    '@typescript-eslint/no-duplicate-enum-values': 'off'
+    '@typescript-eslint/no-duplicate-enum-values': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off'
   }
 };

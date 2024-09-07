@@ -488,6 +488,7 @@
     "@types/katex": "^0.16.5",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
+    "@types/parse-path": "^7.0.3",
     "@types/picomatch": "^2.3.4",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
@@ -520,11 +521,16 @@
     "axios": "^1.6.0",
     "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
+    "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",
+    "lg-markdown-processor": "github:Mr-Python-in-China/lg-markdown-processor",
     "markdown-it": "^13.0.2",
     "markdown-it-highlightjs": "^4.0.1",
+    "parse-path": "^7.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "rehype-react": "^8.0.0",
+    "unist-util-visit": "^5.0.0"
   },
   "author": "",
   "packageManager": "npm@*"

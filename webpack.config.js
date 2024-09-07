@@ -82,7 +82,6 @@ function getExtensionConfig(mode) {
       ]
     },
     plugins: [
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
     ]
