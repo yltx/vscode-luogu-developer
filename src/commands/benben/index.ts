@@ -201,7 +201,7 @@ export default new SuperCommand({
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body>
-        <script defer src=${getDistFilePath(panel.webview, 'benben.js')}></script>
+        <script defer src=${getDistFilePath(panel.webview, 'webview-benben.js')}></script>
         <div id="app"></div>
         </body>
         </html>

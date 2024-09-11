@@ -7,6 +7,10 @@ const { visit, SKIP } = await import('unist-util-visit');
 const { default: parsePath } = await import('parse-path');
 const { faBilibili } = await import('@fortawesome/free-brands-svg-icons');
 const { icon } = await import('@fortawesome/fontawesome-svg-core');
+const { default: rehypeHighlight } = await import('rehype-highlight');
+import './hljsTheme';
+import '../copyablePreElement';
+import 'katex/dist/katex.css';
 
 const bilibiliIconHastElement = hastUtilFromHtml(icon(faBilibili).html[0], {
   fragment: true
@@ -22,6 +26,7 @@ const rehypeReactConfig: import('hast-util-to-jsx-runtime').Options = {
 
 const processor = getLuoguProcessor({
   rehypePlugins: [
+    rehypeHighlight,
     // vscode 里没法放 bilibili 的 iframe，拿链接顶一下
     () => (tree: import('hast').Root) =>
       visit(tree, 'element', function (e) {
@@ -101,6 +106,22 @@ const processor = getLuoguProcessor({
       })
   ]
 })
+  .use(
+    () => (tree: import('hast').Root) =>
+      visit(tree, 'element', function (e) {
+        if (e.tagName === 'pre') {
+          e.properties['is'] = 'copyable-pre';
+          return SKIP;
+        }
+        let className = e.properties['className'];
+        if (typeof className === 'string') className = [className];
+        if (
+          Array.isArray(className) &&
+          (className.includes('katex') || className.includes('katex-display'))
+        )
+          return SKIP;
+      })
+  )
   .use(rehypeReact, rehypeReactConfig)
   .freeze();
 

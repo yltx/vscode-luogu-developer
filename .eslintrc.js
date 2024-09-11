@@ -25,7 +25,13 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint', 'react', 'prettier'],
-  ignorePatterns: ['out', 'dist', 'luogu-api-docs', 'resources'],
+  ignorePatterns: [
+    'out',
+    'dist',
+    'luogu-api-docs',
+    'resources',
+    'node_modules'
+  ],
   rules: {
     'prettier/prettier': 'error',
     '@typescript-eslint/no-namespace': 'off',

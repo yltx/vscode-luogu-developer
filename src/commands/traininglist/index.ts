@@ -4,7 +4,6 @@ import { searchTrainingdetail, searchTraininglist } from '@/utils/api';
 import { getResourceFilePath } from '@/utils/html';
 import { showTrainDetails } from '@/utils/showTrainDetails';
 import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
-import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'traininglist',
@@ -46,7 +45,9 @@ export default new SuperCommand({
         panel2.webview.onDidReceiveMessage(async message => {
           if (message.type === 'open') {
             console.log('pid:', message.data);
-            await showProblem(message.data, '');
+            vscode.commands.executeCommand('luogu.searchProblem', {
+              pid: message.data
+            });
           }
         });
       } else if (message.type === 'request') {

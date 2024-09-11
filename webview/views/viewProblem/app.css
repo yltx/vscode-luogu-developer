@@ -1,0 +1,99 @@
+#app {
+  > header {
+    display: flex;
+    border-bottom: 1px solid #7f7f7f7f;
+    flex-direction: row;
+    > :nth-child(1) {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      > :nth-child(1) {
+        flex: 1;
+      }
+      > :nth-child(2) {
+        display: flex;
+        margin-bottom: 0.67em;
+        gap: 5px;
+        flex-wrap: wrap;
+        > vscode-button > svg {
+          margin-right: 2px;
+        }
+      }
+    }
+    > :nth-child(2) {
+      @media screen and (max-width: 420px) {
+        display: none;
+      }
+      display: grid;
+      grid-template-columns: repeat(2, auto);
+      grid-template-rows: repeat(2, min-content);
+      font-family: -apple-system, BlinkMacSystemFont, 'San Francisco',
+        'Helvetica Neue', 'Noto Sans', 'Noto Sans CJK SC', 'Noto Sans CJK',
+        'Source Han Sans', 'PingFang SC', 'Segoe UI', 'Microsoft YaHei',
+        sans-serif;
+      margin: 10px;
+      > div {
+        padding: 6px 12px;
+        background-color: var(--vscode-editor-background);
+        > div:nth-child(1) {
+          text-align: center;
+        }
+        > div:nth-child(2) {
+          text-align: center;
+          font-weight: 700;
+        }
+      }
+      > div.haveTag {
+        > div:nth-child(2) > :first-child {
+          transition: transform 0.5s;
+        }
+        > div:nth-child(3) {
+          position: relative;
+          > div {
+            position: absolute;
+            top: 0;
+            right: -30px;
+            opacity: 0;
+            transition: opacity 0.5s;
+            backdrop-filter: blur(12px);
+            background-color: var(--vscode-editor-background);
+            box-shadow: 0 3px 8px var(--vscode-editor-foreground);
+            border-radius: 7px;
+            padding: 10px;
+            margin: 10px;
+            width: 200px;
+            z-index: 114514;
+          }
+        }
+      }
+      > div.haveTag:hover {
+        > div:nth-child(2) > :first-child {
+          transform: rotate(180deg);
+        }
+        > div:nth-child(3) > div {
+          opacity: 1;
+        }
+      }
+      > div:nth-child(1),
+      > div:nth-child(2) {
+        border-bottom: 1px solid var(--vscode-editor-foreground);
+      }
+    }
+  }
+  div.problemSamples {
+    > div {
+      display: flex;
+      gap: 10px;
+      @media screen and (max-width: 300px) {
+        flex-direction: column;
+        gap: unset;
+      }
+      > div {
+        flex: 1;
+        > h3 {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

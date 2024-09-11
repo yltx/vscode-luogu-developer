@@ -1,3 +1,6 @@
+const { difficultyColor, difficultyName, tagsData } = await import(
+  '@/utils/shared'
+);
 import { UserInfo } from '@w/webviewMessage';
 
 const { default: React } = await import('react');
@@ -73,10 +76,18 @@ export function UserIcon({
   );
 }
 
+export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
+  return (
+    <Tag color={difficultyColor[difficulty]}>{difficultyName[difficulty]}</Tag>
+  );
+}
+
+export function ProblemTag({ tag }: { tag: number }) {
+  return <Tag color={tagsData[tag].color}>{tagsData[tag].name}</Tag>;
+}
+
 export async function sleep(ms: number) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve('');
-    }, ms);
+  return new Promise<void>(resolve => {
+    setTimeout(() => resolve(), ms);
   });
 }

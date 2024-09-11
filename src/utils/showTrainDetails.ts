@@ -2,7 +2,7 @@ import { Problem, ProblemSetDetails, UserSummary } from 'luogu-api';
 import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
-import { tagsColor, tagsName } from './shared';
+import { tagsData as Tags } from './shared';
 import { getScoreColor } from './workspaceUtils';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
@@ -41,7 +41,7 @@ const getDifficultyStatus = (difficulty: number) => {
 const getTagsStatus = (tags: number[]) => {
   let html = '';
   tags.forEach(index => {
-    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`;
+    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${Tags[index].color}">${Tags[index].name}</span>&nbsp;`;
   });
   return html;
 };

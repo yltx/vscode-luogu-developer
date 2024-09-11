@@ -2,7 +2,6 @@ import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
 import { searchTrainingdetail } from '@/utils/api';
 import { showTrainDetails } from '@/utils/showTrainDetails';
-import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'traindetails',
@@ -40,7 +39,9 @@ export default new SuperCommand({
       panel.webview.onDidReceiveMessage(async message => {
         if (message.type === 'open') {
           console.log('pid:', message.data);
-          await showProblem(message.data, '');
+          vscode.commands.executeCommand('luogu.searchProblem', {
+            pid: message.data
+          });
         }
       });
     } catch (err) {

@@ -9,7 +9,7 @@ const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { sleep, UserIcon, UserName } = await import('@w/utils');
 const { default: send } = await import('@w/webviewRequest');
-const { default: Md } = await import('../markdownViewer');
+const { default: Md } = await import('../../markdownViewer');
 
 import '@w/common.css';
 import './app.css';

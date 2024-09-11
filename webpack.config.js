@@ -4,6 +4,7 @@
 
 const resolve = require('path').resolve;
 const terser = require('terser-webpack-plugin');
+const fs = require('fs');
 
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
@@ -23,6 +24,7 @@ function getBaseConfig(mode) {
       alias: {
         '@': resolve('src'),
         '@w': resolve('webview'),
+        '@r': resolve('resources'),
         'luogu-api': resolve('luogu-api-docs', 'luogu-api.d.ts')
       }
     },
@@ -69,7 +71,6 @@ function getExtensionConfig(mode) {
       rules: [
         {
           test: /\.tsx?$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: 'ts-loader',
@@ -105,7 +106,6 @@ function getOldWebviewConfig(mode) {
       rules: [
         {
           test: /\.tsx?$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: 'ts-loader',
@@ -137,7 +137,6 @@ function GetWebviewConfig(mode, entry) {
     module: {
       rules: [
         {
-          exclude: /node_modules/,
           test: /\.tsx?$/,
           use: {
             loader: 'ts-loader',
@@ -147,9 +146,23 @@ function GetWebviewConfig(mode, entry) {
           }
         },
         {
-          exclude: /node_modules/,
           test: /\.css$/,
-          use: ['style-loader', 'css-loader']
+          exclude: /\.lazy\.css$/,
+          use: [{ loader: 'style-loader' }, 'css-loader']
+        },
+        {
+          test: /\.lazy\.css$/,
+          use: [
+            {
+              loader: 'style-loader',
+              options: { injectType: 'lazySingletonStyleTag' }
+            },
+            'css-loader'
+          ]
+        },
+        {
+          test: /\.(woff2|woff|eot|ttf|otf|svg)$/,
+          type: 'asset'
         }
       ]
     }
@@ -166,9 +179,13 @@ module.exports =
     return Promise.all([
       getExtensionConfig(mode),
       getOldWebviewConfig(mode),
-      GetWebviewConfig(mode, {
-        benben: './webview/benben',
-        login: './webview/login'
-      })
+      GetWebviewConfig(
+        mode,
+        Object.fromEntries(
+          fs
+            .readdirSync('./webview/views')
+            .map(s => [`webview-${s}`, `./webview/views/${s}`])
+        )
+      )
     ]);
   };

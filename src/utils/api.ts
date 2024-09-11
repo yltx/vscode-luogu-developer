@@ -23,7 +23,6 @@ import {
   UserSummary
 } from 'luogu-api';
 import { cookieString, praseCookie } from './workspaceUtils';
-import { Login } from '@/commands/login';
 import { needLogin } from './uiUtils';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
@@ -164,7 +163,7 @@ export const axios = (() => {
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
-                if (c) Login();
+                if (c) vscode.commands.executeCommand('luogu.signin');
               });
           }
         }
@@ -204,7 +203,7 @@ export const axios = (() => {
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
-                if (c) Login();
+                if (c) vscode.commands.executeCommand('luogu.signin');
               });
           }
         }
@@ -281,6 +280,13 @@ export const searchContestProblem = async (pid: string, cid: string) =>
         throw err;
       }
     });
+
+export const getProblemData = async (pid: string, cid?: number) =>
+  axios
+    .get<
+      DataResponse<ProblemData>
+    >(cid ? API.SEARCH_CONTESTPROBLEM(pid, cid.toString()) : API.SEARCH_PROBLEM(pid))
+    .then(x => x.data.currentData);
 
 export const searchContest = async (cid: string) =>
   axios
@@ -439,7 +445,7 @@ export const getStatus = async () => {
     vscode.window
       .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
       .then(async c => {
-        if (c) Login();
+        if (c) vscode.commands.executeCommand('luogu.signin');
       });
     return UserStatus.SignedOut.toString();
   }

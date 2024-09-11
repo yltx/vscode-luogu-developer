@@ -3,7 +3,7 @@ import { formatTime } from '@/utils/shared';
 import { Article } from 'luogu-api';
 import * as vscode from 'vscode';
 import myArticleFsProvider from './fsProvider';
-import { getArticleCategory } from '@/utils/workspaceUtils';
+import { getArticleCategory, processAxiosError } from '@/utils/workspaceUtils';
 
 export default class MyArticleTreeviewProvider
   implements vscode.TreeDataProvider<Article>, vscode.Disposable
@@ -65,11 +65,7 @@ export default class MyArticleTreeviewProvider
       try {
         return await listMyAllArticles();
       } catch (e) {
-        vscode.window.showErrorMessage(
-          'Error when fetch article list: ' +
-            (e instanceof Error ? e.message : String(e))
-        );
-        console.error('Error when fetch article list: ', e);
+        processAxiosError('获取文章列表')(e);
       }
     })();
   }

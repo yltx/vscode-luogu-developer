@@ -92,6 +92,7 @@ export default class LuoguAuthProvider
     await this.cacheLock;
     if (this.status) return this.cache;
     const user = await showLoginView();
+    if (user === null) throw new Error('Canceled');
     const session = new LuoguSession(user);
     await this.secretStorage.store(
       LuoguAuthProvider.SecretKey,

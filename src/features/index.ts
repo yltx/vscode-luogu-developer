@@ -1,9 +1,11 @@
 import vscode from 'vscode';
 
-import registerMyArticle from './myArticle';
-import registerHistory from './history';
+import myArticle from './myArticle';
+import history from './history';
+import viewProblem from './viewProblem';
+import login from './login';
 
 export default function registerFeatures(context: vscode.ExtensionContext) {
-  registerMyArticle(context);
-  registerHistory(context);
+  for (const registerFeature of [login, myArticle, history, viewProblem])
+    registerFeature(context);
 }

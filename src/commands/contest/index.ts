@@ -17,7 +17,6 @@ import {
   getUserSvg,
   getScoreColor
 } from '@/utils/workspaceUtils';
-import { showProblem } from '../../utils/showProblem';
 import { ContestData, GetScoreboardResponse } from 'luogu-api';
 
 export default new SuperCommand({
@@ -68,7 +67,10 @@ export default new SuperCommand({
             }
           });
         } else if (message.type === 'request-problem') {
-          await showProblem(message.data, globalThis.cid);
+          vscode.commands.executeCommand('luogu.searchProblem', {
+            pid: message.data,
+            cid: cid ? Number(cid) : undefined
+          });
           console.log(message.data);
         }
       });

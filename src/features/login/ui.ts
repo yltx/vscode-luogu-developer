@@ -119,7 +119,7 @@ export default async function showLoginView() {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body>
-        <script defer src=${getDistFilePath(panel.webview, 'login.js')}></script>
+        <script defer src=${getDistFilePath(panel.webview, 'webview-login.js')}></script>
         <div id="app"></div>
         </body>
         </html>
@@ -131,5 +131,5 @@ export default async function showLoginView() {
       clientID,
       name: (await searchUser(uid.toString(), { uid, clientID })).users[0]!.name
     };
-  else throw new Error('Canceled');
+  else return null;
 }

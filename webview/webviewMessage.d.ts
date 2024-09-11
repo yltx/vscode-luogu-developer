@@ -86,6 +86,18 @@ type clearLoginCookieMessageType = WebviewMessage<
   WebviewRequestMessage<'clearLoginCookie', void>,
   WebviewResponseMessage<void>
 >;
+type checkCphMessageType = WebviewMessage<
+  WebviewRequestMessage<'checkCph', void>,
+  WebviewResponseMessage<boolean>
+>;
+type JumpToCphMessageType = WebviewMessage<
+  WebviewRequestMessage<'jumpToCph', void>,
+  WebviewResponseMessage<void>
+>;
+type searchSolution = WebviewMessage<
+  WebviewRequestMessage<'searchSolution', void>,
+  WebviewResponseMessage<void>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -99,7 +111,10 @@ type MessageTypes = MessageTypesBase<
     CookieLoginMessageType,
     SendMailCodeMessageType,
     Login2faMessageType,
-    clearLoginCookieMessageType
+    clearLoginCookieMessageType,
+    checkCphMessageType,
+    JumpToCphMessageType,
+    searchSolution
   ]
 >;
 export default MessageTypes;

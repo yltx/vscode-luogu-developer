@@ -1,5 +1,5 @@
 /* eslint-disable no-var */
-import LuoguAuthProvider from './commands/login/auth';
+import LuoguAuthProvider from './features/login/auth';
 import HistoryItem from './features/history/historyItem';
 declare global {
   namespace luogu {
@@ -13,4 +13,22 @@ declare global {
     clientID: string;
   }
   type MaybeThenable<T> = T | Thenable<T>;
+}
+
+interface vscodeContext {
+  luoguLoginStatus: boolean;
+}
+
+declare module 'vscode' {
+  namespace commands {
+    function executeCommand<K extends keyof vscodeContext>(
+      command: 'setContext',
+      contextKey: K,
+      contextValue: vscodeContext[K]
+    ): void;
+    function executeCommand(
+      command: 'luogu.searchProblem',
+      id?: { pid: string; cid?: number }
+    ): Thenable<unknown>;
+  }
 }

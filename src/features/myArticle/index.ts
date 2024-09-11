@@ -10,6 +10,7 @@ import {
   withdrawPromotion
 } from '@/utils/api';
 import { isAxiosError } from 'axios';
+import { processAxiosError } from '@/utils/workspaceUtils';
 
 export default function registerMyArticle(context: vscode.ExtensionContext) {
   const fs = new myArticleFsProvider('luogu-myarticle');
@@ -112,14 +113,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           category: res.category,
           status: res.status,
           content: res.content
-        }).catch(x => {
-          if (isAxiosError(x) && x.response?.data)
-            vscode.window.showErrorMessage(x.response.data.errorMessage);
-          else if (x instanceof Error)
-            vscode.window.showErrorMessage(x.message);
-          else vscode.window.showErrorMessage(x);
-          console.error('Error when create article: ', x);
-        });
+        }).catch(processAxiosError('重命名文章'));
         view.refresh();
       }
     ),
@@ -128,14 +122,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
       async (item: Article) => {
         await (item.promoteStatus === 0 ? requestPromotion : withdrawPromotion)(
           item.lid
-        ).catch(x => {
-          if (isAxiosError(x) && x.response?.data)
-            vscode.window.showErrorMessage(x.response.data.errorMessage);
-          else if (x instanceof Error)
-            vscode.window.showErrorMessage(x.message);
-          else vscode.window.showErrorMessage(x);
-          console.error('Error when create article: ', x);
-        });
+        ).catch(processAxiosError('申请/撤销推荐'));
         view.refresh();
       }
     ),
@@ -145,14 +132,12 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         ignoreFocusOut: true
       });
       if (!title) {
-        vscode.window.showErrorMessage('Canceled.');
         return;
       }
       const category = await vscode.window.showQuickPick(ArticleCategory, {
         title: '文章分类'
       });
       if (!category) {
-        vscode.window.showErrorMessage('Canceled.');
         return;
       }
       const solutionFor =
@@ -165,14 +150,12 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
             })
           : null;
       if (solutionFor === undefined) {
-        vscode.window.showErrorMessage('Canceled.');
         return;
       }
       const status = await vscode.window.showQuickPick(['公开', '私有'], {
         title: '文章状态'
       });
       if (!status) {
-        vscode.window.showErrorMessage('Canceled.');
         return;
       }
       fs.create({
@@ -185,14 +168,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         .then(res =>
           vscode.commands.executeCommand('vscode.open', fs.getUri(res))
         )
-        .catch(x => {
-          if (isAxiosError(x) && x.response?.data)
-            vscode.window.showErrorMessage(x.response.data.errorMessage);
-          else if (x instanceof Error)
-            vscode.window.showErrorMessage(x.message);
-          else vscode.window.showErrorMessage(x);
-          console.error('Error when create article: ', x);
-        });
+        .catch(processAxiosError('新建文章'));
     }),
     vscode.commands.registerCommand(
       'luogu.myarticle.setSolutionFor',
@@ -210,14 +186,7 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           category: res.category,
           status: res.status,
           content: res.content
-        }).catch(x => {
-          if (isAxiosError(x) && x.response?.data)
-            vscode.window.showErrorMessage(x.response.data.errorMessage);
-          else if (x instanceof Error)
-            vscode.window.showErrorMessage(x.message);
-          else vscode.window.showErrorMessage(x);
-          console.error('Error when create article: ', x);
-        });
+        }).catch(processAxiosError('设置关联题目'));
         view.refresh();
       }
     ),

@@ -22,8 +22,8 @@ export async function activate(
   console.log('init luogu-vscode success.');
   globalThis.resourcesPath = path.join(context.extensionPath, 'resources');
   globalThis.distPath = path.join(context.extensionPath, 'dist');
-  getStatus();
   registerFeatures(context);
+  getStatus();
   initFinish();
 }
 
