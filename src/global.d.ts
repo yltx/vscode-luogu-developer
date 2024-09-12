@@ -1,11 +1,13 @@
 /* eslint-disable no-var */
 import LuoguAuthProvider from './features/login/auth';
 import HistoryItem from './features/history/historyItem';
+import historyTreeviewProvider from './features/history/treeviewProvider';
 declare global {
   namespace luogu {
     var waitinit: Promise<void>;
     var version: string;
     var authProvider: LuoguAuthProvider;
+    var historyTreeviewProvider: historyTreeviewProvider;
     var insertHistory: (value: HistoryItem) => void;
   }
   interface Cookie {
@@ -31,4 +33,8 @@ declare module 'vscode' {
       id?: { pid: string; cid?: number }
     ): Thenable<unknown>;
   }
+}
+
+declare module 'vscode' {
+  namespace luogu {}
 }

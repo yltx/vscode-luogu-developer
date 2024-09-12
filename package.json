@@ -42,34 +42,23 @@
       {
         "command": "luogu.signin",
         "title": "登录洛谷账号(Signin)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/login-dark.png",
-          "light": "resources/light/login-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.sumbitCode",
-        "title": "提交当前文档代码(Submit this code)",
-        "category": "Luogu"
+        "title": "提交代码(Submit this code)",
+        "category": "Luogu",
+        "icon":"$(cloud-upload)"
       },
       {
         "command": "luogu.searchProblem",
         "title": "查看题目(Search for problem)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/search-dark.png",
-          "light": "resources/light/search-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.solution",
         "title": "查看题解(Search for solution)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/search-dark.png",
-          "light": "resources/light/search-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.fate",
@@ -79,11 +68,7 @@
       {
         "command": "luogu.benben",
         "title": "犇犇(Benben)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/refresh-dark.png",
-          "light": "resources/light/refresh-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.userInfo",
@@ -306,6 +291,11 @@
           "command": "luogu.myarticle.openInBrowser",
           "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
           "group": "navigation@9"
+        },
+        {
+          "command": "luogu.sumbitCode",
+          "when": "view == luogu.history && viewItem == luogu.history.problemItem",
+          "group": "inline"
         }
       ],
       "commandPalette": [
@@ -461,10 +451,10 @@
             "scope": "window",
             "description": "Show record Webview panel when opening a record."
           },
-          "luogu.historyLength": {
+          "luogu.maxHistoryLength": {
             "type": "integer",
-            "default": "256",
-            "description": "最近浏览记录的最大长度，过长的将自动删除"
+            "default": 256,
+            "description": "最近浏览记录的最大长度，过长的将自动删除。不应过大，否则会影响性能。"
           }
         }
       }

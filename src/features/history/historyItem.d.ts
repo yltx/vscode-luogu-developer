@@ -1,7 +1,7 @@
 export type ProblemHistoryItem = {
   type: 'problem';
   pid: string;
-  contestId?: number;
+  contest?: { contestId: number; title: string };
   title: string;
 };
 export type ContestHistoryItem = {

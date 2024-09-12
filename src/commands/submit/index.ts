@@ -11,7 +11,9 @@ import showRecord from '@/utils/showRecord';
 
 export default new SuperCommand({
   onCommand: 'sumbitCode',
-  handle: async () => {
+  handle: async (
+    dat?: import('@/features/history/historyItem').ProblemHistoryItem
+  ) => {
     await globalThis.luogu.waitinit;
     const edtior = vscode.window.activeTextEditor;
     if (!edtior) {
@@ -87,10 +89,11 @@ export default new SuperCommand({
     }
     const defaultID = await parseProblemID(fileFName);
 
-    const id =
-      vscode.workspace
-        .getConfiguration('luogu')
-        .get<boolean>('checkFilenameAsProblemID') && defaultID !== ''
+    const id = dat
+      ? dat.pid
+      : vscode.workspace
+            .getConfiguration('luogu')
+            .get<boolean>('checkFilenameAsProblemID') && defaultID !== ''
         ? defaultID
         : await vscode.window.showInputBox({
             placeHolder: '输入提交到的题目ID',

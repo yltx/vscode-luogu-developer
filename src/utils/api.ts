@@ -286,7 +286,9 @@ export const getProblemData = async (pid: string, cid?: number) =>
     .get<
       DataResponse<ProblemData>
     >(cid ? API.SEARCH_CONTESTPROBLEM(pid, cid.toString()) : API.SEARCH_PROBLEM(pid))
-    .then(x => x.data.currentData);
+    .then(x => {
+      return x.data.currentData;
+    });
 
 export const searchContest = async (cid: string) =>
   axios
