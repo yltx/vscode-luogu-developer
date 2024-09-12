@@ -4,34 +4,20 @@
     "moduleResolution": "Node",
     "target": "ES2020",
     "outDir": "dist",
-    "lib": [
-      "DOM",
-      "ESNext"
-    ],
+    "lib": ["DOM", "ESNext"],
     "sourceMap": true,
     "rootDir": ".",
     "strict": true,
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@w/*": [
-        "webview/*"
-      ],
-      "@r/*": [
-        "resources/*"
-      ],
-      "luogu-api": [
-        "luogu-api-docs/luogu-api"
-      ]
+      "@/*": ["src/*"],
+      "@w/*": ["webview/*"],
+      "@r/*": ["resources/*"],
+      "luogu-api": ["luogu-api-docs/luogu-api"]
     },
     "esModuleInterop": true,
     "jsx": "react"
   },
-  "include": [
-    "./src",
-    "./webview"
-  ]
+  "include": ["./src", "./webview"]
 }

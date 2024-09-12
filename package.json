@@ -48,7 +48,7 @@
         "command": "luogu.sumbitCode",
         "title": "提交代码(Submit this code)",
         "category": "Luogu",
-        "icon":"$(cloud-upload)"
+        "icon": "$(cloud-upload)"
       },
       {
         "command": "luogu.searchProblem",
