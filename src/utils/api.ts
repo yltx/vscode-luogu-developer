@@ -40,7 +40,7 @@ export namespace API {
   export const INDEX = `/`;
   export const CAPTCHA_IMAGE = '/api/verify/captcha';
   export const LOGIN_CAPTCHA_IMAGE = `/lg4/captcha`;
-  export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`;
+  export const CONTEST = (cid: number) => `/contest/${cid}?_contentOnly=1`;
   export const LOGIN_ENDPOINT = `/do-auth/password`;
   export const SEND_MAIL_2fa = `${apiURL}/verify/sendTwoFactorCode`;
   export const LOGOUT = `/auth/logout`;
@@ -53,7 +53,7 @@ export namespace API {
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
   export const BENBEN_DELETE = (id: number) => `${apiURL}/feed/delete/${id}`;
   export const UNLOCK_ENDPOINT = `/do-auth/totp`;
-  export const ranklist = (cid: string, page: number) =>
+  export const ranklist = (cid: number, page: number) =>
     `/fe/api/contest/scoreboard/${cid}?page=${page}`;
   export const TRAINLISTDETAIL = (id: number) =>
     `/training/${id}?_contentOnly=1`;
@@ -290,7 +290,7 @@ export const getProblemData = async (pid: string, cid?: number) =>
       return x.data.currentData;
     });
 
-export const searchContest = async (cid: string) =>
+export const searchContest = async (cid: number) =>
   axios
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
     .then(res => res?.data?.currentData)
@@ -376,7 +376,7 @@ export const searchTraininglist = async (
 export const searchTrainingdetail = async (id: number) =>
   axios
     .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id))
-    .then(res => res?.data?.currentData)
+    .then(res => res.data.currentData)
     .then(async res => {
       // console.log(res)
       if ((res || null) === null) {
@@ -671,7 +671,7 @@ export const loadUserIcon = async (uid: number) => {
   }
 };
 
-export const getRanklist = async (cid: string, page: number) => {
+export const getRanklist = async (cid: number, page: number) => {
   return axios
     .get<GetScoreboardResponse>(API.ranklist(cid, page))
     .then(res => res.data)

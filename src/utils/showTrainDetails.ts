@@ -122,9 +122,22 @@ export class TrainDetals {
   }
 }
 export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
-  const train = await searchTrainingdetail(id).then(
-    res => new TrainDetals(res['training'])
-  );
+  const train = await searchTrainingdetail(id).then(res => {
+    globalThis.luogu.historyTreeviewProvider.addItem({
+      type: 'training',
+      title: res.training.title,
+      trainingId: res.training.id,
+      trainingType: res.training.type,
+      owner:
+        'uid' in res.training.provider
+          ? { uid: res.training.provider.uid, name: res.training.provider.name }
+          : {
+              teamId: res.training.provider.id,
+              name: res.training.provider.name
+            }
+    });
+    return new TrainDetals(res['training']);
+  });
   return generateTrainDetailsHTML(webview, train);
 };
 export const generateTrainDetailsHTML = (

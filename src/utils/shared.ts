@@ -162,13 +162,15 @@ export enum contestRated {
   'true' = 'color: rgb(255, 255, 255); background: rgb(82, 196, 26);'
 }
 export const contestVisibility: string[] = [
-  '',
+  '封禁比赛',
   '官方比赛',
   '团队公开赛',
   '团队内部赛',
   '个人公开赛',
   '个人邀请赛',
-  '团队邀请赛'
+  '团队邀请赛',
+  '团队公开赛 (待审核)',
+  '个人公开赛 (待审核)'
 ];
 export const contestVisibilityStyle: string[] = [
   '',
@@ -2813,3 +2815,15 @@ export const ArticleCategory = [
   '休闲·娱乐',
   '闲话'
 ] as const;
+
+export const TrainingTypes = [
+  '隐藏题单',
+  '官方题单',
+  '团队私有',
+  '团队精选',
+  '团队作业',
+  '个人私有',
+  '个人精选',
+  '团队公开',
+  '个人公开'
+];
