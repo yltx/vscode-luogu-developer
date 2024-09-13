@@ -11,3 +11,4 @@ webpack.config.json
 .github/
 node_modules/
 luogu-api-docs/
+productIcons/

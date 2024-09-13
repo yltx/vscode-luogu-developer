@@ -2,25 +2,25 @@ import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
 import { searchTrainingdetail } from '@/utils/api';
 import { showTrainDetails } from '@/utils/showTrainDetails';
-import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'traindetails',
-  handle: async () => {
+  handle: async (tid?: number) => {
     const defaultID = globalThis.tid;
-    const tid = await vscode.window
-      .showInputBox({
-        placeHolder: '输入题单编号',
-        value: defaultID,
-        ignoreFocusOut: true
-      })
-      .then(res => (res ? res.toUpperCase() : null));
+    if (!tid)
+      tid = await vscode.window
+        .showInputBox({
+          placeHolder: '输入题单编号',
+          value: defaultID,
+          ignoreFocusOut: true
+        })
+        .then(res => (res ? parseInt(res) : undefined));
     if (!tid) {
       return;
     }
-    globalThis.tid = tid;
+    globalThis.tid = String(tid);
     try {
-      const data = await searchTrainingdetail(+tid);
+      const data = await searchTrainingdetail(tid);
       // console.log(data)
       const panel = vscode.window.createWebviewPanel(
         '题单详情',
@@ -40,7 +40,9 @@ export default new SuperCommand({
       panel.webview.onDidReceiveMessage(async message => {
         if (message.type === 'open') {
           console.log('pid:', message.data);
-          await showProblem(message.data, '');
+          vscode.commands.executeCommand('luogu.searchProblem', {
+            pid: message.data
+          });
         }
       });
     } catch (err) {

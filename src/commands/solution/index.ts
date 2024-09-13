@@ -14,8 +14,8 @@ import * as vscode from 'vscode';
 
 export default new SuperCommand({
   onCommand: 'solution',
-  handle: async () => {
-    await globalThis.waitinit;
+  handle: async (pid?: string) => {
+    await globalThis.luogu.waitinit;
     const edtior = vscode.window.activeTextEditor;
     let fileNameID = '';
     if (edtior) {
@@ -24,18 +24,19 @@ export default new SuperCommand({
       );
       fileNameID = fileNameID.toUpperCase();
     }
-    const pid =
-      vscode.workspace
-        .getConfiguration('luogu')
-        .get<boolean>('checkFilenameAsProblemID') && fileNameID !== ''
-        ? fileNameID
-        : await vscode.window
-            .showInputBox({
-              placeHolder: '输入题号',
-              value: globalThis.pid,
-              ignoreFocusOut: true
-            })
-            .then(res => (res ? res.toUpperCase() : null));
+    if (pid === undefined)
+      pid =
+        vscode.workspace
+          .getConfiguration('luogu')
+          .get<boolean>('checkFilenameAsProblemID') && fileNameID !== ''
+          ? fileNameID
+          : await vscode.window
+              .showInputBox({
+                placeHolder: '输入题号',
+                value: globalThis.pid,
+                ignoreFocusOut: true
+              })
+              .then(res => (res ? res.toUpperCase() : undefined));
     if (!pid) {
       return;
     }

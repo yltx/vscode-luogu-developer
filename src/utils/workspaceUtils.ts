@@ -11,6 +11,7 @@ import {
   problemset,
   ArticleCategory
 } from '@/utils/shared';
+import { isAxiosError } from 'axios';
 
 export function getSelectedLanguage(
   selected: string = vscode.workspace
@@ -94,4 +95,19 @@ export function praseCookie(cookie: string[] | undefined) {
 
 export function getArticleCategory(x: number) {
   return ArticleCategory[x - 1];
+}
+
+export function processAxiosError(verb?: string) {
+  if (verb === undefined) verb = '操作';
+  return (x: unknown) => {
+    if (isAxiosError(x) && x.response?.data)
+      vscode.window.showErrorMessage(
+        verb + '时出现错误：' + x.response.data.errorMessage
+      );
+    else if (x instanceof Error)
+      vscode.window.showErrorMessage(verb + '时出现错误：' + x.message);
+    else
+      vscode.window.showErrorMessage(verb + '时出现错误，前往控制台查看详情。');
+    console.error('Error when ' + verb, x);
+  };
 }

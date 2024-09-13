@@ -4,8 +4,44 @@
 
 const resolve = require('path').resolve;
 const terser = require('terser-webpack-plugin');
-
+const fs = require('fs');
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
+
+/* build icon
+ * 放这里可能不太合适 改天再换
+ */
+(async function () {
+  console.log('Building icon fonts...');
+  try {
+    fs.mkdirSync(resolve('dist'));
+  } catch {
+    /* empty */
+  }
+  const fontPath = 'dist/icon.woff';
+  /**@type {Record<string,{"description": string,"default":{"fontPath": "dist/icon.woff","fontCharacter": string}}>}*/
+  const iconData = JSON.parse(
+    fs.readFileSync(resolve('package.json')).toString()
+  ).contributes.icons;
+  const fontBinary = (
+    await require('webfont').webfont({
+      files: Object.entries(iconData).map(
+        ([name]) => `productIcons/${name}.svg`
+      ),
+      formats: ['woff'],
+      glyphTransformFn: obj => {
+        (obj.unicode || (obj.unicode = ['']))[0] = String.fromCharCode(
+          parseInt(iconData[obj.name].default.fontCharacter.substring(1), 16)
+        );
+        return obj;
+      },
+      normalize: true,
+      sort: false
+    })
+  ).woff;
+  if (!fontBinary) throw new Error('fontBinary is null');
+  fs.writeFileSync(resolve(fontPath), fontBinary);
+  console.log('Icon fonts built!');
+})();
 
 /**
  * @param { 'production' | 'development' | 'none' } mode
@@ -23,6 +59,7 @@ function getBaseConfig(mode) {
       alias: {
         '@': resolve('src'),
         '@w': resolve('webview'),
+        '@r': resolve('resources'),
         'luogu-api': resolve('luogu-api-docs', 'luogu-api.d.ts')
       }
     },
@@ -69,7 +106,6 @@ function getExtensionConfig(mode) {
       rules: [
         {
           test: /\.tsx?$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: 'ts-loader',
@@ -82,7 +118,6 @@ function getExtensionConfig(mode) {
       ]
     },
     plugins: [
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       // new (require('webpack-bundle-analyzer').BundleAnalyzerPlugin)()
     ]
@@ -106,7 +141,6 @@ function getOldWebviewConfig(mode) {
       rules: [
         {
           test: /\.tsx?$/,
-          exclude: /node_modules/,
           use: [
             {
               loader: 'ts-loader',
@@ -138,7 +172,6 @@ function GetWebviewConfig(mode, entry) {
     module: {
       rules: [
         {
-          exclude: /node_modules/,
           test: /\.tsx?$/,
           use: {
             loader: 'ts-loader',
@@ -148,9 +181,23 @@ function GetWebviewConfig(mode, entry) {
           }
         },
         {
-          exclude: /node_modules/,
           test: /\.css$/,
-          use: ['style-loader', 'css-loader']
+          exclude: /\.lazy\.css$/,
+          use: [{ loader: 'style-loader' }, 'css-loader']
+        },
+        {
+          test: /\.lazy\.css$/,
+          use: [
+            {
+              loader: 'style-loader',
+              options: { injectType: 'lazySingletonStyleTag' }
+            },
+            'css-loader'
+          ]
+        },
+        {
+          test: /\.(woff2|woff|eot|ttf|otf|svg)$/,
+          type: 'asset'
         }
       ]
     }
@@ -167,9 +214,13 @@ module.exports =
     return Promise.all([
       getExtensionConfig(mode),
       getOldWebviewConfig(mode),
-      GetWebviewConfig(mode, {
-        benben: './webview/benben',
-        login: './webview/login'
-      })
+      GetWebviewConfig(
+        mode,
+        Object.fromEntries(
+          fs
+            .readdirSync('./webview/views')
+            .map(s => [`webview-${s}`, `./webview/views/${s}`])
+        )
+      )
     ]);
   };

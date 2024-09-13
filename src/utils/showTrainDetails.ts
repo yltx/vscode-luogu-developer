@@ -2,7 +2,7 @@ import { Problem, ProblemSetDetails, UserSummary } from 'luogu-api';
 import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
-import { tagsColor, tagsName } from './shared';
+import { tagsData as Tags } from './shared';
 import { getScoreColor } from './workspaceUtils';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
@@ -41,7 +41,7 @@ const getDifficultyStatus = (difficulty: number) => {
 const getTagsStatus = (tags: number[]) => {
   let html = '';
   tags.forEach(index => {
-    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tagsColor[index]}">${tagsName[index]}</span>&nbsp;`;
+    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${Tags[index].color}">${Tags[index].name}</span>&nbsp;`;
   });
   return html;
 };
@@ -122,9 +122,22 @@ export class TrainDetals {
   }
 }
 export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
-  const train = await searchTrainingdetail(id).then(
-    res => new TrainDetals(res['training'])
-  );
+  const train = await searchTrainingdetail(id).then(res => {
+    globalThis.luogu.historyTreeviewProvider.addItem({
+      type: 'training',
+      title: res.training.title,
+      trainingId: res.training.id,
+      trainingType: res.training.type,
+      owner:
+        'uid' in res.training.provider
+          ? { uid: res.training.provider.uid, name: res.training.provider.name }
+          : {
+              teamId: res.training.provider.id,
+              name: res.training.provider.name
+            }
+    });
+    return new TrainDetals(res['training']);
+  });
   return generateTrainDetailsHTML(webview, train);
 };
 export const generateTrainDetailsHTML = (

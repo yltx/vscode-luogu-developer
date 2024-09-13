@@ -17,32 +17,48 @@ import {
   getUserSvg,
   getScoreColor
 } from '@/utils/workspaceUtils';
-import { showProblem } from '../../utils/showProblem';
 import { ContestData, GetScoreboardResponse } from 'luogu-api';
 
 export default new SuperCommand({
   onCommand: 'contest',
-  handle: async () => {
-    await globalThis.waitinit;
+  handle: async (cid?: number) => {
+    await globalThis.luogu.waitinit;
     const defaultID = globalThis.cid;
-    const cid = await vscode.window
-      .showInputBox({
-        placeHolder: '输入比赛编号',
-        value: defaultID,
-        ignoreFocusOut: true
-      })
-      .then(res => (res ? res.toUpperCase() : null));
     if (!cid) {
-      return;
+      const tmpcid = await vscode.window
+        .showInputBox({
+          placeHolder: '输入比赛编号',
+          value: defaultID,
+          ignoreFocusOut: true
+        })
+        .then(res => (res ? res.toUpperCase() : undefined));
+      if (!tmpcid) {
+        return;
+      }
+      cid = +tmpcid;
     }
-    globalThis.cid = cid;
+    globalThis.cid = cid.toString();
     try {
       const res = await searchContest(cid);
+      globalThis.luogu.historyTreeviewProvider.addItem({
+        type: 'contest',
+        title: res.contest.name,
+        contestId: res.contest.id,
+        owner:
+          'uid' in res.contest.host
+            ? { uid: res.contest.host.uid, name: res.contest.host.name }
+            : { teamId: res.contest.host.id, name: res.contest.host.name },
+        visibilityType: res.contest.visibilityType,
+        ruleType: res.contest.ruleType,
+        rated: res.contest.rated,
+        startTime: res.contest.startTime,
+        endTime: res.contest.endTime
+      });
       console.log(res);
       const ranklist = await getRanklist(cid, 1);
       console.log(ranklist);
       const panel = vscode.window.createWebviewPanel(
-        cid,
+        'luogu.contest',
         `比赛详情 - ${res.contest.name}`,
         vscode.ViewColumn.Two,
         {
@@ -68,7 +84,10 @@ export default new SuperCommand({
             }
           });
         } else if (message.type === 'request-problem') {
-          await showProblem(message.data, globalThis.cid);
+          vscode.commands.executeCommand('luogu.searchProblem', {
+            pid: message.data,
+            cid: cid ? Number(cid) : undefined
+          });
           console.log(message.data);
         }
       });

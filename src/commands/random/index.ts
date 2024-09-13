@@ -6,7 +6,6 @@ import {
   getSelectedProblemset
 } from '@/utils/workspaceUtils';
 import axios from 'axios';
-import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'random',
@@ -81,10 +80,9 @@ export default new SuperCommand({
             console.log(
               res['currentData']['problems']['result'][randNum]['pid']
             );
-            await showProblem(
-              res['currentData']['problems']['result'][randNum]['pid'],
-              ''
-            );
+            vscode.commands.executeCommand('luogu.searchProblem', {
+              pid: res['currentData']['problems']['result'][randNum]['pid']
+            });
             return;
           });
       })

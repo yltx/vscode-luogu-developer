@@ -9,7 +9,7 @@ const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { sleep, UserIcon, UserName } = await import('@w/utils');
 const { default: send } = await import('@w/webviewRequest');
-import md from './markdown';
+const { default: Md } = await import('../../markdownViewer');
 
 import '@w/common.css';
 import './app.css';
@@ -122,11 +122,9 @@ function BenbenBlock({
             <></>
           )}
         </header>
-        <div
-          className="benben-comment-text"
-          dangerouslySetInnerHTML={{ __html: md.render(data.comment) }}
-          ref={benbenTextElementRef}
-        />
+        <div className="benben-comment-text" ref={benbenTextElementRef}>
+          <Md>{data.comment}</Md>
+        </div>
       </div>
     </div>
   );

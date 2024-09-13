@@ -3,7 +3,8 @@ import { formatTime } from '@/utils/shared';
 import { Article } from 'luogu-api';
 import * as vscode from 'vscode';
 import myArticleFsProvider from './fsProvider';
-import { getArticleCategory } from '@/utils/workspaceUtils';
+import { getArticleCategory, processAxiosError } from '@/utils/workspaceUtils';
+import { MarkdownString } from 'vscode';
 
 export default class MyArticleTreeviewProvider
   implements vscode.TreeDataProvider<Article>, vscode.Disposable
@@ -27,30 +28,32 @@ export default class MyArticleTreeviewProvider
                 ? 'eye-closed'
                 : 'circle-large-outline'
       ),
-      tooltip: [
-        `${element.lid}·${element.title}`,
-        `发布于 ${formatTime(element.time * 1000)} ${getArticleCategory(element.category)}`,
-        (element.solutionFor
-          ? `关联于题目 ${element.solutionFor.pid}·`
-          : element.promoteStatus > 0
-            ? `申请为全站推荐·`
-            : '') +
-          (element.promoteStatus > 0
-            ? (element.promoteStatus == 1
-                ? '等待审核'
-                : element.promoteStatus == 2
-                  ? '通过'
-                  : '被打回') +
-              (element.promoteResult?.updateAt
-                ? ` @ ${formatTime(element.promoteResult.updateAt * 1000)}`
-                : '')
-            : element.status == 1
-              ? '隐藏'
-              : '公开'),
-        ...(element.promoteResult?.rejectReason
-          ? ['拒绝原因：' + element.promoteResult.rejectReason]
-          : [])
-      ].join('\n'),
+      tooltip: new MarkdownString(
+        [
+          `[${element.lid}](https://www.luogu.com.cn/article/${element.lid})·${element.title}`,
+          `发布于 ${formatTime(element.time * 1000)} ${getArticleCategory(element.category)}`,
+          (element.solutionFor
+            ? `关联于题目 ${element.solutionFor.pid}·`
+            : element.promoteStatus > 0
+              ? `申请为全站推荐·`
+              : '') +
+            (element.promoteStatus > 0
+              ? (element.promoteStatus == 1
+                  ? '等待审核'
+                  : element.promoteStatus == 2
+                    ? '通过'
+                    : '被打回') +
+                (element.promoteResult?.updateAt
+                  ? ` @ ${formatTime(element.promoteResult.updateAt * 1000)}`
+                  : '')
+              : element.status == 1
+                ? '隐藏'
+                : '公开'),
+          ...(element.promoteResult?.rejectReason
+            ? ['拒绝原因：' + element.promoteResult.rejectReason]
+            : [])
+        ].join('  \n')
+      ),
       command: {
         command: 'vscode.open',
         title: '编辑文章',
@@ -65,17 +68,11 @@ export default class MyArticleTreeviewProvider
       try {
         return await listMyAllArticles();
       } catch (e) {
-        vscode.window.showErrorMessage(
-          'Error when fetch article list: ' +
-            (e instanceof Error ? e.message : String(e))
-        );
-        console.error('Error when fetch article list: ', e);
+        processAxiosError('获取文章列表')(e);
       }
     })();
   }
-  private _onDidChangeTreeData = new vscode.EventEmitter<
-    void | Article | Article[] | null | undefined
-  >();
+  private _onDidChangeTreeData = new vscode.EventEmitter<void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
   refresh() {
     this._onDidChangeTreeData.fire();

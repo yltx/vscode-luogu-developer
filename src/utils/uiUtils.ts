@@ -1,4 +1,3 @@
-import { Login } from '@/commands/login';
 import * as vscode from 'vscode';
 
 export namespace DialogOptions {
@@ -108,5 +107,5 @@ export enum DialogType {
 
 export const needLogin = () =>
   vscode.window.showErrorMessage('未登录', '登录').then(async c => {
-    if (c) Login();
+    if (c) vscode.commands.executeCommand('luogu.signin');
   });

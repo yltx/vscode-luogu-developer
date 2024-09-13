@@ -42,34 +42,23 @@
       {
         "command": "luogu.signin",
         "title": "登录洛谷账号(Signin)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/login-dark.png",
-          "light": "resources/light/login-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.sumbitCode",
-        "title": "提交当前文档代码(Submit this code)",
-        "category": "Luogu"
+        "title": "提交代码(Submit this code)",
+        "category": "Luogu",
+        "icon": "$(luogu-paper-plane)"
       },
       {
         "command": "luogu.searchProblem",
         "title": "查看题目(Search for problem)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/search-dark.png",
-          "light": "resources/light/search-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.solution",
         "title": "查看题解(Search for solution)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/search-dark.png",
-          "light": "resources/light/search-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.fate",
@@ -79,11 +68,7 @@
       {
         "command": "luogu.benben",
         "title": "犇犇(Benben)",
-        "category": "Luogu",
-        "icon": {
-          "dark": "resources/dark/refresh-dark.png",
-          "light": "resources/light/refresh-light.png"
-        }
+        "category": "Luogu"
       },
       {
         "command": "luogu.userInfo",
@@ -236,6 +221,11 @@
           "when": "!luoguLoginStatus"
         },
         {
+          "id": "luogu.history",
+          "name": "最近浏览",
+          "when": "luoguLoginStatus"
+        },
+        {
           "id": "luogu.myarticle",
           "name": "我的专栏",
           "when": "luoguLoginStatus"
@@ -301,6 +291,11 @@
           "command": "luogu.myarticle.openInBrowser",
           "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
           "group": "navigation@9"
+        },
+        {
+          "command": "luogu.sumbitCode",
+          "when": "view == luogu.history && viewItem == luogu.history.problemItem",
+          "group": "inline"
         }
       ],
       "commandPalette": [
@@ -455,10 +450,24 @@
             "default": true,
             "scope": "window",
             "description": "Show record Webview panel when opening a record."
+          },
+          "luogu.maxHistoryLength": {
+            "type": "integer",
+            "default": 256,
+            "description": "最近浏览记录的最大长度，过长的将自动删除。不应过大，否则会影响性能。"
           }
         }
       }
-    ]
+    ],
+    "icons": {
+      "luogu-paper-plane":{
+        "description": "paper plane",
+        "default":{
+          "fontPath": "dist/icon.woff",
+          "fontCharacter": "\\E000"
+        }
+      }
+    }
   },
   "scripts": {
     "pack": "vsce package --allow-star-activation -o vscode-luogu.vsix",
@@ -478,6 +487,7 @@
     "@types/katex": "^0.16.5",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
+    "@types/parse-path": "^7.0.3",
     "@types/picomatch": "^2.3.4",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
@@ -487,7 +497,7 @@
     "@typescript-eslint/parser": "^7.3.1",
     "@vscode/vsce": "^2.32.0",
     "@vscode/webview-ui-toolkit": "^1.2.2",
-    "css-loader": "^6.10.0",
+    "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^7.0.0",
     "del-cli": "^5.1.0",
     "eslint": "^8.50.0",
@@ -497,6 +507,7 @@
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.2.2",
+    "webfont": "^11.2.26",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.10.1",
     "webpack-cli": "^5.1.4"
@@ -510,11 +521,17 @@
     "axios": "^1.6.0",
     "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
+    "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",
+    "lg-markdown-processor": "github:Mr-Python-in-China/lg-markdown-processor",
     "markdown-it": "^13.0.2",
     "markdown-it-highlightjs": "^4.0.1",
+    "parse-path": "^7.0.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "rehype-highlight": "^7.0.0",
+    "rehype-react": "^8.0.0",
+    "unist-util-visit": "^5.0.0"
   },
   "author": "",
   "packageManager": "npm@*"

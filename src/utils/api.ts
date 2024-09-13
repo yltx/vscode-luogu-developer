@@ -23,7 +23,6 @@ import {
   UserSummary
 } from 'luogu-api';
 import { cookieString, praseCookie } from './workspaceUtils';
-import { Login } from '@/commands/login';
 import { needLogin } from './uiUtils';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
@@ -41,7 +40,7 @@ export namespace API {
   export const INDEX = `/`;
   export const CAPTCHA_IMAGE = '/api/verify/captcha';
   export const LOGIN_CAPTCHA_IMAGE = `/lg4/captcha`;
-  export const CONTEST = (cid: string) => `/contest/${cid}?_contentOnly=1`;
+  export const CONTEST = (cid: number) => `/contest/${cid}?_contentOnly=1`;
   export const LOGIN_ENDPOINT = `/do-auth/password`;
   export const SEND_MAIL_2fa = `${apiURL}/verify/sendTwoFactorCode`;
   export const LOGOUT = `/auth/logout`;
@@ -54,7 +53,7 @@ export namespace API {
   export const BENBEN_POST = `${apiURL}/feed/postBenben`;
   export const BENBEN_DELETE = (id: number) => `${apiURL}/feed/delete/${id}`;
   export const UNLOCK_ENDPOINT = `/do-auth/totp`;
-  export const ranklist = (cid: string, page: number) =>
+  export const ranklist = (cid: number, page: number) =>
     `/fe/api/contest/scoreboard/${cid}?page=${page}`;
   export const TRAINLISTDETAIL = (id: number) =>
     `/training/${id}?_contentOnly=1`;
@@ -127,7 +126,8 @@ export const axios = (() => {
   axios.interceptors.request.use(async config => {
     if (config.myInterceptors_cookie === null) return config;
     if (config.myInterceptors_cookie === undefined)
-      config.myInterceptors_cookie = await authProvider.cookie();
+      config.myInterceptors_cookie =
+        await globalThis.luogu.authProvider.cookie();
     config.headers.cookie = cookieString(config.myInterceptors_cookie);
     return config;
   });
@@ -157,13 +157,13 @@ export const axios = (() => {
           get.uid !== undefined &&
           get.uid != err.config.myInterceptors_cookie.uid
         ) {
-          const sessions = await authProvider.getSessions();
+          const sessions = await globalThis.luogu.authProvider.getSessions();
           if (sessions.length > 0) {
-            authProvider.removeSession(sessions[0].id);
+            globalThis.luogu.authProvider.removeSession(sessions[0].id);
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
-                if (c) Login();
+                if (c) vscode.commands.executeCommand('luogu.signin');
               });
           }
         }
@@ -197,13 +197,13 @@ export const axios = (() => {
           get.uid !== undefined &&
           get.uid != err.config.myInterceptors_cookie.uid
         ) {
-          const sessions = await authProvider.getSessions();
+          const sessions = await globalThis.luogu.authProvider.getSessions();
           if (sessions.length > 0) {
-            authProvider.removeSession(sessions[0].id);
+            globalThis.luogu.authProvider.removeSession(sessions[0].id);
             vscode.window
               .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
               .then(async c => {
-                if (c) Login();
+                if (c) vscode.commands.executeCommand('luogu.signin');
               });
           }
         }
@@ -281,7 +281,16 @@ export const searchContestProblem = async (pid: string, cid: string) =>
       }
     });
 
-export const searchContest = async (cid: string) =>
+export const getProblemData = async (pid: string, cid?: number) =>
+  axios
+    .get<
+      DataResponse<ProblemData>
+    >(cid ? API.SEARCH_CONTESTPROBLEM(pid, cid.toString()) : API.SEARCH_PROBLEM(pid))
+    .then(x => {
+      return x.data.currentData;
+    });
+
+export const searchContest = async (cid: number) =>
   axios
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
     .then(res => res?.data?.currentData)
@@ -367,7 +376,7 @@ export const searchTraininglist = async (
 export const searchTrainingdetail = async (id: number) =>
   axios
     .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id))
-    .then(res => res?.data?.currentData)
+    .then(res => res.data.currentData)
     .then(async res => {
       // console.log(res)
       if ((res || null) === null) {
@@ -426,19 +435,19 @@ export const unlock = async (code: string, cookie?: Cookie) => {
 };
 
 export const getStatus = async () => {
-  const session = await authProvider.getSessions();
+  const session = await globalThis.luogu.authProvider.getSessions();
   if (session.length === 0) return UserStatus.SignedOut.toString();
-  const status = await authProvider
+  const status = await globalThis.luogu.authProvider
     .cookie()
     .then(x => (x.uid !== 0 ? checkCookie(x) : false));
   if (status) {
     return UserStatus.SignedIn.toString();
   } else {
-    authProvider.removeSession(session[0].id);
+    globalThis.luogu.authProvider.removeSession(session[0].id);
     vscode.window
       .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
       .then(async c => {
-        if (c) Login();
+        if (c) vscode.commands.executeCommand('luogu.signin');
       });
     return UserStatus.SignedOut.toString();
   }
@@ -662,7 +671,7 @@ export const loadUserIcon = async (uid: number) => {
   }
 };
 
-export const getRanklist = async (cid: string, page: number) => {
+export const getRanklist = async (cid: number, page: number) => {
   return axios
     .get<GetScoreboardResponse>(API.ranklist(cid, page))
     .then(res => res.data)

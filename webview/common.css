@@ -36,25 +36,55 @@ pre {
   position: relative;
   font-size: 0.875em !important;
 }
+pre > code {
+  background-color: var(--vscode-editor-background) !important;
+  padding: 0 !important;
+}
+pre[is='copyable-pre'] {
+  min-height: 16px;
+  min-width: 16px;
+  > div {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    > vscode-button {
+      margin: 0;
+      > .animate {
+        animation: copyButtonSuccessAnimationBegin 1s;
+      }
+    }
+  }
+}
+@keyframes copyButtonSuccessAnimationBegin {
+  10% {
+    color: #07f;
+  }
+  90% {
+    color: #07f;
+  }
+  100% {
+    color: unset;
+  }
+}
 
 .tag {
   display: inline-block;
   padding: 0 8px;
   box-sizing: border-box;
-  font-weight: 700;
+  font-weight: 400;
+  line-height: 1.5;
   border-radius: 2px;
-  font-size: 12px;
+  font-size: 0.875em;
   color: white;
   margin: 2px;
   line-height: 1.5;
-  font-family: var(--luogu-font);
 }
 
 hr {
   margin-top: 16px;
   margin-bottom: 16px;
   border: none;
-  border-bottom: solid 1px #eee;
+  border-bottom: solid 1px #7f7f7f7f;
 }
 
 .username {
@@ -98,4 +128,8 @@ vscode-button[appearance='icon'] {
 .captcha {
   width: 90px;
   height: 35px;
+}
+
+a {
+  text-decoration: none;
 }

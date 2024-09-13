@@ -2,12 +2,11 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import SuperCommand from '../SuperCommand';
 import { parseProblemID } from '@/utils/api';
-import showProblem from '@/utils/showProblem';
 
 export default new SuperCommand({
   onCommand: 'searchProblem',
   handle: async () => {
-    await globalThis.waitinit;
+    await globalThis.luogu.waitinit;
     const edtior = vscode.window.activeTextEditor;
     let fileNameID = '';
     if (edtior) {
@@ -40,6 +39,6 @@ export default new SuperCommand({
     //   return;
     // }
     globalThis.pid = pid;
-    await showProblem(pid, '');
+    vscode.commands.executeCommand('luogu.searchProblem', { pid });
   }
 });
