@@ -313,24 +313,22 @@ export const searchContest = async (cid: number) =>
 
 export const searchSolution = async (pid: string) =>
   axios
-    .get<DataResponse<SolutionsData>>(API.SEARCH_SOLUTION(pid, 1))
+    .get<LentilleDataResponse<SolutionsData>>(API.SEARCH_SOLUTION(pid, 1))
     .then(res => res.data)
     .then(async resp => {
-      if ((resp.currentData.solutions || null) === null) {
+      if ((resp.data.solutions || null) === null) {
         throw new Error('题目不存在');
       }
-      const problem = resp.currentData.problem;
-      const res = resp.currentData.solutions;
+      const problem = resp.data.problem;
+      const res = resp.data.solutions;
       if (res.perPage === null) res.perPage = Infinity;
       const result = Object.values(res.result);
       const pages = Math.ceil(res.count / res.perPage);
       for (let i = 2; i <= pages; i++) {
         const currentPage = (await axios.get(API.SEARCH_SOLUTION(pid, i)))
-          .data as DataResponse<SolutionsData>;
-        if (currentPage.code == 200)
-          result.push(
-            ...Object.values(currentPage.currentData.solutions.result)
-          );
+          .data as LentilleDataResponse<SolutionsData>;
+        if (currentPage.status == 200)
+          result.push(...Object.values(currentPage.data.solutions.result));
         else throw new Error('未找到题解');
       }
       return {
