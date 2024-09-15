@@ -7,10 +7,10 @@ import {
 } from '@/utils/api';
 import { formatTime } from '@/utils/shared';
 import HTMLtemplate, { usernameSpan } from '@/utils/html';
-import { BlogDetails } from 'luogu-api';
 import * as path from 'path';
 import md from '@/utils/markdown';
 import * as vscode from 'vscode';
+import { ArticleDetails } from 'luogu-api';
 
 export default new SuperCommand({
   onCommand: 'solution',
@@ -77,7 +77,7 @@ export default new SuperCommand({
           case 'voteup': {
             const r = await postVote(
               res.solutions[page].id,
-              res.solutions[page].currentUserVoteType == 1 ? 0 : 1
+              res.solutions[page].voted == 1 ? 0 : 1
             ).catch(function (err) {
               vscode.window.showErrorMessage(
                 `点赞/取消点赞失败：${err.response?.data?.errorMessage}`
@@ -88,16 +88,16 @@ export default new SuperCommand({
               vscode.window.showErrorMessage(`点赞/取消点赞失败：${r.data}`);
               throw r;
             }
-            (res.solutions[page].thumbUp = r.data as number),
-              (res.solutions[page].currentUserVoteType =
-                1 - res.solutions[page].currentUserVoteType);
+            (res.solutions[page].upvote = r.data as number),
+              (res.solutions[page].voted =
+                1 - (res.solutions[page].voted ?? 0));
             updateVote(panel.webview, res.solutions[page]);
             break;
           }
           case 'votedown': {
             const r = await postVote(
               res.solutions[page].id,
-              res.solutions[page].currentUserVoteType == -1 ? 0 : -1
+              res.solutions[page].voted == -1 ? 0 : -1
             ).catch(function (err) {
               vscode.window.showErrorMessage(
                 `点踩/取消点踩失败：${err.response?.data?.errorMessage}`
@@ -108,9 +108,9 @@ export default new SuperCommand({
               vscode.window.showErrorMessage(`点踩/取消点踩失败：${r.data}`);
               throw r;
             }
-            (res.solutions[page].thumbUp = r.data as number),
-              (res.solutions[page].currentUserVoteType =
-                -1 - res.solutions[page].currentUserVoteType);
+            (res.solutions[page].upvote = r.data as number),
+              (res.solutions[page].voted =
+                -1 - (res.solutions[page].voted ?? 0));
             updateVote(panel.webview, res.solutions[page]);
             break;
           }
@@ -151,7 +151,7 @@ export default new SuperCommand({
 
 const updatePassage = async function (
   webview: vscode.Webview,
-  passage: BlogDetails,
+  passage: ArticleDetails,
   disable: [boolean, boolean]
 ) {
   webview.postMessage({
@@ -162,22 +162,19 @@ const updatePassage = async function (
         'base64'
       ),
       userSpan: usernameSpan(passage.author),
-      timeStr: formatTime(
-        new Date(passage.postTime * 1000),
-        'yyyy-MM-dd hh:mm:ss'
-      ),
+      timeStr: formatTime(new Date(passage.time * 1000), 'yyyy-MM-dd hh:mm:ss'),
       passageHTML: md.render(passage.content),
       disable
     }
   });
   updateVote(webview, passage);
 };
-const updateVote = function (webview: vscode.Webview, passage: BlogDetails) {
+const updateVote = function (webview: vscode.Webview, passage: ArticleDetails) {
   webview.postMessage({
     type: 'updateVote',
     data: {
-      currentUserVoteType: passage.currentUserVoteType,
-      thumbUp: passage.thumbUp
+      currentUserVoteType: passage.voted ?? 0,
+      thumbUp: passage.upvote
     }
   });
 };
