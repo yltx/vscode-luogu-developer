@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
 
 import debug from '../utils/debug';
-import Submit from './submit';
+// import Submit from './submit';
 import About from './about';
 import userInfo from './userinfo';
 import Fate from './fate';
-import selectLanguage from './selectLanguage';
 import BenBen from './benben';
 import lastRecord from './lastRecord';
 import solution from './solution';
@@ -16,10 +15,9 @@ import traininglist from './traininglist';
 import traindetails from './traindetails';
 const commands = [
   About,
-  Submit,
+  // Submit,
   userInfo,
   Fate,
-  selectLanguage,
   BenBen,
   lastRecord,
   solution,

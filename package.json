@@ -341,128 +341,134 @@
         }
       ]
     },
-    "configuration": [
-      {
-        "title": "Luogu",
-        "properties": {
-          "luogu.defaultLanguage": {
-            "type": "string",
-            "enum": [
-              "Auto",
-              "Pascal",
-              "C",
-              "C++14 (GCC 9)",
-              "C++98",
-              "C++11",
-              "C++14",
-              "C++17",
-              "C++20",
-              "Python 3",
-              "PyPy 3",
-              "Java 8",
-              "Node.js LTS",
-              "Ruby",
-              "Go",
-              "Rust",
-              "PHP",
-              "C# Mono",
-              "Haskell",
-              "Kotlin/JVM",
-              "Scala",
-              "Perl"
-            ],
-            "default": "Auto",
-            "scope": "window",
-            "description": "Default language for solving the problems."
+    "configuration": {
+      "title": "Luogu",
+      "properties": {
+        "luogu.defaultLanguageVersion": {
+          "type": "object",
+          "properties": {
+            "C++": {
+              "type": "string",
+              "enum": [
+                "C++14 (GCC 9)",
+                "C++14 (GCC 9) with O2",
+                "C++98",
+                "C++98 with O2",
+                "C++11",
+                "C++11 with O2",
+                "C++14",
+                "C++14 with O2",
+                "C++17",
+                "C++17 with O2",
+                "C++20",
+                "C++20 with O2"
+              ],
+              "description": "C++ 语言版本"
+            },
+            "C": {
+              "type": "string",
+              "enum": [
+                "C",
+                "C with O2"
+              ],
+              "description": "C 语言版本"
+            },
+            "Pascal": {
+              "type": "string",
+              "enum": [
+                "Pascal",
+                "Pascal with O2"
+              ],
+              "description": "Pascal 语言版本"
+            },
+            "Python": {
+              "type": "string",
+              "enum": [
+                "Python 3",
+                "PyPy 3"
+              ],
+              "description": "Python 语言版本"
+            },
+            "Java": {
+              "type": "string",
+              "enum": [
+                "Java 8",
+                "Java 21"
+              ],
+              "description": "Java 语言版本"
+            }
           },
-          "luogu.showSelectLanguageHint": {
-            "type": "boolean",
-            "default": true,
-            "scope": "window",
-            "description": "Show select language hint when submit."
-          },
-          "luogu.alwaysEnableO2": {
-            "type": "boolean",
-            "default": false,
-            "scope": "window",
-            "description": "Always enable O2 when submit."
-          },
-          "luogu.checkFilenameAsProblemID": {
-            "type": "boolean",
-            "default": true,
-            "scope": "window",
-            "description": "Continue to submit / open problem when your filename is a valid problem ID."
-          },
-          "luogu.defaultWaitingTime": {
-            "type": "integer",
-            "default": 3000,
-            "scope": "window",
-            "description": "Default waiting time for selecting the file after clicking the submit button(ms)."
-          },
-          "luogu.defaultProblemSet": {
-            "type": "string",
-            "enum": [
-              "洛谷题库",
-              "入门与面试",
-              "Codeforces",
-              "APOJ",
-              "AtCoder",
-              "UVA"
-            ],
-            "scope": "window",
-            "description": "Default problemset for random choose problem."
-          },
-          "luogu.defaultDifficulty": {
-            "type": "string",
-            "enum": [
-              "暂无评定",
-              "入门",
-              "普及-",
-              "普及/提高-",
-              "普及+/提高",
-              "提高+/省选-",
-              "省选/NOI-",
-              "NOI/NOI+/CTSC"
-            ],
-            "scope": "window",
-            "description": "Default difficulty for random choose problem."
-          },
-          "luogu.showSelectProblemsetHint": {
-            "type": "boolean",
-            "default": true,
-            "scope": "window",
-            "description": "Show select problemset hint when randomize."
-          },
-          "luogu.showSelectDifficultyHint": {
-            "type": "boolean",
-            "default": true,
-            "scope": "window",
-            "description": "Show select difficulty hint when randomize."
-          },
-          "luogu.userIconCacheTime": {
-            "type": "integer",
-            "default": 21600000,
-            "scope": "window",
-            "description": "The time of cache user icon, in seconds."
-          },
-          "luogu.showRecordPanel": {
-            "type": "boolean",
-            "default": true,
-            "scope": "window",
-            "description": "Show record Webview panel when opening a record."
-          },
-          "luogu.maxHistoryLength": {
-            "type": "integer",
-            "default": 256,
-            "description": "最近浏览记录的最大长度，过长的将自动删除。不应过大，否则会影响性能。"
-          }
+          "description": "提交时使用的默认语言版本。\n编辑时支持 vscode 智能提示。"
+        },
+        "luogu.guessProblemID": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "尝试通过 CPH 配置或文件名猜测 PID 并自动填充。"
+        },
+        "luogu.defaultProblemSet": {
+          "type": "string",
+          "enum": [
+            "洛谷题库",
+            "入门与面试",
+            "Codeforces",
+            "APOJ",
+            "AtCoder",
+            "UVA"
+          ],
+          "scope": "window",
+          "description": "Default problemset for random choose problem."
+        },
+        "luogu.defaultDifficulty": {
+          "type": "string",
+          "enum": [
+            "暂无评定",
+            "入门",
+            "普及-",
+            "普及/提高-",
+            "普及+/提高",
+            "提高+/省选-",
+            "省选/NOI-",
+            "NOI/NOI+/CTSC"
+          ],
+          "scope": "window",
+          "description": "Default difficulty for random choose problem."
+        },
+        "luogu.showSelectProblemsetHint": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "Show select problemset hint when randomize."
+        },
+        "luogu.showSelectDifficultyHint": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "Show select difficulty hint when randomize."
+        },
+        "luogu.userIconCacheTime": {
+          "type": "integer",
+          "default": 21600000,
+          "scope": "window",
+          "description": "The time of cache user icon, in seconds."
+        },
+        "luogu.showRecordPanel": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "Show record Webview panel when opening a record."
+        },
+        "luogu.maxHistoryLength": {
+          "type": "integer",
+          "default": 256,
+          "description": "最近浏览记录的最大长度，过长的将自动删除。不应过大，否则会影响性能。"
         }
       }
-    ],
+    },
     "icons": {
-      "luogu-paper-plane":{
+      "luogu-paper-plane": {
         "description": "paper plane",
-        "default":{
+        "default": {
           "fontPath": "dist/icon.woff",
           "fontCharacter": "\\E000"
         }

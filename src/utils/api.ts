@@ -609,16 +609,16 @@ export const postVote = async (id: number, type: number) =>
       throw err;
     });
 
-export const parseProblemID = async (name: string) => {
+export const parseProblemID = (name: string) => {
   const regexs = [
-    /(AT_\w*)/i,
-    /(CF[0-9]{1,4}[A-Z][0-9]{0,1})/i,
-    /(SP[0-9]{1,5})/i,
-    /(P[0-9]{4,5})/i,
-    /(UVA[0-9]{1,5})/i,
-    /(U[0-9]{1,6})/i,
-    /(T[0-9]{1,6})/i,
-    /(B[0-9]{4})/i
+    /^(AT_\w*)\./i,
+    /^(CF[0-9]{1,4}[A-Z][0-9]{0,1})\./i,
+    /^(SP[0-9]{1,5})\./i,
+    /^(P[0-9]{4,5})\./i,
+    /^(UVA[0-9]{1,5})\./i,
+    /^(U[0-9]{1,6})\./i,
+    /^(T[0-9]{1,6})\./i,
+    /^(B[0-9]{4})\./i
   ];
   for (const regex of regexs) {
     const m = regex.exec(name);
@@ -630,21 +630,6 @@ export const parseProblemID = async (name: string) => {
       if (ret !== '') {
         return ret;
       }
-    }
-  }
-  return '';
-};
-
-export const parseUID = async (name: string) => {
-  const regex = /([0-9]{1,7})/i;
-  const m = regex.exec(name);
-  if (m !== null) {
-    let ret = '';
-    m.forEach(match => {
-      ret = match;
-    });
-    if (ret !== '') {
-      return ret;
     }
   }
   return '';
@@ -686,12 +671,13 @@ export const getErrorMessage = (err: unknown) => {
 };
 
 export async function submitCode(
-  id: string,
+  { pid, cid }: { pid: string; cid?: number },
   code: string,
   language: number = 0,
   enableO2: boolean = false
 ) {
-  const url = `/fe/api/problem/submit/${id}`;
+  const url =
+    `/fe/api/problem/submit/${pid}` + (cid ? `?contestId=${cid}` : '');
   return axios
     .post<{ rid: number }>(url, {
       code: code,
@@ -699,26 +685,7 @@ export async function submitCode(
       enableO2: enableO2,
       verify: ''
     })
-    .then(res => {
-      if (res.status === 200) {
-        return res.data.rid;
-      } else {
-        throw res.data;
-      }
-    })
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data.data ?? err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      throw err;
-    });
+    .then(res => res.data.rid);
 }
 export async function checkCookie(c: Cookie) {
   const res = await axios.get('/', {

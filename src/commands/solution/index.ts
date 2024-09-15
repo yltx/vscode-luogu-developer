@@ -28,7 +28,7 @@ export default new SuperCommand({
       pid =
         vscode.workspace
           .getConfiguration('luogu')
-          .get<boolean>('checkFilenameAsProblemID') && fileNameID !== ''
+          .get<boolean>('guessProblemID') && fileNameID !== ''
           ? fileNameID
           : await vscode.window
               .showInputBox({

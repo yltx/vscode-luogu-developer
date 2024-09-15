@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
 
+import fs from 'fs';
+import crypto from 'crypto';
 import {
   languageList,
   Languages,
@@ -9,9 +11,14 @@ import {
   fileExtention,
   difficultyID,
   problemset,
-  ArticleCategory
+  ArticleCategory,
+  fileExtToLanguage,
+  languageData,
+  defaultLanguageVersion
 } from '@/utils/shared';
 import { isAxiosError } from 'axios';
+import { parseProblemID } from './api';
+import path from 'path';
 
 export function getSelectedLanguage(
   selected: string = vscode.workspace
@@ -110,4 +117,125 @@ export function processAxiosError(verb?: string) {
       vscode.window.showErrorMessage(verb + '时出现错误，前往控制台查看详情。');
     console.error('Error when ' + verb, x);
   };
+}
+
+function matchCph(src: string) {
+  const srcFileName = path.basename(src);
+  const cphConfigPath = path.join(
+    path.dirname(src),
+    '.cph',
+    `.${srcFileName}_${crypto.createHash('md5').update(src).digest('hex')}.prob`
+  );
+  try {
+    const urlStr = JSON.parse(fs.readFileSync(cphConfigPath).toString()).url;
+    if (typeof urlStr !== 'string') return undefined;
+    const url = new URL(urlStr);
+    if (
+      url.host !== 'www.luogu.com.cn' ||
+      !/^\/problem\/\w+$/.test(url.pathname)
+    )
+      return undefined;
+    const cid = url.searchParams.get('contestId') ?? undefined;
+    if (cid !== undefined && !/^\d+$/.test(cid)) return undefined;
+    return {
+      pid: url.pathname.slice(9),
+      cid: cid ? +cid : undefined
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+export function guessProblemId(src: string) {
+  if (
+    !vscode.workspace
+      .getConfiguration('luogu')
+      .get<boolean>('guessProblemID', true)
+  )
+    return undefined;
+  const x1 = matchCph(src);
+  if (x1) return x1;
+  const x2 = parseProblemID(path.basename(src));
+  if (x2) return { pid: x2 };
+  return undefined;
+}
+
+const pidValidate = /^\w+( \d+)?$/;
+export async function askForPid(defaultPid?: { pid: string; cid?: number }) {
+  const defaultStr =
+    defaultPid &&
+    defaultPid?.pid + (defaultPid.cid ? ` ${defaultPid.cid}` : '');
+  const res = await vscode.window.showInputBox({
+    title: '输入题目编号和比赛编号',
+    placeHolder:
+      '题目编号和比赛编号间用空格分隔，不属于比赛则不填写比赛编号。大小写错误可能导致奇怪问题！',
+    validateInput: s => (pidValidate.test(s) ? undefined : '格式错误'),
+    ignoreFocusOut: true,
+    value: defaultStr
+  });
+  if (res === undefined) return undefined;
+  const [pid, cid] = res.split(' ');
+  return { pid, cid: cid ? parseInt(cid) : undefined };
+}
+
+export async function askForLanguage(fileExt: string) {
+  // shit anyscript
+  let nowLangStr: undefined | keyof typeof languageData = undefined;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    if (nowLangStr === undefined) {
+      const quickPick = vscode.window.createQuickPick();
+      quickPick.title = '选择语言';
+      quickPick.ignoreFocusOut = true;
+      quickPick.items = Object.keys(languageData).map(x => ({ label: x }));
+      const guessedLanguage =
+        fileExt in fileExtToLanguage
+          ? (fileExtToLanguage[fileExt] as keyof typeof languageData)
+          : undefined;
+      if (guessedLanguage !== undefined)
+        quickPick.activeItems = [
+          quickPick.items.find(x => x.label === guessedLanguage)!
+        ];
+      quickPick.show();
+      const res = await new Promise<string | undefined>(resolve => {
+        quickPick.onDidChangeSelection(item => resolve(item[0].label));
+        quickPick.onDidHide(() => resolve(undefined));
+      });
+      quickPick.dispose();
+      if (res === undefined) return undefined;
+      nowLangStr = res as keyof typeof languageData;
+    } else {
+      const nowLangData = languageData[nowLangStr];
+      if ('id' in nowLangData) return { id: nowLangData.id };
+      const quickPick = vscode.window.createQuickPick();
+      (quickPick.title = `选择 ${nowLangStr} 版本`),
+        (quickPick.ignoreFocusOut = true),
+        (quickPick.placeholder = '按下 Esc 选择其他语言');
+      quickPick.items = Object.keys(nowLangData).map(x => ({ label: x }));
+      const defaultVersion = (vscode.workspace
+        .getConfiguration('luogu')
+        .get('defaultLanguageVersion', {})[nowLangStr] ??
+        defaultLanguageVersion[nowLangStr]) as string;
+      const defaultIndex = quickPick.items.findIndex(
+        x => x.label === defaultVersion
+      );
+      if (defaultIndex === -1)
+        vscode.window.showWarningMessage(
+          `${nowLangStr} 的默认语言版本设置无效！`
+        );
+      else quickPick.activeItems = [quickPick.items[defaultIndex]];
+      quickPick.show();
+      const res = await new Promise<string | undefined>(resolve => {
+        quickPick.onDidChangeSelection(item => resolve(item[0].label));
+        quickPick.onDidHide(() => resolve(undefined));
+      });
+      quickPick.dispose();
+      if (res === undefined) {
+        nowLangStr = undefined;
+        continue;
+      }
+      console.assert(res in nowLangData);
+      return nowLangData[res] as { id: number; O2?: true };
+    }
+  }
 }
