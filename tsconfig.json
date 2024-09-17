@@ -17,7 +17,8 @@
       "luogu-api": ["luogu-api-docs/luogu-api"]
     },
     "esModuleInterop": true,
-    "jsx": "react"
+    "jsx": "react",
+    "resolveJsonModule": true
   },
   "include": ["./src", "./webview"]
 }

@@ -2827,3 +2827,73 @@ export const TrainingTypes = [
   '团队公开',
   '个人公开'
 ];
+
+export const languageData = {
+  Pascal: { Pascal: { id: 1 }, 'Pascal with O2': { id: 1, O2: true } },
+  C: { C: { id: 2 }, 'C with O2': { id: 2, O2: true } },
+  'C++': {
+    'C++14 (GCC 9)': { id: 28 },
+    'C++14 (GCC 9) with O2': { id: 28, O2: true },
+    'C++98': { id: 3 },
+    'C++98 with O2': { id: 3, O2: true },
+    'C++11': { id: 4 },
+    'C++11 with O2': { id: 4, O2: true },
+    'C++14': { id: 11 },
+    'C++14 with O2': { id: 11, O2: true },
+    'C++17': { id: 12 },
+    'C++17 with O2': { id: 12, O2: true },
+    'C++20': { id: 27 },
+    'C++20 with O2': { id: 27, O2: true }
+  },
+  Python: {
+    'Python 3': { id: 7 },
+    'PyPy 3': { id: 25 }
+  },
+  Java: {
+    'Java 8': { id: 8 },
+    'Java 21': { id: 33 }
+  },
+  'Node.js LTS': { id: 9 },
+  Ruby: { id: 13 },
+  Go: { id: 14 },
+  Rust: { id: 15 },
+  PHP: { id: 16 },
+  'C# Mono': { id: 17 },
+  Haskell: { id: 19 },
+  'Kotlin/JVM': { id: 21 },
+  Scala: { id: 22 },
+  Perl: { id: 23 },
+  OCaml: { id: 30 },
+  Julia: { id: 31 },
+  Lua: { id: 32 }
+} as const;
+export const fileExtToLanguage = {
+  pas: 'Pascal',
+  c: 'C',
+  cc: 'C++',
+  cpp: 'C++',
+  cxx: 'C++',
+  py: 'Python',
+  java: 'Java',
+  js: 'Node.js LTS',
+  rb: 'Ruby',
+  go: 'Go',
+  rs: 'Rust',
+  php: 'PHP',
+  cs: 'C# Mono',
+  hs: 'Haskell',
+  kt: 'Kotlin/JVM',
+  scala: 'Scala',
+  pl: 'Perl',
+  ml: 'OCaml',
+  jl: 'Julia',
+  lua: 'Lua'
+} as const satisfies Record<string, keyof typeof languageData>;
+
+export const defaultLanguageVersion = {
+  'C++': 'C++14 (GCC 9) with O2',
+  C: 'C with O2',
+  Pascal: 'Pascal with O2',
+  Python: 'PyPy 3',
+  Java: 'Java 21'
+};

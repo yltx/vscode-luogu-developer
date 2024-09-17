@@ -9,6 +9,7 @@ declare global {
     var authProvider: LuoguAuthProvider;
     var historyTreeviewProvider: historyTreeviewProvider;
     var insertHistory: (value: HistoryItem) => void;
+    var lastViewProblem: { pid: string; cid?: number } | undefined;
   }
   interface Cookie {
     uid: number;
