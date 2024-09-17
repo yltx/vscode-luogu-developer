@@ -406,6 +406,7 @@ export const login = async (
   captcha: string,
   cookie?: Cookie
 ) => {
+  if (username.match(/^1[0-9]{10}$/)) username = '+86' + username;
   return await axios
     .post<LoginResponse>(
       API.LOGIN_ENDPOINT,
