@@ -146,9 +146,13 @@ export const axios = (() => {
     },
     async err => {
       if (!isAxiosError(err) || !err.response) throw err;
-      if (err.response.data.errorMessage === '未登录') {
+      if (
+        err.response.data.errorMessage === '未登录' ||
+        err.response.data.data?.errorType ===
+          'LuoguWeb\\Spilopelia\\Exception\\UserUnloginException'
+      ) {
         needLogin();
-        throw err;
+        throw new Error('未登录', { cause: err });
       }
       if (err.config?.myInterceptors_notCheckCookie) throw err;
       if (err.config?.myInterceptors_cookie?.uid) {
@@ -186,9 +190,13 @@ export const axios = (() => {
     },
     async err => {
       if (!isAxiosError(err) || !err.response) throw err;
-      if (err.response.data.errorMessage === '未登录') {
+      if (
+        err.response.data.errorMessage === '未登录' ||
+        err.response.data.data?.errorType ===
+          'LuoguWeb\\Spilopelia\\Exception\\UserUnloginException'
+      ) {
         needLogin();
-        throw err;
+        throw new Error('未登录', { cause: err });
       }
       if (err.config?.myInterceptors_notCheckCookie) throw err;
       if (err.config?.myInterceptors_cookie?.uid) {
