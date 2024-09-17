@@ -1,5 +1,9 @@
 import { getProblemData } from '@/utils/api';
-import { askForPid, processAxiosError } from '@/utils/workspaceUtils';
+import {
+  askForPid,
+  guessProblemId,
+  processAxiosError
+} from '@/utils/workspaceUtils';
 import * as vscode from 'vscode';
 import showProblemWebview from './webview';
 
@@ -8,7 +12,14 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'luogu.searchProblem',
       async (id?: { pid: string; cid?: number }) => {
-        if (!id) if (!(id = await askForPid())) return false;
+        if (!id)
+          if (
+            !(id = await askForPid(
+              vscode.window.activeTextEditor &&
+                guessProblemId(vscode.window.activeTextEditor.document.fileName)
+            ))
+          )
+            return false;
         return await getProblemData(id.pid, id.cid)
           .then(problemDetails => {
             globalThis.luogu.historyTreeviewProvider.addItem({
