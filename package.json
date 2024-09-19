@@ -402,9 +402,15 @@
         },
         "luogu.guessProblemID": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "scope": "window",
-          "description": "尝试通过 CPH 配置或文件名猜测 PID 并自动填充。"
+          "description": "尝试通过 CPH 配置或文件名猜测 PID，不再提示输入。"
+        },
+        "luogu.alwaysUseDefaultLanguageVersion": {
+          "type": "boolean",
+          "default": false,
+          "scope": "window",
+          "description": "提交时总是使用默认语言版本，不再提示选择。"
         },
         "luogu.defaultProblemSet": {
           "type": "string",

@@ -26,13 +26,22 @@ export default function registerSubmitFeature(
           );
           return false;
         }
-        if (!problem)
+        if (!problem) {
+          const guessed = guessProblemId(editor.document.fileName);
           if (
+            guessed &&
+            vscode.workspace
+              .getConfiguration('luogu')
+              .get('guessProblemID', false)
+          )
+            problem = guessed;
+          else if (
             !(problem = await askForPid(
               guessProblemId(editor.document.fileName)
             ))
           )
             return false;
+        }
         if ('type' in problem)
           problem = { pid: problem.pid, cid: problem.contest?.contestId };
         const lang = await askForLanguage(

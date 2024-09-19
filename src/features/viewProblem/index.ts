@@ -12,14 +12,19 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'luogu.searchProblem',
       async (id?: { pid: string; cid?: number }) => {
-        if (!id)
+        if (!id) {
+          const guessed =
+            vscode.window.activeTextEditor &&
+            guessProblemId(vscode.window.activeTextEditor.document.fileName);
           if (
-            !(id = await askForPid(
-              vscode.window.activeTextEditor &&
-                guessProblemId(vscode.window.activeTextEditor.document.fileName)
-            ))
+            guessed &&
+            vscode.workspace
+              .getConfiguration('luogu')
+              .get('guessProblemID', false)
           )
-            return false;
+            id = guessed;
+          else if (!(id = await askForPid(guessed))) return false;
+        }
         return await getProblemData(id.pid, id.cid)
           .then(problemDetails => {
             globalThis.luogu.historyTreeviewProvider.addItem({

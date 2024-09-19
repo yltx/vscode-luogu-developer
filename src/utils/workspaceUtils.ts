@@ -147,12 +147,6 @@ function matchCph(src: string) {
 }
 
 export function guessProblemId(src: string) {
-  if (
-    !vscode.workspace
-      .getConfiguration('luogu')
-      .get<boolean>('guessProblemID', true)
-  )
-    return undefined;
   const x1 = matchCph(src);
   if (x1) return x1;
   const x2 = parseProblemID(path.basename(src));
@@ -181,17 +175,25 @@ export async function askForPid(defaultPid?: { pid: string; cid?: number }) {
 export async function askForLanguage(fileExt: string) {
   // shit anyscript
   let nowLangStr: undefined | keyof typeof languageData = undefined;
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
+  for (;;) {
     if (nowLangStr === undefined) {
-      const quickPick = vscode.window.createQuickPick();
-      quickPick.title = '选择语言';
-      quickPick.ignoreFocusOut = true;
-      quickPick.items = Object.keys(languageData).map(x => ({ label: x }));
       const guessedLanguage =
         fileExt in fileExtToLanguage
           ? (fileExtToLanguage[fileExt] as keyof typeof languageData)
           : undefined;
+      if (
+        guessedLanguage &&
+        vscode.workspace
+          .getConfiguration('luogu')
+          .get('alwaysUseDefaultLanguageVersion', false)
+      ) {
+        nowLangStr = guessedLanguage;
+        continue;
+      }
+      const quickPick = vscode.window.createQuickPick();
+      quickPick.title = '选择语言';
+      quickPick.ignoreFocusOut = true;
+      quickPick.items = Object.keys(languageData).map(x => ({ label: x }));
       if (guessedLanguage !== undefined)
         quickPick.activeItems = [
           quickPick.items.find(x => x.label === guessedLanguage)!
@@ -207,15 +209,22 @@ export async function askForLanguage(fileExt: string) {
     } else {
       const nowLangData = languageData[nowLangStr];
       if ('id' in nowLangData) return { id: nowLangData.id };
+      const defaultVersion = (vscode.workspace
+        .getConfiguration('luogu')
+        .get('defaultLanguageVersion', {})[nowLangStr] ??
+        defaultLanguageVersion[nowLangStr]) as string;
+      if (
+        nowLangData[defaultVersion] &&
+        vscode.workspace
+          .getConfiguration('luogu')
+          .get('alwaysUseDefaultLanguageVersion', false)
+      )
+        return nowLangData[defaultVersion] as { id: number; O2?: true };
       const quickPick = vscode.window.createQuickPick();
       (quickPick.title = `选择 ${nowLangStr} 版本`),
         (quickPick.ignoreFocusOut = true),
         (quickPick.placeholder = '按下 Esc 选择其他语言');
       quickPick.items = Object.keys(nowLangData).map(x => ({ label: x }));
-      const defaultVersion = (vscode.workspace
-        .getConfiguration('luogu')
-        .get('defaultLanguageVersion', {})[nowLangStr] ??
-        defaultLanguageVersion[nowLangStr]) as string;
       const defaultIndex = quickPick.items.findIndex(
         x => x.label === defaultVersion
       );
