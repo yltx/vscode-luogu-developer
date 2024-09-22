@@ -74,7 +74,7 @@
           opacity: 1;
         }
       }
-      > div.haveTag:not(:hover){
+      > div.haveTag:not(:hover) {
         > div:nth-child(3) > div {
           animation: fadeOut 0.5s;
         }
@@ -101,4 +101,3 @@
     }
   }
 }
-
