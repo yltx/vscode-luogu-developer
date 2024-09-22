@@ -74,6 +74,11 @@
           opacity: 1;
         }
       }
+      > div.haveTag:not(:hover){
+        > div:nth-child(3) > div {
+          animation: fadeOut 0.5s;
+        }
+      }
       > div:nth-child(1),
       > div:nth-child(2) {
         border-bottom: 1px solid var(--vscode-editor-foreground);
@@ -82,14 +87,13 @@
   }
   div.problemSamples {
     > div {
-      display: flex;
-      gap: 10px;
-      @media screen and (max-width: 300px) {
-        flex-direction: column;
-        gap: unset;
+      display: grid;
+      column-gap: 10px;
+      grid-template-columns: 50% 50%;
+      @media screen and (max-width: 400px) {
+        grid-template-columns: 100%;
       }
       > div {
-        flex: 1;
         > h3 {
           margin: 0;
         }
@@ -97,3 +101,4 @@
     }
   }
 }
+

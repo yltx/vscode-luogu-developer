@@ -102,7 +102,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
               <ProblemDifficultyTag difficulty={data.problem.difficulty} />
             </div>
           </div>
-          <div className={data.problem.tags.length ? 'haveTag' : ''}>
+          <div className={data.problem.tags.length ? 'haveTag' : undefined}>
             <div>题目标签</div>
             <div>
               {data.problem.tags.length ? (
@@ -111,7 +111,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                 '暂无标签'
               )}
             </div>
-            {data.problem.tags.length && (
+            {data.problem.tags.length ? (
               <div>
                 <div>
                   {data.problem.tags.map((x, i) => (
@@ -119,7 +119,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                   ))}
                 </div>
               </div>
-            )}
+            ) : undefined}
           </div>
         </div>
       </header>

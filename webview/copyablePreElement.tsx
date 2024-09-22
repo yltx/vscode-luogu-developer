@@ -7,13 +7,15 @@ const { createRoot } = await import('react-dom/client');
 const { faCopy } = await import('@fortawesome/free-solid-svg-icons');
 
 class CopyablePreElement extends HTMLPreElement {
+  buttonDiv?: HTMLDivElement;
   reactRoot?: import('react-dom/client').Root;
   constructor() {
     super();
   }
   connectedCallback() {
-    const div = document.createElement('div');
-    this.appendChild(div);
+    this.buttonDiv = document.createElement('div');
+    this.buttonDiv.className = 'copyButton';
+    this.insertBefore(this.buttonDiv, this.firstElementChild);
 
     const Compose = () => {
       const [animationType, setAnimationType] = useState(false);
@@ -36,10 +38,11 @@ class CopyablePreElement extends HTMLPreElement {
         </VSCodeButton>
       );
     };
-    (this.reactRoot = createRoot(div)).render(<Compose />);
+    (this.reactRoot = createRoot(this.buttonDiv)).render(<Compose />);
   }
   disconnectedCallback() {
     this.reactRoot?.unmount();
+    if (this.buttonDiv) this.removeChild(this.buttonDiv);
   }
 }
 customElements.define('copyable-pre', CopyablePreElement, { extends: 'pre' });

@@ -39,14 +39,14 @@ pre {
 pre > code {
   background-color: var(--vscode-editor-background) !important;
   padding: 0 !important;
+  display: block;
+  overflow-x: auto;
 }
 pre[is='copyable-pre'] {
   min-height: 16px;
   min-width: 16px;
-  > div {
-    position: absolute;
-    top: 0px;
-    right: 0px;
+  > div.copyButton {
+    float: right;
     > vscode-button {
       margin: 0;
       > .animate {
