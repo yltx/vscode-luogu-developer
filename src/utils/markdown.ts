@@ -13,25 +13,29 @@ md.renderer.rules.image = function (tokens, idx, options, env, self) {
   const token = tokens[idx],
     aIndex = token.attrIndex('src');
   if (!token.attrs) return defaultRender(tokens, idx, options, env, self);
-  const url = new URL(token.attrs[aIndex][1]); // 将视频当作 url 处理
-  if (
-    url.protocol == 'bilibili:' &&
-    (aidRE.test(url.pathname) || bvidRE.test(url.pathname))
-  ) {
-    const info: { aid?: string; bvid?: string; page: number; t: number } = {
-      t: +(url.searchParams.get('t') || '0'),
-      page: +(url.searchParams.get('page') || '1')
-    }; // 若没有P号或时间标记，则默认为 0 与 1
-    if (aidRE.test(url.pathname))
-      info.aid = (url.pathname[0] != 'a' ? 'av' : '') + url.pathname; // 匹配 av 号。若匹配，将纯数字格式的 av 号开头也补上 "av"
-    if (bvidRE.test(url.pathname)) info.bvid = url.pathname; // 匹配 bv 号
-    return `
+  try {
+    const url = new URL(token.attrs[aIndex][1]); // 将视频当作 url 处理
+    if (
+      url.protocol == 'bilibili:' &&
+      (aidRE.test(url.pathname) || bvidRE.test(url.pathname))
+    ) {
+      const info: { aid?: string; bvid?: string; page: number; t: number } = {
+        t: +(url.searchParams.get('t') || '0'),
+        page: +(url.searchParams.get('page') || '1')
+      }; // 若没有P号或时间标记，则默认为 0 与 1
+      if (aidRE.test(url.pathname))
+        info.aid = (url.pathname[0] != 'a' ? 'av' : '') + url.pathname; // 匹配 av 号。若匹配，将纯数字格式的 av 号开头也补上 "av"
+      if (bvidRE.test(url.pathname)) info.bvid = url.pathname; // 匹配 bv 号
+      return `
             <a href="https://www.bilibili.com/video/${
               info.bvid || info.aid
             }?p=${info.page}&t=${info.t}" class="bilivideo">
                 <i class="fa-brands fa-bilibili"></i>
                 在 bilibili 中打开视频 ${info.bvid || info.aid}
             </a>`;
+    }
+  } catch (e) {
+    if (!(e instanceof TypeError)) throw e;
   }
   return defaultRender(tokens, idx, options, env, self);
 };
