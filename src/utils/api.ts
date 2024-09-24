@@ -118,9 +118,7 @@ export const axios = (() => {
 
   axios.interceptors.request.use(async config => {
     if (config.method !== 'get' && config.headers['X-CSRF-Token'] === undefined)
-      config.headers['X-CSRF-Token'] = await csrfToken(
-        config.myInterceptors_cookie || undefined
-      ).catch(err => console.error(err));
+      config.headers['X-CSRF-Token'] = csrfCache;
     return config;
   });
   axios.interceptors.request.use(async config => {
@@ -253,7 +251,8 @@ export const csrfToken = async (cookie?: Cookie, path: string = API.baseURL) =>
     })
     .then(res => {
       const result = CSRF_TOKEN_REGEX.exec(res.data);
-      return result ? result[1].trim() : null;
+      if (result === null) throw new Error('CSRF Token not found');
+      return result[1].trim();
     });
 
 export const searchProblem = async (pid: string) =>
@@ -434,7 +433,7 @@ export const unlock = async (code: string, cookie?: Cookie) => {
     },
     {
       headers: {
-        'X-CSRF-Token': await csrfToken(cookie, '/auth/login')
+        'X-CSRF-Token': await csrfToken(cookie)
       },
       myInterceptors_cookie: cookie
     }
@@ -773,3 +772,18 @@ export const listMyArticles = async (params: {
     axios
       .post<{ article: ArticleDetails }>(API.CREATE_ARTICLE, data)
       .then(x => x.data.article);
+
+let csrfCache: string;
+let csrfTimer: NodeJS.Timeout | undefined = undefined;
+function updateCsrfCache() {
+  if (csrfTimer) clearInterval(csrfTimer);
+  csrfTimer = setInterval(
+    () => csrfToken().then(s => (csrfCache = s)),
+    10 * 60 * 1000
+  );
+}
+globalThis.luogu.waitinit
+  .then(() => updateCsrfCache())
+  .then(() =>
+    globalThis.luogu.authProvider.onDidChangeSessions(() => updateCsrfCache())
+  );

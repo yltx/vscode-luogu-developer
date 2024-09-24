@@ -1,3 +1,5 @@
+import initFinish from './initGlobal';
+
 import * as vscode from 'vscode';
 import debug from '@/utils/debug';
 import RegisterCommands from '@/commands';
@@ -6,12 +8,6 @@ import path from 'path';
 import registerFeatures from './features';
 
 globalThis.pid = '';
-let initFinish: () => void;
-//@ts-expect-error
-globalThis.luogu = {};
-globalThis.luogu.waitinit = new Promise(
-  resolve => (initFinish = () => resolve())
-);
 
 export async function activate(
   context: vscode.ExtensionContext
