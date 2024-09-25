@@ -777,6 +777,7 @@ let csrfCache: string;
 let csrfTimer: NodeJS.Timeout | undefined = undefined;
 function updateCsrfCache() {
   if (csrfTimer) clearInterval(csrfTimer);
+  csrfToken().then(s => (csrfCache = s));
   csrfTimer = setInterval(
     () => csrfToken().then(s => (csrfCache = s)),
     10 * 60 * 1000
