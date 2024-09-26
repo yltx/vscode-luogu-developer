@@ -20,7 +20,7 @@ class CopyablePreElement extends HTMLPreElement {
     const Compose = () => {
       const [animationType, setAnimationType] = useState(false);
       const copy = async () => {
-        const text = this.childNodes[0].textContent ?? '';
+        const text = this.childNodes[1].textContent ?? '';
         await navigator.clipboard.writeText(text);
         setAnimationType(true);
       };
