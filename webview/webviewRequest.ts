@@ -7,7 +7,7 @@ import { UUID } from 'crypto';
 declare function acquireVsCodeApi(): {
   postMessage<T extends WebviewRequestMessage<string, unknown>>(data: T): void;
 };
-const vscode = acquireVsCodeApi();
+export const vscode = acquireVsCodeApi();
 
 const p = new Map<UUID, [(data: unknown) => void, (err: string) => void]>();
 

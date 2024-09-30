@@ -1,7 +1,6 @@
 import { BenbenData } from '@w/webviewMessage';
 
 const { default: React, useState, useRef, useEffect } = await import('react');
-const { default: dateFormat } = await import('dateformat');
 const { VSCodeButton, VSCodeProgressRing, VSCodeTextArea } = await import(
   '@vscode/webview-ui-toolkit/react'
 );
@@ -10,6 +9,7 @@ const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { sleep, UserIcon, UserName } = await import('@w/utils');
 const { default: send } = await import('@w/webviewRequest');
 const { default: Md } = await import('../../markdownViewer');
+const { formatDate } = await import('@/utils/stringUtils');
 
 import '@w/common.css';
 import './app.css';
@@ -91,7 +91,7 @@ function BenbenBlock({
           <UserName user={data.user} />
           <span className="benben-comment-time">
             &thinsp;
-            {`at ${dateFormat(new Date(data.time), 'yyyy-mm-dd HH:MM:ss')}`}
+            {`at ${formatDate(data.time)}`}
           </span>
           <a
             href=""

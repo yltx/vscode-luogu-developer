@@ -5,6 +5,7 @@ import history from './history';
 import viewProblem from './viewProblem';
 import login from './login';
 import submit from './submit';
+import record from './record';
 
 export default function registerFeatures(context: vscode.ExtensionContext) {
   for (const registerFeature of [
@@ -12,7 +13,8 @@ export default function registerFeatures(context: vscode.ExtensionContext) {
     myArticle,
     history,
     viewProblem,
-    submit
+    submit,
+    record
   ])
     registerFeature(context);
 }

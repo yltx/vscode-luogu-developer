@@ -8,6 +8,7 @@ const { ProblemDifficultyTag } = await import('@w/utils');
 const { default: Markdown } = await import('@w/markdownViewer');
 const { ProblemTag } = await import('@w/utils');
 const { default: send } = await import('@w/webviewRequest');
+const { formatTime, formatMemory } = await import('@/utils/stringUtils');
 import { ProblemData } from 'luogu-api';
 
 import CphIcon from './cphIcon';
@@ -17,28 +18,16 @@ import './app.css';
 function formatTimeLimit(timeLimit: number[]) {
   const mintime = Math.min(...timeLimit),
     maxtime = Math.max(...timeLimit);
-  let mintimestr: string, maxtimestr: string;
-  if (mintime < 1e3) mintimestr = `${mintime}ms`;
-  else if (mintime < 60e3) mintimestr = `${(mintime / 1e3).toFixed(2)}s`;
-  else mintimestr = `${(mintime / 60e3).toFixed(2)}min`;
-  if (maxtime < 1e3) maxtimestr = `${maxtime}ms`;
-  else if (maxtime < 60e3) maxtimestr = `${(maxtime / 1e3).toFixed(2)}s`;
-  else maxtimestr = `${(maxtime / 60e3).toFixed(2)}min`;
+  const mintimestr = formatTime(mintime),
+    maxtimestr = formatTime(maxtime);
   return mintimestr == maxtimestr ? mintimestr : `${mintimestr}~${maxtimestr}`;
 }
 
 function formatMemoryLimit(memoryLimit: number[]) {
-  const minmemory = Math.min(...memoryLimit),
-    maxmemory = Math.max(...memoryLimit);
-  let minmemorystr: string, maxmemorystr: string;
-  if (minmemory < 2 ** 1) minmemorystr = `${minmemory}KB`;
-  else if (minmemory < 2 ** 20)
-    minmemorystr = `${(minmemory / 2 ** 10).toFixed(2)}MB`;
-  else minmemorystr = `${(minmemory / 2 ** 20).toFixed(2)}GB`;
-  if (maxmemory < 2 ** 1) maxmemorystr = `${maxmemory}KB`;
-  else if (maxmemory < 2 ** 20)
-    maxmemorystr = `${(maxmemory / 2 ** 10).toFixed(2)}MB`;
-  else maxmemorystr = `${(maxmemory / 2 ** 20).toFixed(2)}GB`;
+  const minmemory = Math.min(...memoryLimit) * 2 ** 10,
+    maxmemory = Math.max(...memoryLimit) * 2 ** 10;
+  const minmemorystr = formatMemory(minmemory),
+    maxmemorystr = formatMemory(maxmemory);
   return minmemorystr == maxmemorystr
     ? minmemorystr
     : `${minmemorystr}~${maxmemorystr}`;

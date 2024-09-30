@@ -1,5 +1,4 @@
 import { submitCode } from '@/utils/api';
-import showRecord from '@/utils/showRecord';
 import {
   askForLanguage,
   askForPid,
@@ -56,7 +55,7 @@ export default function registerSubmitFeature(
             lang.id,
             lang.O2
           );
-          showRecord(rid);
+          vscode.commands.executeCommand('luogu.record', rid);
           return true;
         } catch (e) {
           processAxiosError('提交代码')(e);

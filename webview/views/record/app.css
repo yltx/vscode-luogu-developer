@@ -1,0 +1,87 @@
+#app {
+  > h1:first-child {
+    font-size: 20px;
+  }
+  > div:nth-child(2) {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+    > div {
+      display: grid;
+      grid-template-columns: 6em auto;
+      align-items: center;
+    }
+  }
+  > div.testCaseData {
+    > div {
+      > div {
+        > div:nth-child(2) {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: 8px;
+          font-family: -apple-system, BlinkMacSystemFont, 'San Francisco',
+            'Helvetica Neue', 'Noto Sans', 'Noto Sans CJK SC', 'Noto Sans CJK',
+            'Source Han Sans', 'PingFang SC', 'Segoe UI', 'Microsoft YaHei',
+            sans-serif;
+          > div {
+            position: relative;
+            > div:nth-child(1) {
+              width: 96px;
+              height: 96px;
+              color: white;
+              > div {
+                display: flex;
+              }
+              > div:nth-child(1) {
+                align-items: flex-end;
+                font-size: 0.65em;
+                height: 22px;
+                margin-left: 6px;
+              }
+              > div:nth-child(2) {
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5em;
+                height: 34px;
+                font-weight: bold;
+              }
+              > div:nth-child(3) {
+                align-items: center;
+                justify-content: center;
+                font-size: 0.8em;
+                height: 23px;
+              }
+            }
+            > div:nth-child(2) {
+              display: block;
+              position: absolute;
+              background-color: var(--vscode-editor-foreground);
+              color: var(--vscode-editor-background);
+              border-radius: 3px;
+              font-size: .8em;
+              z-index: 10;
+              left: 50%;
+              transform: translateX(-50%);
+              padding: 0.5em;
+              margin: 6px;
+              min-width: 12em;
+              max-width: 16em;
+              white-space: pre-line;
+              top: -7em;
+              transition: 0.6s ease all;
+              opacity: 0;
+              pointer-events: none;
+            }
+            &:hover > div:nth-child(2) {
+              transition: 0.6s ease all;
+              top: -3em;
+              opacity: 0.8;
+              pointer-events: auto;
+            }
+          }
+        }
+      }
+    }
+  }
+}

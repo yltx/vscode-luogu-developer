@@ -1,12 +1,10 @@
 import * as vscode from 'vscode';
 
 import debug from '../utils/debug';
-// import Submit from './submit';
 import About from './about';
 import userInfo from './userinfo';
 import Fate from './fate';
 import BenBen from './benben';
-import lastRecord from './lastRecord';
 import solution from './solution';
 import contest from './contest';
 import random from './random';
@@ -15,18 +13,15 @@ import traininglist from './traininglist';
 import traindetails from './traindetails';
 const commands = [
   About,
-  // Submit,
   userInfo,
   Fate,
   BenBen,
-  lastRecord,
   solution,
   contest,
   random,
   paintboard,
   traininglist,
   traindetails
-  // ,(await import('./search')).default
 ];
 export { commands };
 
