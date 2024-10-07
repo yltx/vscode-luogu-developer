@@ -160,7 +160,7 @@ function TestCase({ children: data }: { children: TestCaseStatus }) {
   return (
     <div>
       <div style={{ backgroundColor: RecordStatus[data.status].color }}>
-        <div>#{data.id}</div>
+        <div>#{data.id + 1}</div>
         <div>
           {data.status !== 1 ? (
             RecordStatus[data.status].shortName
