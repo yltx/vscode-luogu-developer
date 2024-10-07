@@ -521,7 +521,7 @@ export const fetchRecords = async () =>
   axios
     .get<
       DataResponse<{ records: List<RecordBase> }>
-    >(`/record/list?_contentOnly=1`)
+    >(`/record/list?_contentOnly=1`, { params: { user: (await globalThis.luogu.authProvider.cookie()).uid } })
     .then(data => data.data.currentData.records);
 
 export const searchUser = async (keyword: string, cookie?: Cookie) =>
