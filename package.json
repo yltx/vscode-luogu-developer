@@ -156,6 +156,14 @@
       {
         "command": "luogu.myarticle.openInBrowser",
         "title": "在浏览器中打开"
+      },
+      {
+        "command": "luogu.record",
+        "title": "评测记录"
+      },
+      {
+        "command": "luogu.openUntitledTextDocument",
+        "title": "打开新文档"
       }
     ],
     "keybindings": [
@@ -337,6 +345,14 @@
         },
         {
           "command": "luogu.myarticle.openInBrowser",
+          "when": "false"
+        },
+        {
+          "command": "luogu.record",
+          "when": "false"
+        },
+        {
+          "command": "luogu.openUntitledTextDocument",
           "when": "false"
         }
       ]
@@ -531,6 +547,7 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.6.0",
+    "bufferutil": "^4.0.8",
     "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
     "hast-util-from-html": "^2.0.2",
@@ -543,7 +560,9 @@
     "react-dom": "^18.2.0",
     "rehype-highlight": "^7.0.0",
     "rehype-react": "^8.0.0",
-    "unist-util-visit": "^5.0.0"
+    "unist-util-visit": "^5.0.0",
+    "utf-8-validate": "^5.0.10",
+    "ws": "^8.18.0"
   },
   "author": "",
   "packageManager": "npm@*"

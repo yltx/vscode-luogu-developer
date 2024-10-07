@@ -8,8 +8,8 @@ const { default: parsePath } = await import('parse-path');
 const { faBilibili } = await import('@fortawesome/free-brands-svg-icons');
 const { icon } = await import('@fortawesome/fontawesome-svg-core');
 const { default: rehypeHighlight } = await import('rehype-highlight');
+await import('../copyablePreElement');
 import './hljsTheme';
-import '../copyablePreElement';
 import 'katex/dist/katex.css';
 
 const bilibiliIconHastElement = hastUtilFromHtml(icon(faBilibili).html[0], {

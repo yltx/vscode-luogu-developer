@@ -33,6 +33,7 @@ declare module 'vscode' {
       command: 'luogu.searchProblem',
       id?: { pid: string; cid?: number }
     ): Thenable<unknown>;
+    function executeCommand(command: 'luogu.record', rid: number): void;
   }
 }
 

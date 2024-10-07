@@ -5,126 +5,86 @@ export enum UserStatus {
   SignedOut = 2
 }
 
-export enum Languages {
-  'Auto' = 0,
-  'Pascal' = 1,
-  'C' = 2,
-  'C++14 (GCC 9)' = 28,
-  'C++98' = 3,
-  'C++11' = 4,
-  'C++14' = 11,
-  'C++17' = 12,
-  'C++20' = 27,
-  // 'Python 2' = 6,
-  'Python 3' = 7,
-  'Java 8' = 8,
-  'Node.js LTS' = 9,
-  'Go' = 14,
-  'Ruby' = 13,
-  'Rust' = 15,
-  'PHP' = 16,
-  'C# Mono' = 17,
-  // 'VisualBasic' = 18,
-  'Haskell' = 19,
-  // 'Kotlin/Native' = 20,
-  'Kotlin/JVM' = 21,
-  'Scala' = 22,
-  'Perl' = 23,
-  // 'PyPy2' = 24,
-  'PyPy3' = 25
-  // '文言' = 26
-}
-
-export enum ProblemState {
-  'Waiting' = 0,
-  'Judging' = 1,
-  'Compile Error' = 2,
-  'OLE' = 3,
-  'MLE' = 4,
-  'TLE' = 5,
-  'WA' = 6,
-  'RE' = 7,
-  'Accepted' = 12,
-  'Unaccepted' = 14,
-  'Hack Success' = 21,
-  'Hack Failure' = 22,
-  'Hack Skipped' = 23
-}
-
-export const fileExtention = {
-  pas: 'pascal',
-  pp: 'pascal',
-  lpr: 'pascal',
-  dpr: 'pascal',
-  c: 'c',
-  cpp: 'cpp',
-  cxx: 'cpp',
-  cc: 'cpp',
-  'c++': 'cpp',
-  C: 'cpp',
-  py: 'python',
-  java: 'java',
-  js: 'nodejs',
-  go: 'go',
-  ruby: 'ruby',
-  rust: 'rust',
-  php: 'php',
-  cs: 'c#',
-  vb: 'vb',
-  vbs: 'vb',
-  hs: 'haskell',
-  kt: 'kotlin',
-  scala: 'scala',
-  perl: 'perl',
-  wy: 'wy'
+export const RecordStatus: Record<
+  number,
+  { name: string; shortName: string; color: string }
+> = {
+  0: {
+    name: 'Waiting',
+    shortName: 'Waiting',
+    color: 'rgb(20, 85, 143)'
+  },
+  1: {
+    name: 'Judging',
+    shortName: 'Judging',
+    color: 'rgb(52, 152, 219)'
+  },
+  2: {
+    name: 'Compile Error',
+    shortName: 'CE',
+    color: 'rgb(250, 219, 20)'
+  },
+  3: {
+    name: 'Output Limit Exceeded',
+    shortName: 'OLE',
+    color: '#001277'
+  },
+  4: {
+    name: 'Memory Limit Exceeded',
+    shortName: 'MLE',
+    color: '#001277'
+  },
+  5: {
+    name: 'Time Limit Exceeded',
+    shortName: 'TLE',
+    color: '#001277'
+  },
+  6: {
+    name: 'Wrong Answer',
+    shortName: 'WA',
+    color: '#fb6340'
+  },
+  7: {
+    name: 'Runtime Error',
+    shortName: 'RE',
+    color: '#8e44ad'
+  },
+  11: {
+    name: 'Unknown Error',
+    shortName: 'UKE',
+    color: 'rgb(14, 29, 105)'
+  },
+  12: {
+    name: 'Accepted',
+    shortName: 'AC',
+    color: 'rgb(82, 196, 26)'
+  },
+  14: {
+    name: 'Unaccepted',
+    shortName: 'Unaccepted',
+    color: 'rgb(231, 76, 60)'
+  },
+  21: {
+    name: 'Hack Success',
+    shortName: 'Hack Success',
+    color: 'rgb(82, 196, 26)'
+  },
+  22: {
+    name: 'Hack Failure',
+    shortName: 'Hack Failure',
+    color: 'rgb(231, 76, 60)'
+  },
+  23: {
+    name: 'Hack Skipped',
+    shortName: 'Hack Skipped',
+    color: '#001277'
+  },
+  '-1': {
+    name: 'Unshown',
+    shortName: 'Unshown',
+    color: 'rgb(38, 38, 38)'
+  }
 };
-
-export const languageList = {
-  pascal: ['Pascal'],
-  c: ['C'],
-  cpp: ['C++14 (GCC 9)', 'C++98', 'C++11', 'C++14', 'C++17', 'C++20'],
-  python: [/* 'Python 2', */ 'Python 3', /* 'PyPy2', */ 'PyPy3'],
-  java: ['Java 8'],
-  nodejs: 'Node.js LTS',
-  go: ['Go'],
-  ruby: ['Ruby'],
-  rust: ['Rust'],
-  php: ['PHP'],
-  'c#': ['C# Mono'],
-  // 'vb': ['VisualBasic'],
-  haskell: ['Haskell'],
-  kotlin: [/* 'Kotlin/Native',*/ 'Kotlin/JVM'],
-  scala: ['Scala'],
-  perl: ['Perl']
-  // 'wy': ['文言']
-};
-
-export const stateColor: string[] = [
-  'rgb(20, 85, 143)',
-  'rgb(52, 152, 219)',
-  'rgb(250, 219, 20)',
-  '#001277',
-  '#001277',
-  '#001277',
-  '#fb6340',
-  '#8e44ad',
-  '',
-  '',
-  '',
-  'rgb(14, 29, 105)',
-  'rgb(82, 196, 26)',
-  '',
-  'rgb(231, 76, 60)'
-];
-export enum resultState {
-  'OLE' = 3,
-  'MLE' = 4,
-  'TLE' = 5,
-  'WA' = 6,
-  'RE' = 7,
-  'UKE' = 11,
-  'AC' = 12
-}
 export enum colorStyle {
   'grey' = 'rgb(191,191,191)',
   'Gray' = 'rgb(191,191,191)',
@@ -2828,7 +2788,7 @@ export const TrainingTypes = [
   '个人公开'
 ];
 
-export const languageData = {
+export const languageFamily = {
   Pascal: { Pascal: { id: 1 }, 'Pascal with O2': { id: 1, O2: true } },
   C: { C: { id: 2 }, 'C with O2': { id: 2, O2: true } },
   'C++': {
@@ -2888,7 +2848,7 @@ export const fileExtToLanguage = {
   ml: 'OCaml',
   jl: 'Julia',
   lua: 'Lua'
-} as const satisfies Record<string, keyof typeof languageData>;
+} as const satisfies Record<string, keyof typeof languageFamily>;
 
 export const defaultLanguageVersion = {
   'C++': 'C++14 (GCC 9) with O2',
@@ -2896,4 +2856,84 @@ export const defaultLanguageVersion = {
   Pascal: 'Pascal with O2',
   Python: 'PyPy 3',
   Java: 'Java 21'
+};
+
+export function getScoreColor(score: number): string {
+  return score < 30
+    ? 'rgb(231, 76, 60)'
+    : score < 80
+      ? 'rgb(243, 156, 17)'
+      : 'rgb(82, 196, 26)';
+}
+
+export const LanguageString: Record<number, string> = {
+  1: 'Pascal',
+  2: 'C',
+  3: 'C++98',
+  4: 'C++11',
+  5: '提交答案',
+  6: 'Python 2',
+  7: 'Python 3',
+  8: 'Java 8',
+  9: 'Node.js LTS',
+  10: 'Shell',
+  11: 'C++14',
+  12: 'C++17',
+  13: 'Ruby',
+  14: 'Go',
+  15: 'Rust',
+  16: 'PHP',
+  17: 'C# Mono',
+  18: 'Visual Basic Mono',
+  19: 'Haskell',
+  20: 'Kotlin/Native',
+  21: 'Kotlin/JVM',
+  22: 'Scala',
+  23: 'Perl',
+  24: 'PyPy 2',
+  25: 'PyPy 3',
+  26: '文言',
+  27: 'C++20',
+  28: 'C++14 (GCC 9)',
+  29: 'F#.NET',
+  30: 'OCaml',
+  31: 'Julia',
+  32: 'Lua',
+  33: 'Java 21'
+};
+
+export const vscodeLanguageId: Record<number, string> = {
+  1: 'pascal',
+  2: 'c',
+  3: 'cpp',
+  4: 'cpp',
+  5: 'plaintext',
+  6: 'python',
+  7: 'python',
+  8: 'java',
+  9: 'javascript',
+  10: 'shellscript',
+  11: 'cpp',
+  12: 'cpp',
+  13: 'ruby',
+  14: 'go',
+  15: 'rust',
+  16: 'php',
+  17: 'csharp',
+  18: 'vb',
+  19: 'haskell',
+  20: 'kotlin',
+  21: 'kotlin',
+  22: 'scala',
+  23: 'perl',
+  24: 'python',
+  25: 'python',
+  26: 'wenyan',
+  27: 'cpp',
+  28: 'cpp',
+  29: 'fsharp',
+  30: 'ocaml',
+  31: 'julia',
+  32: 'lua',
+  33: 'java'
 };

@@ -87,7 +87,36 @@ export function ProblemTag({ tag }: { tag: number }) {
 }
 
 export async function sleep(ms: number) {
-  return new Promise<void>(resolve => {
-    setTimeout(() => resolve(), ms);
-  });
+  return new Promise<void>(resolve => setTimeout(() => resolve(), ms));
+}
+
+export function ProblemNameWithDifficulty({
+  pid,
+  title,
+  difficulty,
+  contestId
+}: {
+  pid: string;
+  title: string;
+  difficulty: number;
+  contestId?: number;
+}) {
+  return (
+    <a className="problemNameWithDifficulty">
+      <span style={{ color: difficultyColor[difficulty] }}>{pid}</span> {title}
+      {contestId && ' · ' + contestId}
+    </a>
+  );
+}
+
+export function Spinner({ size = 32 }: { size?: number | string }) {
+  return (
+    <span
+      className="spinner"
+      style={{
+        height: size,
+        width: size
+      }}
+    />
+  );
 }

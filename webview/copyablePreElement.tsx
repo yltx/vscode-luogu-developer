@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-const { default: React } = await import('react');
+const { default: React, useState } = await import('react');
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { VSCodeButton } = await import('@vscode/webview-ui-toolkit/react');
 const { createRoot } = await import('react-dom/client');

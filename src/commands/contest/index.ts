@@ -10,13 +10,10 @@ import {
   contestType,
   contestVisibility,
   contestVisibilityStyle,
-  contestRated
-} from '@/utils/shared';
-import {
-  getUsernameColor,
-  getUserSvg,
+  contestRated,
   getScoreColor
-} from '@/utils/workspaceUtils';
+} from '@/utils/shared';
+import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
 import { ContestData, GetScoreboardResponse } from 'luogu-api';
 
 export default new SuperCommand({

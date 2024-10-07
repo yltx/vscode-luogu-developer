@@ -45,14 +45,21 @@ pre > code {
 pre[is='copyable-pre'] {
   min-height: 16px;
   min-width: 16px;
+  position: relative;
   > div.copyButton {
-    float: right;
+    position: absolute;
+    top: 0;
+    right: 0;
+    visibility: hidden;
     > vscode-button {
       margin: 0;
       > .animate {
         animation: copyButtonSuccessAnimationBegin 1s;
       }
     }
+  }
+  &:hover > div.copyButton {
+    visibility: visible;
   }
 }
 @keyframes copyButtonSuccessAnimationBegin {
@@ -132,4 +139,27 @@ vscode-button[appearance='icon'] {
 
 a {
   text-decoration: none;
+}
+.problemNameWithDifficulty {
+  > :first-child {
+    font-weight: bold;
+  }
+}
+
+.spinner {
+  display: inline-block;
+  border-left: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid transparent;
+  border-radius: 100%;
+  animation: spin 1.5s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

@@ -19,6 +19,17 @@ export async function activate(
   globalThis.resourcesPath = path.join(context.extensionPath, 'resources');
   globalThis.distPath = path.join(context.extensionPath, 'dist');
   registerFeatures(context);
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      'luogu.openUntitledTextDocument',
+      (options?: { content: string; language: string }) =>
+        vscode.workspace
+          .openTextDocument(options)
+          .then(x =>
+            vscode.window.showTextDocument(x, vscode.ViewColumn.One, true)
+          )
+    )
+  );
   getStatus();
   initFinish();
 }

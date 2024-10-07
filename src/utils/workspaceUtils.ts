@@ -3,30 +3,17 @@ import * as vscode from 'vscode';
 import fs from 'fs';
 import crypto from 'crypto';
 import {
-  languageList,
-  Languages,
-  ProblemState,
-  stateColor,
   colorStyle,
-  fileExtention,
   difficultyID,
   problemset,
   ArticleCategory,
   fileExtToLanguage,
-  languageData,
+  languageFamily,
   defaultLanguageVersion
 } from '@/utils/shared';
 import { isAxiosError } from 'axios';
 import { parseProblemID } from './api';
 import path from 'path';
-
-export function getSelectedLanguage(
-  selected: string = vscode.workspace
-    .getConfiguration('luogu')
-    .get<string>('defaultLanguage')!
-): number {
-  return Languages[selected];
-}
 
 export function getSelectedDifficulty(selected: string): number {
   return difficultyID[selected];
@@ -34,27 +21,6 @@ export function getSelectedDifficulty(selected: string): number {
 
 export function getSelectedProblemset(selected: string): string {
   return problemset[selected];
-}
-
-export function getStatusText(status: number): string {
-  return ProblemState[status];
-}
-
-export function getStatusColor(status: number): string {
-  return stateColor[status];
-}
-export function getLanauageFromExt(ext: string) {
-  return fileExtention[ext] === undefined
-    ? []
-    : languageList[fileExtention[ext]];
-}
-
-export function getScoreColor(score: number): string {
-  return score < 30
-    ? 'rgb(231, 76, 60)'
-    : score < 80
-      ? 'rgb(243, 156, 17)'
-      : 'rgb(82, 196, 26)';
 }
 
 export function getUsernameColor(color: string): string {
@@ -174,12 +140,12 @@ export async function askForPid(defaultPid?: { pid: string; cid?: number }) {
 
 export async function askForLanguage(fileExt: string) {
   // shit anyscript
-  let nowLangStr: undefined | keyof typeof languageData = undefined;
+  let nowLangStr: undefined | keyof typeof languageFamily = undefined;
   for (;;) {
     if (nowLangStr === undefined) {
       const guessedLanguage =
         fileExt in fileExtToLanguage
-          ? (fileExtToLanguage[fileExt] as keyof typeof languageData)
+          ? (fileExtToLanguage[fileExt] as keyof typeof languageFamily)
           : undefined;
       if (
         guessedLanguage &&
@@ -193,7 +159,7 @@ export async function askForLanguage(fileExt: string) {
       const quickPick = vscode.window.createQuickPick();
       quickPick.title = '选择语言';
       quickPick.ignoreFocusOut = true;
-      quickPick.items = Object.keys(languageData).map(x => ({ label: x }));
+      quickPick.items = Object.keys(languageFamily).map(x => ({ label: x }));
       if (guessedLanguage !== undefined)
         quickPick.activeItems = [
           quickPick.items.find(x => x.label === guessedLanguage)!
@@ -205,9 +171,9 @@ export async function askForLanguage(fileExt: string) {
       });
       quickPick.dispose();
       if (res === undefined) return undefined;
-      nowLangStr = res as keyof typeof languageData;
+      nowLangStr = res as keyof typeof languageFamily;
     } else {
-      const nowLangData = languageData[nowLangStr];
+      const nowLangData = languageFamily[nowLangStr];
       if ('id' in nowLangData) return { id: nowLangData.id };
       const defaultVersion = (vscode.workspace
         .getConfiguration('luogu')

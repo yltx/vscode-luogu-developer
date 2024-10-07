@@ -3,7 +3,7 @@ import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
 import { tagsData as Tags } from './shared';
-import { getScoreColor } from './workspaceUtils';
+import { getScoreColor } from './shared';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {

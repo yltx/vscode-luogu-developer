@@ -18,6 +18,7 @@ import {
   LoginResponse,
   ProblemData,
   ProblemSetData,
+  RecordBase,
   RecordData,
   SolutionsData,
   UserSummary
@@ -518,17 +519,10 @@ export const getFate = async () =>
 
 export const fetchRecords = async () =>
   axios
-    .get(`/record/list?_contentOnly=1`)
-    .then(data => data?.data)
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
-    });
+    .get<
+      DataResponse<{ records: List<RecordBase> }>
+    >(`/record/list?_contentOnly=1`, { params: { user: (await globalThis.luogu.authProvider.cookie()).uid } })
+    .then(data => data.data.currentData.records);
 
 export const searchUser = async (keyword: string, cookie?: Cookie) =>
   axios
