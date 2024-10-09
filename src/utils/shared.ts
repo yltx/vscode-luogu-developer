@@ -2816,14 +2816,14 @@ export const languageFamily = {
   'Node.js LTS': { id: 9 },
   Ruby: { id: 13 },
   Go: { id: 14 },
-  Rust: { id: 15 },
+  Rust: { Rust: { id: 15 }, 'Rust with O2': { id: 15, O2: true } },
   PHP: { id: 16 },
   'C# Mono': { id: 17 },
-  Haskell: { id: 19 },
+  Haskell: { Haskell: { id: 19 }, 'Haskell with O2': { id: 19, O2: true } },
   'Kotlin/JVM': { id: 21 },
   Scala: { id: 22 },
   Perl: { id: 23 },
-  OCaml: { id: 30 },
+  OCaml: { Ocaml: { id: 30 }, 'OCaml with O2': { id: 30, O2: true } },
   Julia: { id: 31 },
   Lua: { id: 32 }
 } as const;
@@ -2855,7 +2855,10 @@ export const defaultLanguageVersion = {
   C: 'C with O2',
   Pascal: 'Pascal with O2',
   Python: 'PyPy 3',
-  Java: 'Java 21'
+  Java: 'Java 21',
+  Rust: 'Rust with O2',
+  Haskell: 'Haskell with O2',
+  OCaml: 'OCaml with O2'
 };
 
 export function getScoreColor(score: number): string {
