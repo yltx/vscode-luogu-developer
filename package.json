@@ -412,6 +412,30 @@
                 "Java 21"
               ],
               "description": "Java 语言版本"
+            },
+            "Rust": {
+              "type": "string",
+              "enum": [
+                "Rust",
+                "Rust with O2"
+              ],
+              "description": "Rust 语言版本"
+            },
+            "Haskell": {
+              "type": "string",
+              "enum": [
+                "Haskell",
+                "Haskell with O2"
+              ],
+              "description": "Haskell 语言版本"
+            },
+            "OCaml": {
+              "type": "string",
+              "enum": [
+                "OCaml",
+                "OCaml with O2"
+              ],
+              "description": "OCaml 语言版本"
             }
           },
           "description": "提交时使用的默认语言版本。\n编辑时支持 vscode 智能提示。"
