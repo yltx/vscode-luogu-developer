@@ -8,6 +8,9 @@ on:
     types: [published]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,8 +25,14 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
-      - uses: lannonbr/vsce-action@4.0.0
+      - name: Package
+        run: npm run pack
+      - name: Upload to Github Releases
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          args: 'publish -p $VSCE_TOKEN --allow-star-activation'
+          files: vscode-luogu.vsix
+      - name: Publish to VSCode Marketplace
+        run: npx vsce publish -i vscode-luogu.vsix
         env:
-          VSCE_TOKEN: ${{ secrets.PAT }}
+          VSCE_PAT: ${{ secrets.PAT }}
