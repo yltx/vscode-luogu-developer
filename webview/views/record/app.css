@@ -59,7 +59,7 @@
               background-color: var(--vscode-editor-foreground);
               color: var(--vscode-editor-background);
               border-radius: 3px;
-              font-size: .8em;
+              font-size: 0.8em;
               z-index: 10;
               left: 50%;
               transform: translateX(-50%);
