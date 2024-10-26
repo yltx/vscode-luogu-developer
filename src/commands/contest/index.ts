@@ -100,6 +100,16 @@ export default new SuperCommand({
   }
 });
 
+const beautifyTime = (time: number) => {
+  if (time < 1000) {
+    return `${time}ms`;
+  }
+  if (time < 60000) {
+    return `${(time / 1000).toFixed(2)}s`;
+  }
+  return `${(time / 60000).toFixed(2)}min`;
+}
+
 const generateRanklist = async (
   res: ContestData,
   ranklist: GetScoreboardResponse,
@@ -137,14 +147,14 @@ const generateRanklist = async (
     )}</td><td align="center" width="35px" nowrap>${
       ranklist['scoreboard']['result'][i]['score']
     }<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">`;
-    if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
+    if (contest['ruleType'] === 2 || contest['ruleType'] === 5) { //ICPC or Codeforces
       html += `(${Math.floor(
         (ranklist['scoreboard']['result'][i]['runningTime'] / 3600) % 24
       )}:${Math.floor(
         (ranklist['scoreboard']['result'][i]['runningTime'] % 3600) / 60
       )})`;
     } else {
-      html += `${ranklist['scoreboard']['result'][i]['runningTime']}ms`;
+      html += beautifyTime(ranklist['scoreboard']['result'][i]['runningTime']);
     }
     html += '</span></td>';
     for (let j = 0; j < contest['problemCount']; j++) {
@@ -242,7 +252,7 @@ const generateRanklist = async (
         ) {
           html +=
             '<br data-v-239a177d data-v-6e56e2aa><span data-v-239a177d data-v-6e56e2aa class="time" style="color: rgb(155,155,155);">';
-          if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
+          if (contest['ruleType'] === 2 || contest['ruleType'] === 5) { //ICPC or Codeforces
             html += `(${Math.floor(
               (ranklist['scoreboard']['result'][i]['details'][
                 res['contestProblems'][j]['problem']['pid']
@@ -257,11 +267,9 @@ const generateRanklist = async (
                 60
             )})`;
           } else {
-            html += `${
-              ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
-              ]['runningTime']
-            }ms`;
+            html += beautifyTime(ranklist['scoreboard']['result'][i]['details'][
+              res['contestProblems'][j]['problem']['pid']
+            ]['runningTime'])
           }
           html += '</span>';
         }
