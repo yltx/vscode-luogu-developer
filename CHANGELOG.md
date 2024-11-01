@@ -1,5 +1,11 @@
 # Change Log
 
+## 4.10.4
+- Fix:
+  1. 有关自动更新记录的若干 bug
+- Add:
+  1. 支持 Rust, Haskell, OCaml 的 O2 优化
+
 ## 4.10.3
 - Fix:
   1. 复制代码按钮炸了
