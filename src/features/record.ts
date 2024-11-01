@@ -4,6 +4,7 @@ import { getDistFilePath } from '@/utils/html';
 import { createWebsocket, WebsocketSchema } from '@/utils/websocket';
 import { processAxiosError } from '@/utils/workspaceUtils';
 import { RecordData } from 'luogu-api';
+import { MessageTypes } from '@w/views/record/data';
 
 async function record(record: RecordData) {
   const panel = vscode.window.createWebviewPanel(
@@ -37,7 +38,7 @@ async function record(record: RecordData) {
     </body>
     </html>
   `;
-  if (record.record.status === 0 || record.record.status === 2)
+  if (record.record.status === 0 || record.record.status === 1)
     connectWebsocket(record.record.id, panel);
 }
 
@@ -63,7 +64,13 @@ function connectWebsocket(rid: number, panel: vscode.WebviewPanel) {
             time: +ws.data.record.time,
             score: ws.data.record.score && +ws.data.record.score
           }
-        } satisfies import('@w/views/record/data').MessageTypes);
+        } satisfies MessageTypes);
+        if (ws.data.status !== 0 && ws.data.status !== 1) {
+          resolve();
+          pending = false;
+          ws.dispose();
+          return;
+        }
         ws.event.event(e => {
           if (!pending) return;
           if (e.type === 'error') {
@@ -77,7 +84,14 @@ function connectWebsocket(rid: number, panel: vscode.WebviewPanel) {
             panel.webview.postMessage({
               type: 'updateRecord',
               data: e.data.record
-            } satisfies import('@w/views/record/data').MessageTypes);
+            } satisfies MessageTypes);
+            if (e.data.record.status === 2)
+              fetchResult(rid).then(x =>
+                panel.webview.postMessage({
+                  type: 'updateRecord',
+                  data: x.record
+                } satisfies MessageTypes)
+              );
             if (e.data.record.status !== 0 && e.data.record.status !== 1) {
               pending = false;
               resolve();
@@ -94,7 +108,7 @@ function connectWebsocket(rid: number, panel: vscode.WebviewPanel) {
       panel.webview.postMessage({
         type: 'updateRecord',
         data: x.record
-      } satisfies import('@w/views/record/data').MessageTypes)
+      } satisfies MessageTypes)
     )
     .catch(e => {
       console.error('获取记录时 WebSocket 连接失败', e);
