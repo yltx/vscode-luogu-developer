@@ -7,7 +7,12 @@ const luoguPath = path.resolve(os.homedir(), '.luogu');
 
 fs.rm(path.resolve(luoguPath, 'luogu.json'), () => {});
 
+const createDirIfNotExist = function (dir: string) {
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+}
+
 export const saveUserIconCache = function (uid: number, image: Buffer) {
+  createDirIfNotExist(luoguPath);
   fs.writeFileSync(path.join(luoguPath, `${uid}.jpg`), Uint8Array.from(image));
   fs.writeFileSync(
     path.join(luoguPath, `${uid}.savetime.txt`),
