@@ -1,9 +1,8 @@
+const { default: React } = await import('react');
 const { difficultyColor, difficultyName, tagsData } = await import(
   '@/utils/shared'
 );
-import { UserInfo } from '@w/webviewMessage';
-
-const { default: React } = await import('react');
+import { UserInfo } from '@/model/user';
 
 export function Tag({
   color,
@@ -29,7 +28,6 @@ export function CCFsvg({ level }: { level: number }) {
       height="16"
       viewBox="0 0 16 16"
       fill={level <= 5 ? '#52c41a' : level <= 7 ? '#3498db' : '#ffc116'}
-      style={{ marginBottom: '-3px' }}
       className="ccfsvg"
     >
       <path
@@ -54,22 +52,16 @@ export function UserName({ user }: { user: UserInfo }) {
       <span className="username-name" style={{ color: user.color }}>
         {user.name}
       </span>
-      {user.ccfLevel ? <CCFsvg level={user.ccfLevel} /> : <></>}
-      {user.badge ? <Tag color={user.color}>{user.badge}</Tag> : <></>}
+      <CCFsvg level={user.ccfLevel} />
+      {user.badge && <Tag color={user.color}>{user.badge}</Tag>}
     </a>
   );
 }
 
-export function UserIcon({
-  image_base64: image,
-  uid
-}: {
-  image_base64: string;
-  uid?: number;
-}) {
+export function UserIcon({ url: image, uid }: { url?: string; uid?: number }) {
   return (
     <img
-      src={`data:image/jpeg;base64,${image}`}
+      src={image}
       alt={`user icon ${uid !== undefined ? uid : ''}`}
       className="usericon"
     />

@@ -75,6 +75,7 @@ export namespace API {
     WITHDRAW_PROMOTION = (lid: string) =>
       `/api/article/withdrawPromotion/${lid}`,
     CREATE_ARTICLE = '/api/article/new';
+  export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
 }
 
 declare module 'axios' {
@@ -319,6 +320,10 @@ export const searchContest = async (cid: number) =>
       }
     });
 
+export const getSolution = async (pid: string, page: number) =>
+  axios
+    .get<LentilleDataResponse<SolutionsData>>(API.SEARCH_SOLUTION(pid, page))
+    .then(res => res.data.data);
 export const searchSolution = async (pid: string) =>
   axios
     .get<LentilleDataResponse<SolutionsData>>(API.SEARCH_SOLUTION(pid, 1))
@@ -608,6 +613,14 @@ export const postVote = async (id: number, type: number) =>
     .catch(err => {
       throw err;
     });
+
+export const voteArticle = async (lid: string, type: -1 | 0 | 1) =>
+  axios
+    .post<{
+      voted: -1 | 0 | 1;
+      upvotes: number;
+    }>(API.VOTE_ARTICLE(lid), {}, { params: { vote: type } })
+    .then(x => (console.debug(x), x.data));
 
 export const parseProblemID = (name: string) => {
   const regexs = [

@@ -1,4 +1,4 @@
-import { BenbenData } from '@w/webviewMessage';
+import type BenbenData from '@/model/benben';
 
 const { default: React, useState, useRef, useEffect } = await import('react');
 const { VSCodeButton, VSCodeProgressRing, VSCodeTextArea } = await import(
@@ -85,7 +85,10 @@ function BenbenBlock({
   const benbenTextElementRef = useRef<HTMLDivElement>(null);
   return (
     <div className="benben-comment-primary">
-      <UserIcon image_base64={data.user.icon} uid={data.user.uid} />
+      <UserIcon
+        url={'data:image/jpeg;base64,' + data.user.icon}
+        uid={data.user.uid}
+      />
       <div className="benben-comment-main">
         <header className="benben-comment-header">
           <UserName user={data.user} />

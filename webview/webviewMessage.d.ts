@@ -28,24 +28,9 @@ type MessageTypesBase<T> = T extends []
       : never
     : never;
 
-export interface UserInfo {
-  uid: number;
-  name: string;
-  ccfLevel: number;
-  color: string;
-  badge?: string;
-  isMe?: boolean;
-}
-export type UserInfoWithIcon = UserInfo & { icon: string };
-export interface BenbenData {
-  user: UserInfoWithIcon;
-  time: number;
-  comment: string;
-  id: number;
-}
 type BenbenUpdateMessageType = WebviewMessage<
   WebviewRequestMessage<'BenbenUpdate', { page: number }>,
-  WebviewResponseMessage<BenbenData[]>
+  WebviewResponseMessage<import('@/model/benben').default[]>
 >;
 type BenbenSendMessageType = WebviewMessage<
   WebviewRequestMessage<'BenbenSend', { comment: string }>,
@@ -94,9 +79,17 @@ type JumpToCphMessageType = WebviewMessage<
   WebviewRequestMessage<'jumpToCph', void>,
   WebviewResponseMessage<void>
 >;
-type searchSolution = WebviewMessage<
+type SearchSolutionFromViewProblemMessageType = WebviewMessage<
   WebviewRequestMessage<'searchSolution', void>,
   WebviewResponseMessage<void>
+>;
+type GetSolutionDetailsMessageType = WebviewMessage<
+  WebviewRequestMessage<'getSolutionDetails', { index: number }>,
+  WebviewResponseMessage<import('@/model/article').default>
+>;
+type VoteArticleMessageType = WebviewMessage<
+  WebviewRequestMessage<'voteArticle', { lid: string; type: 1 | 0 | -1 }>,
+  WebviewResponseMessage<{ upvotes: number; voted: 1 | 0 | -1 }>
 >;
 
 type MessageTypes = MessageTypesBase<
@@ -114,7 +107,9 @@ type MessageTypes = MessageTypesBase<
     clearLoginCookieMessageType,
     checkCphMessageType,
     JumpToCphMessageType,
-    searchSolution
+    SearchSolutionFromViewProblemMessageType,
+    GetSolutionDetailsMessageType,
+    VoteArticleMessageType
   ]
 >;
 export default MessageTypes;
