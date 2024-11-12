@@ -5,7 +5,7 @@ import About from './about';
 import userInfo from './userinfo';
 import Fate from './fate';
 import BenBen from './benben';
-import solution from './solution';
+// import solution from './solution';
 import contest from './contest';
 import random from './random';
 import paintboard from './paintboard';
@@ -16,7 +16,7 @@ const commands = [
   userInfo,
   Fate,
   BenBen,
-  solution,
+  // solution,
   contest,
   random,
   paintboard,

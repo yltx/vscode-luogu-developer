@@ -10,7 +10,7 @@ import {
 } from '@/utils/api';
 import { getDistFilePath } from '@/utils/html';
 import * as vscode from 'vscode';
-import { BenbenData } from '@w/webviewMessage';
+import type BenbenData from '@/model/benben';
 import { getUsernameColor } from '@/utils/workspaceUtils';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { Activity, UserSummary } from 'luogu-api';
