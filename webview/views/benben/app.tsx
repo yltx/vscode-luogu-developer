@@ -85,10 +85,7 @@ function BenbenBlock({
   const benbenTextElementRef = useRef<HTMLDivElement>(null);
   return (
     <div className="benben-comment-primary">
-      <UserIcon
-        url={'data:image/jpeg;base64,' + data.user.icon}
-        uid={data.user.uid}
-      />
+      <UserIcon url={data.user.icon} uid={data.user.uid} />
       <div className="benben-comment-main">
         <header className="benben-comment-header">
           <UserName user={data.user} />

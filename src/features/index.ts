@@ -7,6 +7,7 @@ import login from './login';
 import submit from './submit';
 import record from './record';
 import solution from './solution';
+import benben from './benben';
 
 export default function registerFeatures(context: vscode.ExtensionContext) {
   for (const registerFeature of [
@@ -16,7 +17,8 @@ export default function registerFeatures(context: vscode.ExtensionContext) {
     viewProblem,
     submit,
     record,
-    solution
+    solution,
+    benben
   ])
     registerFeature(context);
 }

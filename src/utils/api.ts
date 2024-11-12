@@ -1,6 +1,5 @@
 import _, { isAxiosError } from 'axios';
 import { UserStatus } from '@/utils/shared';
-import { loadUserIconCache, saveUserIconCache } from '@/utils/files';
 import * as vscode from 'vscode';
 import {
   Activity,
@@ -646,27 +645,6 @@ export const parseProblemID = (name: string) => {
     }
   }
   return '';
-};
-
-const delay = (t: number) => new Promise(resolve => setTimeout(resolve, t));
-export const loadUserIcon = async (uid: number) => {
-  let image = loadUserIconCache(uid);
-  if (image) return image;
-  else {
-    image = await userIcon(uid);
-    let cnt = 0;
-    while (!image && cnt <= 3) {
-      await delay(200);
-      image = await userIcon(uid);
-      cnt++;
-    }
-    if (image === null) {
-      throw new Error('获取用户头像失败');
-    }
-    saveUserIconCache(uid, image);
-    console.log(`Get usericon; uid: ${uid}`);
-    return image;
-  }
 };
 
 export const getRanklist = async (cid: number, page: number) => {

@@ -1,8 +1,6 @@
-import SuperCommand from '../SuperCommand';
 import {
   searchUser,
   fetchFollowedBenben,
-  loadUserIcon,
   fetchUserBenben,
   fetchAllBenben,
   postBenben,
@@ -42,12 +40,11 @@ async function getFollowedBenben(
       return d;
     })
   );
-  const images = await Promise.all(res.data.map(x => loadUserIcon(x.uid)));
   return Array.from<unknown, BenbenData>(
     { length: res.data.length },
     (_, i) => ({
       user: {
-        icon: images[i].toString('base64'),
+        icon: users[i].avatar,
         uid: users[i].uid,
         name: users[i].name,
         ccfLevel: users[i].ccfLevel,
@@ -81,7 +78,7 @@ async function getUserBenben(page = 1, user?: number) {
           name: d.user.name,
           color: getUsernameColor(d.user.color),
           ccfLevel: d.user.ccfLevel,
-          icon: (await loadUserIcon(d.user.uid)).toString('base64'),
+          icon: d.user.avatar,
           isMe: d.user.uid === me
         },
         id: d.id
@@ -105,7 +102,7 @@ async function getAllBenben(page = 1) {
           name: d.user.name,
           color: getUsernameColor(d.user.color),
           ccfLevel: d.user.ccfLevel,
-          icon: (await loadUserIcon(d.user.uid)).toString('base64'),
+          icon: d.user.avatar,
           isMe: d.user.uid === me
         },
         id: d.id
@@ -165,35 +162,37 @@ async function getMode() {
   });
 }
 
-export default new SuperCommand({
-  onCommand: 'benben',
-  handle: async () => {
-    await globalThis.luogu.waitinit;
-    const mode = await getMode();
-    if (mode === undefined) return;
-    const user =
-      typeof mode === 'string' ? (await searchUser(mode)).users[0] : undefined;
-    if (user === null) {
-      vscode.window.showErrorMessage('用户不存在');
-      return;
-    }
-    const panel = vscode.window.createWebviewPanel(
-      `benben`,
-      `犇犇 - ${mode === 0 ? '全网动态' : mode === 1 ? '我关注的' : mode === 2 ? '我发布的' : `${user!.name} 的动态`}`,
-      vscode.ViewColumn.Two,
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [
-          vscode.Uri.file(globalThis.resourcesPath),
-          vscode.Uri.file(globalThis.distPath)
-        ]
+export default function registerBenben(context: vscode.ExtensionContext) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand('luogu.benben', async () => {
+      await globalThis.luogu.waitinit;
+      const mode = await getMode();
+      if (mode === undefined) return;
+      const user =
+        typeof mode === 'string'
+          ? (await searchUser(mode)).users[0]
+          : undefined;
+      if (user === null) {
+        vscode.window.showErrorMessage('用户不存在');
+        return;
       }
-    );
-    const userinfoCache =
-      mode === '我关注的' ? new Map<number, UserSummary>() : undefined;
-    const initHTML = () => {
-      panel.webview.html = `
+      const panel = vscode.window.createWebviewPanel(
+        `benben`,
+        `犇犇 - ${mode === 0 ? '全网动态' : mode === 1 ? '我关注的' : mode === 2 ? '我发布的' : `${user!.name} 的动态`}`,
+        vscode.ViewColumn.Two,
+        {
+          enableScripts: true,
+          retainContextWhenHidden: true,
+          localResourceRoots: [
+            vscode.Uri.file(globalThis.resourcesPath),
+            vscode.Uri.file(globalThis.distPath)
+          ]
+        }
+      );
+      const userinfoCache =
+        mode === '我关注的' ? new Map<number, UserSummary>() : undefined;
+      const initHTML = () => {
+        panel.webview.html = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -206,40 +205,41 @@ export default new SuperCommand({
         </body>
         </html>
     `;
-    };
-    useWebviewResponseHandle(panel.webview, {
-      BenbenUpdate: data => {
-        if (mode === 1) return getFollowedBenben(data.page, userinfoCache);
-        else if (mode === 2) return getUserBenben(data.page);
-        else if (mode === 0) return getAllBenben(data.page);
-        else return getUserBenben(data.page, user!.uid);
-      },
-      BenbenSend: async data => {
-        try {
-          await postBenben(data.comment);
-        } catch (err) {
-          vscode.window.showErrorMessage(
-            `发送犇犇失败：${(err as unknown as { message: string }).message}`
-          );
-          throw new Error(isError(err) ? err.message : 'Unknown error', {
-            cause: err
-          });
+      };
+      useWebviewResponseHandle(panel.webview, {
+        BenbenUpdate: data => {
+          if (mode === 1) return getFollowedBenben(data.page, userinfoCache);
+          else if (mode === 2) return getUserBenben(data.page);
+          else if (mode === 0) return getAllBenben(data.page);
+          else return getUserBenben(data.page, user!.uid);
+        },
+        BenbenSend: async data => {
+          try {
+            await postBenben(data.comment);
+          } catch (err) {
+            vscode.window.showErrorMessage(
+              `发送犇犇失败：${(err as unknown as { message: string }).message}`
+            );
+            throw new Error(isError(err) ? err.message : 'Unknown error', {
+              cause: err
+            });
+          }
+        },
+        BenbenDelete: async data => {
+          try {
+            const res = await deleteBenben(data.id);
+            if (res.status !== 200) throw res;
+          } catch (err) {
+            vscode.window.showErrorMessage(
+              `发送犇犇失败：${(err as unknown as { message: string }).message}`
+            );
+            throw new Error(isError(err) ? err.message : 'Unknown error', {
+              cause: err
+            });
+          }
         }
-      },
-      BenbenDelete: async data => {
-        try {
-          const res = await deleteBenben(data.id);
-          if (res.status !== 200) throw res;
-        } catch (err) {
-          vscode.window.showErrorMessage(
-            `发送犇犇失败：${(err as unknown as { message: string }).message}`
-          );
-          throw new Error(isError(err) ? err.message : 'Unknown error', {
-            cause: err
-          });
-        }
-      }
-    });
-    initHTML();
-  }
-});
+      });
+      initHTML();
+    })
+  );
+}
