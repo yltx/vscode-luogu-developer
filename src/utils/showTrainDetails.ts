@@ -99,7 +99,7 @@ export class TrainDetals {
       index['problem']['title']
     )}</a></td>
     <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
-    <td nowrap>${getDifficultyStatus(index['problem']['difficulty'])}</td>
+    <td nowrap>${getDifficultyStatus(index['problem']['difficulty']!)}</td>
     <td nowrap>
       <progress value="${index['problem']['totalAccepted']}" max="${
         index['problem']['totalSubmit']

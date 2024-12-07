@@ -161,12 +161,12 @@ const generateRanklist = async (
     for (let j = 0; j < contest['problemCount']; j++) {
       if (
         ranklist['scoreboard']['result'][i]['details'][
-          res['contestProblems'][j]['problem']['pid']
+          res['contestProblems']![j]['problem']['pid']
         ] != null
       ) {
         if (
           ranklist['scoreboard']['result'][i]['details'][
-            res['contestProblems'][j]['problem']['pid']
+            res['contestProblems']![j]['problem']['pid']
           ]['score'] > 0
         ) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
@@ -176,7 +176,7 @@ const generateRanklist = async (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
               (ranklist['firstBloodUID']
                 ? ranklist['firstBloodUID'][
-                    res['contestProblems'][j]['problem']['pid']
+                    res['contestProblems']![j]['problem']['pid']
                   ]
                 : undefined)
             ) {
@@ -186,14 +186,14 @@ const generateRanklist = async (
           } else {
             html += `<td align="center" style="color: ${getScoreColor(
               ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['score']
             )}; font-weight: bold;`;
             if (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
               (ranklist['firstBloodUID']
                 ? ranklist['firstBloodUID'][
-                    res['contestProblems'][j]['problem']['pid']
+                    res['contestProblems']![j]['problem']['pid']
                   ]
                 : undefined)
             ) {
@@ -203,21 +203,21 @@ const generateRanklist = async (
           }
           html +=
             ranklist['scoreboard']['result'][i]['details'][
-              res['contestProblems'][j]['problem']['pid']
+              res['contestProblems']![j]['problem']['pid']
             ]['score'];
         } else if (
           ranklist['scoreboard']['result'][i]['details'][
-            res['contestProblems'][j]['problem']['pid']
+            res['contestProblems']![j]['problem']['pid']
           ]['score'] < 0
         ) {
           html += `<td align="center" style="font-weight: bold; color: rgb(231, 76, 60);" width="35px" nowrap>${
             ranklist['scoreboard']['result'][i]['details'][
-              res['contestProblems'][j]['problem']['pid']
+              res['contestProblems']![j]['problem']['pid']
             ]['score']
           }`;
         } else if (
           ranklist['scoreboard']['result'][i]['details'][
-            res['contestProblems'][j]['problem']['pid']
+            res['contestProblems']![j]['problem']['pid']
           ]['score'] === 0
         ) {
           if (contest['ruleType'] === 2 || contest['ruleType'] === 5) {
@@ -226,7 +226,7 @@ const generateRanklist = async (
               ranklist['scoreboard']['result'][i]['user']['uid'] ===
               (ranklist['firstBloodUID']
                 ? ranklist['firstBloodUID'][
-                    res['contestProblems'][j]['problem']['pid']
+                    res['contestProblems']![j]['problem']['pid']
                   ]
                 : undefined)
             ) {
@@ -237,18 +237,18 @@ const generateRanklist = async (
           } else {
             html += `<td align="center" style="color: ${getScoreColor(
               ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['score']
             )};font-weight: bold" width="35px" nowrap>${
               ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['score']
             }`;
           }
         }
         if (
           ranklist['scoreboard']['result'][i]['details'][
-            res['contestProblems'][j]['problem']['pid']
+            res['contestProblems']![j]['problem']['pid']
           ]['runningTime'] != null
         ) {
           html +=
@@ -257,13 +257,13 @@ const generateRanklist = async (
             //ICPC or Codeforces
             html += `(${Math.floor(
               (ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['runningTime'] /
                 3600) %
                 24
             )}:${Math.floor(
               (ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['runningTime'] %
                 3600) /
                 60
@@ -271,7 +271,7 @@ const generateRanklist = async (
           } else {
             html += beautifyTime(
               ranklist['scoreboard']['result'][i]['details'][
-                res['contestProblems'][j]['problem']['pid']
+                res['contestProblems']![j]['problem']['pid']
               ]['runningTime']
             );
           }
