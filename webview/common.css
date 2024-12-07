@@ -161,3 +161,7 @@ a {
     transform: rotate(360deg);
   }
 }
+
+article img {
+  background-color: white;
+}
