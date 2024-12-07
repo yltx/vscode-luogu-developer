@@ -89,7 +89,7 @@ export class Problem {
     this.translation = fields.translation;
     this.timeLimit = fields.limits.time;
     this.memoryLimit = fields.limits.memory;
-    this.difficulty = fields.difficulty;
+    this.difficulty = fields.difficulty || 0;
   }
 
   toHTML(): string {

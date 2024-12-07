@@ -22,7 +22,7 @@ import {
   SolutionsData,
   UserSummary
 } from 'luogu-api';
-import { cookieString, praseCookie } from './workspaceUtils';
+import { askForCaptcha, cookieString, praseCookie } from './workspaceUtils';
 import { needLogin } from './uiUtils';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
@@ -665,7 +665,8 @@ export async function submitCode(
   { pid, cid }: { pid: string; cid?: number },
   code: string,
   language: number = 0,
-  enableO2: boolean = false
+  enableO2: boolean = false,
+  captcha?: string
 ) {
   const url =
     `/fe/api/problem/submit/${pid}` + (cid ? `?contestId=${cid}` : '');
@@ -673,10 +674,17 @@ export async function submitCode(
     .post<{ rid: number }>(url, {
       code: code,
       lang: language,
-      enableO2: enableO2,
-      verify: ''
+      enableO2: +enableO2,
+      captcha
     })
-    .then(res => res.data.rid);
+    .then(res => res.data.rid)
+    .catch(async e => {
+      if (!isAxiosError(e) || e.response?.data?.errorMessage !== '验证码错误')
+        throw e;
+      const input = await askForCaptcha();
+      if (input === undefined) throw new Error('已取消');
+      return submitCode({ pid, cid }, code, language, enableO2, input);
+    });
 }
 export async function checkCookie(c: Cookie) {
   const res = await axios.get('/', {
