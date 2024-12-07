@@ -1,3 +1,4 @@
+import * as vscode from 'vscode';
 import axios from 'axios';
 import { ProblemData } from 'luogu-api';
 import { processAxiosError } from '@/utils/workspaceUtils';
@@ -26,9 +27,21 @@ export async function checkCPH() {
     .catch(() => false);
 }
 export async function sendCphMessage(data: ProblemData) {
+  const config = vscode.workspace.getConfiguration('luogu').get('cphStyle') as [
+    'ProblemID',
+    'ProblemName',
+    'ProblemIDwithProblemName'
+  ][number];
   await axios
     .post(`http://localhost:${cphPort}`, {
-      name: 'Luogu_' + data.problem.pid,
+      name:
+        'Luogu' +
+        (config === 'ProblemID' || config === 'ProblemIDwithProblemName'
+          ? ' - ' + data.problem.pid
+          : '') +
+        (config === 'ProblemName' || config === 'ProblemIDwithProblemName'
+          ? ' - ' + data.problem.title
+          : ''),
       url:
         'https://www.luogu.com.cn/problem/' +
         data.problem.pid +

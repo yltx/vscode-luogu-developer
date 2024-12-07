@@ -508,6 +508,16 @@
           "type": "integer",
           "default": 256,
           "description": "最近浏览记录的最大长度，过长的将自动删除。不应过大，否则会影响性能。"
+        },
+        "luogu.cphStyle": {
+          "type": "string",
+          "enum": [
+            "ProblemID",
+            "ProblemName",
+            "ProblemIDwithProblemName"
+          ],
+          "default": "ProblemID",
+          "description": "传送至 CPH 时，CPH 创建文件时的文件名形式。"
         }
       }
     },
