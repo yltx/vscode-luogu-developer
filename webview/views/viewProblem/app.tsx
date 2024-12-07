@@ -88,7 +88,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
           <div>
             <div>题目难度</div>
             <div>
-              <ProblemDifficultyTag difficulty={data.problem.difficulty} />
+              <ProblemDifficultyTag difficulty={data.problem.difficulty || 0} />
             </div>
           </div>
           <div className={data.problem.tags.length ? 'haveTag' : undefined}>

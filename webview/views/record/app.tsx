@@ -38,6 +38,7 @@ export default function App() {
           >
             <ProblemNameWithDifficulty
               {...record.problem}
+              difficulty={record.problem?.difficulty || 0}
               contestId={record.contest?.id}
             />
           </a>
@@ -113,7 +114,9 @@ export default function App() {
           <hr />
           <div className="testCaseData">
             <h2>测试点信息</h2>
-            <TestCaseWarp>{record.detail.judgeResult.subtasks}</TestCaseWarp>
+            {record.detail.judgeResult && (
+              <TestCaseWarp>{record.detail.judgeResult.subtasks}</TestCaseWarp>
+            )}
           </div>
         </>
       )}

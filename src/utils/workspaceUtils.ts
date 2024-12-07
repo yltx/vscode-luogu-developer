@@ -12,7 +12,7 @@ import {
   defaultLanguageVersion
 } from '@/utils/shared';
 import { isAxiosError } from 'axios';
-import { parseProblemID } from './api';
+import { getCaptcha, parseProblemID } from './api';
 import path from 'path';
 
 export function getSelectedDifficulty(selected: string): number {
@@ -213,4 +213,24 @@ export async function askForLanguage(fileExt: string) {
       return nowLangData[res] as { id: number; O2?: true };
     }
   }
+}
+
+export async function askForCaptcha() {
+  let input: string | undefined;
+  const panel = vscode.window.createWebviewPanel(
+    'captcha',
+    '验证码',
+    vscode.ViewColumn.Active
+  );
+  do {
+    const img = await getCaptcha();
+    panel.webview.html = `<img src="data:image/png;base64,${img.toString('base64')}">`;
+    input = await vscode.window.showInputBox({
+      prompt: '请输入验证码',
+      ignoreFocusOut: true,
+      placeHolder: '留空以刷新验证码'
+    });
+  } while (input === '');
+  panel.dispose();
+  return input;
 }

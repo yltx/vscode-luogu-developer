@@ -57,6 +57,15 @@ export function processTestcaseData({
       } satisfies SubtaskStatus as SubtaskStatus
     ])
   );
+  if (!recordStatus.judgeResult)
+    recordStatus.judgeResult = {
+      subtasks: [],
+      finishedCaseCount: 0,
+      score: 0,
+      status: 0,
+      time: 0,
+      memory: 0
+    };
   Object.entries(recordStatus.judgeResult.subtasks).forEach(
     ([subtask, subtaskStatus]) =>
       Object.entries(subtaskStatus.testCases).forEach(
@@ -95,7 +104,7 @@ type UpdateRecordData = Omit<
   ClientboundUpdateRecordStatusMessageData['record'],
   'score' | 'memory' | 'time'
 > & {
-  score?: number;
+  score?: number | null;
   memory: number | null;
   time: number | null;
 };
