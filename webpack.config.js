@@ -126,37 +126,6 @@ function getExtensionConfig(mode) {
 
 /**
  * @param { 'production' | 'development' | 'none' } mode
- * @returns {WebpackConfig}
- */
-function getOldWebviewConfig(mode) {
-  return {
-    ...getBaseConfig(mode),
-    target: ['web', 'es2020'],
-    entry: './src/webview/main.ts',
-    output: {
-      filename: 'webview.js',
-      path: resolve('dist')
-    },
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          use: [
-            {
-              loader: 'ts-loader',
-              options: {
-                configFile: resolve('tsconfig.json')
-              }
-            }
-          ]
-        }
-      ]
-    }
-  };
-}
-
-/**
- * @param { 'production' | 'development' | 'none' } mode
  * @param {WebpackConfig['entry']} entry
  * @returns {WebpackConfig}
  */
@@ -213,7 +182,6 @@ module.exports =
     const mode = argv.mode || 'none';
     return Promise.all([
       getExtensionConfig(mode),
-      getOldWebviewConfig(mode),
       GetWebviewConfig(
         mode,
         Object.fromEntries(
