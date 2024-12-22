@@ -86,7 +86,7 @@ export default class historyTreeviewProvider
     throw new TypeError('Unknown history element type', { cause: element });
   }
   async getChildren() {
-    return (await this.getStorage()).reverse();
+    return [...(await this.getStorage())].reverse();
   }
   private _onDidChangeTreeData = new vscode.EventEmitter<void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;

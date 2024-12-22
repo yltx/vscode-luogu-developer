@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { result, schemas, transformers } from './schemas';
 
 /**
- * @warning **Haven't been test!** Please test it before use it.
+ * @warning **Haven't been tested!** Please test it before use it.
  */
 export function getStorage<K extends keyof schemas>(
   context: vscode.ExtensionContext,
@@ -24,7 +24,7 @@ export function getStorage<K extends keyof schemas>(
   return dat.data;
 }
 /**
- * @warning **Haven't been test!** Please test it before use it.
+ * @warning **Haven't been tested!** Please test it before use it.
  */
 export function setStorage<K extends keyof schemas>(
   context: vscode.ExtensionContext,
