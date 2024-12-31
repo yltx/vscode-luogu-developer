@@ -184,7 +184,7 @@ export const difficultyColor = [
   '#0E1D69'
 ];
 
-// https://www.luogu.com.cn/_lfe/tags version 1725803422
+// https://www.luogu.com.cn/_lfe/tags version 1735629686
 export const tagsData = Object.fromEntries(
   [
     {
@@ -207,7 +207,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 3,
-      name: '动态规划,dp',
+      name: '动态规划 DP',
       type: 2,
       parent: null
     },
@@ -449,7 +449,7 @@ export const tagsData = Object.fromEntries(
       id: 43,
       name: '倍增',
       type: 2,
-      parent: 308
+      parent: 110
     },
     {
       id: 44,
@@ -501,7 +501,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 52,
-      name: 'WC/CTSC/集训队',
+      name: '集训队互测',
       type: 3,
       parent: 426
     },
@@ -579,7 +579,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 65,
-      name: '珂朵莉树,颜色段均摊,ODT',
+      name: '颜色段均摊（珂朵莉树 ODT）',
       type: 2,
       parent: 44
     },
@@ -681,13 +681,13 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 82,
-      name: 'NOIp 普及组',
+      name: 'NOIP 普及组',
       type: 3,
       parent: 426
     },
     {
       id: 83,
-      name: 'NOIp 提高组',
+      name: 'NOIP 提高组',
       type: 3,
       parent: 426
     },
@@ -783,7 +783,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 101,
-      name: '后缀自动机,SAM',
+      name: '后缀自动机 SAM',
       type: 2,
       parent: 2
     },
@@ -915,13 +915,13 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 126,
-      name: '广度优先搜索,BFS',
+      name: '广度优先搜索 BFS',
       type: 2,
       parent: 4
     },
     {
       id: 127,
-      name: '深度优先搜索,DFS',
+      name: '深度优先搜索 DFS',
       type: 2,
       parent: 4
     },
@@ -951,7 +951,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 132,
-      name: '启发式迭代加深搜索,IDA*',
+      name: '启发式迭代加深搜索 IDA*',
       type: 2,
       parent: 4
     },
@@ -963,19 +963,19 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 134,
-      name: '爬山算法, Local search',
+      name: '爬山算法 Local search',
       type: 2,
       parent: 4
     },
     {
       id: 135,
-      name: '模拟退火, SA',
+      name: '模拟退火',
       type: 2,
       parent: 4
     },
     {
       id: 136,
-      name: '随机调整, Rounding',
+      name: '随机调整',
       type: 2,
       parent: 4
     },
@@ -986,14 +986,8 @@ export const tagsData = Object.fromEntries(
       parent: 4
     },
     {
-      id: 138,
-      name: '动态规划初步',
-      type: 2,
-      parent: 3
-    },
-    {
       id: 139,
-      name: '背包',
+      name: '背包 DP',
       type: 2,
       parent: 3
     },
@@ -1005,7 +999,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 141,
-      name: '数位 dp',
+      name: '数位 DP',
       type: 2,
       parent: 3
     },
@@ -1017,7 +1011,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 144,
-      name: '区间 dp',
+      name: '区间 DP',
       type: 2,
       parent: 3
     },
@@ -1026,12 +1020,6 @@ export const tagsData = Object.fromEntries(
       name: '动态规划优化',
       type: 2,
       parent: null
-    },
-    {
-      id: 147,
-      name: '降维',
-      type: 2,
-      parent: 146
     },
     {
       id: 148,
@@ -1059,13 +1047,13 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 152,
-      name: '树形 dp',
+      name: '树形 DP',
       type: 2,
       parent: 3
     },
     {
       id: 153,
-      name: '凸完全单调性, wqs 二分',
+      name: '凸完全单调性（wqs 二分）',
       type: 2,
       parent: 146
     },
@@ -1136,12 +1124,6 @@ export const tagsData = Object.fromEntries(
       parent: null
     },
     {
-      id: 165,
-      name: 'K 短路',
-      type: 2,
-      parent: 6
-    },
-    {
       id: 166,
       name: '生成树',
       type: 2,
@@ -1209,7 +1191,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 177,
-      name: '欧拉公式（平面图）',
+      name: '平面图欧拉公式',
       type: 2,
       parent: 6
     },
@@ -1304,12 +1286,6 @@ export const tagsData = Object.fromEntries(
       parent: null
     },
     {
-      id: 194,
-      name: '最大流',
-      type: 2,
-      parent: 6
-    },
-    {
       id: 195,
       name: 'Dinic',
       type: 6,
@@ -1355,7 +1331,7 @@ export const tagsData = Object.fromEntries(
       id: 202,
       name: '分数规划',
       type: 2,
-      parent: 308
+      parent: 467
     },
     {
       id: 203,
@@ -1401,7 +1377,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 211,
-      name: '最近公共祖先,LCA',
+      name: '最近公共祖先 LCA',
       type: 2,
       parent: 230
     },
@@ -1419,13 +1395,13 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 214,
-      name: '哈夫曼树',
+      name: '霍夫曼树',
       type: 2,
       parent: 308
     },
     {
       id: 215,
-      name: '左偏树',
+      name: '可并堆',
       type: 2,
       parent: 11
     },
@@ -1492,8 +1468,8 @@ export const tagsData = Object.fromEntries(
     {
       id: 227,
       name: '动态树',
-      type: 2,
-      parent: 11
+      type: 6,
+      parent: null
     },
     {
       id: 228,
@@ -1503,7 +1479,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 229,
-      name: 'Link-Cut Tree,LCT',
+      name: '动态树 LCT',
       type: 2,
       parent: 11
     },
@@ -1516,8 +1492,8 @@ export const tagsData = Object.fromEntries(
     {
       id: 231,
       name: 'RMQ',
-      type: 2,
-      parent: 230
+      type: 6,
+      parent: null
     },
     {
       id: 232,
@@ -1539,7 +1515,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 235,
-      name: '哈希, hash',
+      name: '哈希 hashing',
       type: 2,
       parent: 308
     },
@@ -1568,20 +1544,14 @@ export const tagsData = Object.fromEntries(
       parent: 72
     },
     {
-      id: 240,
-      name: '众数',
-      type: 2,
-      parent: 266
-    },
-    {
       id: 241,
-      name: '最大公约数,gcd',
+      name: '最大公约数 gcd',
       type: 2,
       parent: 72
     },
     {
       id: 242,
-      name: '扩展欧几里德算法,exgcd',
+      name: '扩展欧几里德算法',
       type: 2,
       parent: 72
     },
@@ -1598,12 +1568,6 @@ export const tagsData = Object.fromEntries(
       parent: 72
     },
     {
-      id: 245,
-      name: '集合论',
-      type: 2,
-      parent: 5
-    },
-    {
       id: 246,
       name: '群论',
       type: 2,
@@ -1617,7 +1581,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 248,
-      name: 'Pólya原理',
+      name: 'Pólya 定理',
       type: 2,
       parent: 246
     },
@@ -1629,7 +1593,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 250,
-      name: '中国剩余定理,CRT',
+      name: '中国剩余定理 CRT',
       type: 2,
       parent: 72
     },
@@ -1683,37 +1647,37 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 259,
-      name: '容斥',
+      name: '容斥原理',
       type: 2,
       parent: 252
     },
     {
       id: 260,
-      name: '斐波那契,Fibonacci',
+      name: '斐波那契数列',
       type: 2,
       parent: 252
     },
     {
       id: 261,
-      name: '卡特兰数,Catalan',
+      name: 'Catalan 数',
       type: 2,
       parent: 252
     },
     {
       id: 262,
-      name: '斯特林数,Stirling',
+      name: 'Stirling 数',
       type: 2,
       parent: 252
     },
     {
       id: 263,
-      name: 'A*算法',
+      name: 'A*  算法',
       type: 2,
-      parent: 130
+      parent: 4
     },
     {
       id: 264,
-      name: '生成函数,GF',
+      name: '生成函数',
       type: 2,
       parent: 252
     },
@@ -1721,7 +1685,7 @@ export const tagsData = Object.fromEntries(
       id: 265,
       name: '线性规划',
       type: 2,
-      parent: 5
+      parent: 467
     },
     {
       id: 266,
@@ -1802,12 +1766,6 @@ export const tagsData = Object.fromEntries(
       parent: null
     },
     {
-      id: 279,
-      name: '极限',
-      type: 2,
-      parent: 278
-    },
-    {
       id: 280,
       name: '导数',
       type: 2,
@@ -1827,7 +1785,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 283,
-      name: '立体解析几何',
+      name: '三维计算几何',
       type: 2,
       parent: 8
     },
@@ -1847,7 +1805,7 @@ export const tagsData = Object.fromEntries(
       id: 286,
       name: '向量',
       type: 2,
-      parent: 44
+      parent: 8
     },
     {
       id: 287,
@@ -1869,7 +1827,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 290,
-      name: 'st表',
+      name: 'ST 表',
       type: 2,
       parent: 44
     },
@@ -1892,12 +1850,6 @@ export const tagsData = Object.fromEntries(
       parent: 8
     },
     {
-      id: 294,
-      name: '点积',
-      type: 2,
-      parent: 8
-    },
-    {
       id: 295,
       name: '半平面交',
       type: 2,
@@ -1910,14 +1862,8 @@ export const tagsData = Object.fromEntries(
       parent: null
     },
     {
-      id: 297,
-      name: '凸多边形的交',
-      type: 2,
-      parent: 8
-    },
-    {
       id: 298,
-      name: '离散化扫描',
+      name: '扫描线',
       type: 2,
       parent: 8
     },
@@ -1929,7 +1875,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 300,
-      name: '字典树,Trie',
+      name: '字典树 Trie',
       type: 2,
       parent: 2
     },
@@ -1941,13 +1887,13 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 302,
-      name: 'KMP',
+      name: 'KMP 算法',
       type: 2,
       parent: 2
     },
     {
       id: 303,
-      name: '后缀数组,SA',
+      name: '后缀数组 SA',
       type: 2,
       parent: 2
     },
@@ -1980,12 +1926,6 @@ export const tagsData = Object.fromEntries(
       name: '随机化',
       type: 2,
       parent: 308
-    },
-    {
-      id: 310,
-      name: 'Nim 游戏',
-      type: 2,
-      parent: 13
     },
     {
       id: 311,
@@ -2043,7 +1983,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 323,
-      name: '插头 dp',
+      name: '插头 DP',
       type: 2,
       parent: 3
     },
@@ -2055,7 +1995,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 325,
-      name: '回文自动机,PAM',
+      name: '回文自动机 PAM',
       type: 2,
       parent: 2
     },
@@ -2175,7 +2115,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 345,
-      name: '双指针,two-pointer',
+      name: '双指针 two-pointer',
       type: 2,
       parent: 308
     },
@@ -2196,12 +2136,6 @@ export const tagsData = Object.fromEntries(
       name: 'Ynoi',
       type: 3,
       parent: 427
-    },
-    {
-      id: 349,
-      name: '插值',
-      type: 2,
-      parent: 5
     },
     {
       id: 350,
@@ -2303,13 +2237,13 @@ export const tagsData = Object.fromEntries(
       id: 368,
       name: '笛卡尔树',
       type: 2,
-      parent: 230
+      parent: 308
     },
     {
       id: 369,
       name: '拟阵',
       type: 2,
-      parent: 5
+      parent: 467
     },
     {
       id: 370,
@@ -2361,7 +2295,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 378,
-      name: '吉司机线段树, segment tree beats',
+      name: '吉司机线段树 segment tree beats',
       type: 2,
       parent: 11
     },
@@ -2373,7 +2307,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 380,
-      name: '折半搜索, meet in the middle',
+      name: '折半搜索 meet in the middle',
       type: 2,
       parent: 4
     },
@@ -2429,11 +2363,11 @@ export const tagsData = Object.fromEntries(
       id: 390,
       name: 'THUPC',
       type: 3,
-      parent: 431
+      parent: 430
     },
     {
       id: 391,
-      name: 'Berlekamp-Massey 算法,BM',
+      name: 'Berlekamp-Massey(BM) 算法',
       type: 2,
       parent: 69
     },
@@ -2549,7 +2483,7 @@ export const tagsData = Object.fromEntries(
       id: 412,
       name: '拉格朗日乘数法',
       type: 2,
-      parent: 252
+      parent: 5
     },
     {
       id: 413,
@@ -2560,8 +2494,8 @@ export const tagsData = Object.fromEntries(
     {
       id: 414,
       name: '随机算法',
-      type: 2,
-      parent: 308
+      type: 6,
+      parent: null
     },
     {
       id: 415,
@@ -2580,12 +2514,6 @@ export const tagsData = Object.fromEntries(
       name: '拉格朗日插值法',
       type: 2,
       parent: 5
-    },
-    {
-      id: 418,
-      name: '欧拉定理（数论）',
-      type: 2,
-      parent: 72
     },
     {
       id: 419,
@@ -2673,7 +2601,7 @@ export const tagsData = Object.fromEntries(
     },
     {
       id: 435,
-      name: 'DP of DP, DP 套 DP',
+      name: 'DP 套 DP',
       type: 2,
       parent: 146
     },
@@ -2688,6 +2616,246 @@ export const tagsData = Object.fromEntries(
       name: 'NordicOI（北欧）',
       type: 3,
       parent: 428
+    },
+    {
+      id: 438,
+      name: 'THUWC',
+      type: 3,
+      parent: 431
+    },
+    {
+      id: 439,
+      name: 'BalkanOI（巴尔干半岛）',
+      type: 3,
+      parent: 428
+    },
+    {
+      id: 440,
+      name: 'KOI（韩国）',
+      type: 3,
+      parent: 428
+    },
+    {
+      id: 441,
+      name: 'RMI（罗马尼亚）',
+      type: 3,
+      parent: 428
+    },
+    {
+      id: 442,
+      name: 'CSP-X',
+      type: 3,
+      parent: 431
+    },
+    {
+      id: 443,
+      name: '动态 DP',
+      type: 2,
+      parent: 146
+    },
+    {
+      id: 444,
+      name: '线性 DP',
+      type: 2,
+      parent: 3
+    },
+    {
+      id: 445,
+      name: 'SG 函数',
+      type: 2,
+      parent: 13
+    },
+    {
+      id: 446,
+      name: '线段树分治',
+      type: 2,
+      parent: 308
+    },
+    {
+      id: 447,
+      name: '离线处理',
+      type: 2,
+      parent: 308
+    },
+    {
+      id: 448,
+      name: '整除分块',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 449,
+      name: '极角排序',
+      type: 2,
+      parent: 8
+    },
+    {
+      id: 450,
+      name: '弦图',
+      type: 2,
+      parent: 6
+    },
+    {
+      id: 451,
+      name: 'Dirichlet 卷积',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 452,
+      name: '大步小步算法 BSGS',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 453,
+      name: '二次剩余',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 454,
+      name: '行列式',
+      type: 2,
+      parent: 271
+    },
+    {
+      id: 455,
+      name: 'Bézout 定理',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 456,
+      name: '概率生成函数',
+      type: 2,
+      parent: 266
+    },
+    {
+      id: 457,
+      name: '随机游走 Markov Chain',
+      type: 2,
+      parent: 266
+    },
+    {
+      id: 458,
+      name: '鞅的停时定理',
+      type: 2,
+      parent: 266
+    },
+    {
+      id: 459,
+      name: 'WC',
+      type: 3,
+      parent: 426
+    },
+    {
+      id: 460,
+      name: 'CTSC/CTS',
+      type: 3,
+      parent: 426
+    },
+    {
+      id: 461,
+      name: '杜教筛',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 462,
+      name: '欧拉函数',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 463,
+      name: '决策单调性',
+      type: 2,
+      parent: 146
+    },
+    {
+      id: 464,
+      name: '状压 DP',
+      type: 2,
+      parent: 3
+    },
+    {
+      id: 465,
+      name: 'bitset',
+      type: 2,
+      parent: 308
+    },
+    {
+      id: 466,
+      name: '特征值',
+      type: 2,
+      parent: 271
+    },
+    {
+      id: 467,
+      name: '组合优化',
+      type: 2,
+      parent: null
+    },
+    {
+      id: 468,
+      name: '整数规划',
+      type: 2,
+      parent: 467
+    },
+    {
+      id: 469,
+      name: '半正定规划',
+      type: 2,
+      parent: 467
+    },
+    {
+      id: 470,
+      name: '原始对偶',
+      type: 2,
+      parent: 467
+    },
+    {
+      id: 471,
+      name: '最大流最小割定理',
+      type: 2,
+      parent: 467
+    },
+    {
+      id: 472,
+      name: '全局平衡二叉树',
+      type: 2,
+      parent: 230
+    },
+    {
+      id: 473,
+      name: '哈希表',
+      type: 2,
+      parent: 44
+    },
+    {
+      id: 474,
+      name: 'Z 函数',
+      type: 2,
+      parent: 2
+    },
+    {
+      id: 475,
+      name: '筛法',
+      type: 2,
+      parent: 72
+    },
+    {
+      id: 476,
+      name: 'Floyd 算法',
+      type: 2,
+      parent: 6
+    },
+    {
+      id: 477,
+      name: '启发式合并',
+      type: 2,
+      parent: 308
     }
   ].map(x => [
     x.id,
