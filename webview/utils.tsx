@@ -75,7 +75,9 @@ export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
 }
 
 export function ProblemTag({ tag }: { tag: number }) {
-  return <Tag color={tagsData[tag].color}>{tagsData[tag].name}</Tag>;
+  const obj = tagsData[tag];
+  if (obj === undefined) return <Tag color="black">Unknown Tag: id ${tag}</Tag>;
+  return <Tag color={obj.color}>{obj.name}</Tag>;
 }
 
 export async function sleep(ms: number) {
