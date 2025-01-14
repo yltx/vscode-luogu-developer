@@ -22,7 +22,12 @@ import {
   SolutionsData,
   UserSummary
 } from 'luogu-api';
-import { askForCaptcha, cookieString, praseCookie } from './workspaceUtils';
+import {
+  askForCaptcha,
+  cookieString,
+  praseCookie,
+  sleep
+} from './workspaceUtils';
 import { needLogin } from './uiUtils';
 
 export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
@@ -75,6 +80,7 @@ export namespace API {
       `/api/article/withdrawPromotion/${lid}`,
     CREATE_ARTICLE = '/api/article/new';
   export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
+  export const CSRF_TOKEN = `/ranking`;
 }
 
 declare module 'axios' {
@@ -112,8 +118,7 @@ export const axios = (() => {
     defaults.transformRequest = [defaults.transformRequest];
   }
   defaults.transformRequest.push((data, headers) => {
-    headers['User-Agent'] =
-      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36';
+    headers['User-Agent'] = 'vscode-luogu@' + globalThis.luogu.version;
     return data;
   });
 
@@ -232,7 +237,7 @@ export const axios = (() => {
 
 export default axios;
 
-export const genClientID = async function () {
+export const genClientID = async function (): Promise<string> {
   const cookies = (
     await axios.get(API.baseURL, {
       myInterceptors_notCheckCookie: true,
@@ -245,7 +250,10 @@ export const genClientID = async function () {
   return s;
 };
 
-export const csrfToken = async (cookie?: Cookie, path: string = API.baseURL) =>
+export const csrfToken = async (
+  cookie?: Cookie,
+  path: string = API.CSRF_TOKEN
+) =>
   axios
     .get(path, {
       myInterceptors_cookie: cookie
@@ -767,15 +775,29 @@ export const listMyArticles = async (params: {
       .then(x => x.data.article);
 
 let csrfCache: string;
-let csrfTimer: NodeJS.Timeout | undefined = undefined;
-function updateCsrfCache() {
-  if (csrfTimer) clearInterval(csrfTimer);
-  function f() {
-    csrfToken().then(s => (csrfCache = s), f);
-  }
-  f();
-  csrfTimer = setInterval(f, 10 * 60 * 1000);
+function updateCsrfCache(retry = 0) {
+  csrfToken().then(
+    s => (csrfCache = s),
+    async e => {
+      if (retry >= 3) {
+        vscode.window.showErrorMessage('与洛谷服务器通讯不畅。');
+        throw new Error('Failed to fetch CSRF token', { cause: e });
+      }
+      await sleep(200);
+      return updateCsrfCache(retry + 1);
+    }
+  );
 }
+
+globalThis.luogu.waitinit.then(() => {
+  updateCsrfCache();
+  setInterval(() => {
+    if (csrfCache === undefined) updateCsrfCache();
+    const outDate = parseInt(csrfCache.split(':')[0]) * 1000;
+    if (Date.now() + 200 * 1000 >= outDate) updateCsrfCache();
+  }, 60 * 1000);
+});
+
 globalThis.luogu.waitinit
   .then(() => updateCsrfCache())
   .then(() =>

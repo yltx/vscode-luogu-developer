@@ -9,9 +9,7 @@ import registerFeatures from './features';
 
 globalThis.pid = '';
 
-export async function activate(
-  context: vscode.ExtensionContext
-): Promise<void> {
+export function activate(context: vscode.ExtensionContext) {
   globalThis.luogu.version = context.extension.packageJSON.version;
   debug('initializing luogu-vscode.');
   RegisterCommands(context);
