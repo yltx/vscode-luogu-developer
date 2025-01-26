@@ -123,10 +123,11 @@ export default class myArticleFsProvider
     this._onDidChangeFile.dispose();
   }
   getUri(article: Article) {
+    const newArticlename = article.title.replace(/[/\\?%*:|"<>]/g, '-');
     return vscode.Uri.from({
       scheme: this.scheme,
       query: article.lid,
-      path: `/${article.title}.md`
+      path: `/${newArticlename}.md`
     });
   }
   async create(data: EditArticleRequest) {
