@@ -81,6 +81,7 @@ export namespace API {
     CREATE_ARTICLE = '/api/article/new';
   export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
   export const CSRF_TOKEN = `/ranking`;
+  export const CLIENT_ID = `https://www.luogu.com.cn/auth/login`;
 }
 
 declare module 'axios' {
@@ -239,7 +240,7 @@ export default axios;
 
 export const genClientID = async function (): Promise<string> {
   const cookies = (
-    await axios.get(API.baseURL, {
+    await axios.get(API.CLIENT_ID, {
       myInterceptors_notCheckCookie: true,
       myInterceptors_cookie: null
     })
