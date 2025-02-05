@@ -81,7 +81,7 @@ export namespace API {
     CREATE_ARTICLE = '/api/article/new';
   export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
   export const CSRF_TOKEN = `/ranking`;
-  export const CLIENT_ID = `https://www.luogu.com.cn/auth/login`;
+  export const CLIENT_ID = `/user/679581?_contentOnly`;
 }
 
 declare module 'axios' {
@@ -696,7 +696,7 @@ export async function submitCode(
     });
 }
 export async function checkCookie(c: Cookie) {
-  const res = await axios.get('/', {
+  const res = await axios.get(API.CLIENT_ID, {
     myInterceptors_notCheckCookie: true,
     myInterceptors_cookie: c
   });
