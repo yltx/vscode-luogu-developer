@@ -25,7 +25,7 @@ jobs:
       - name: Package
         run: npm run pack
       - name: Upload Package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vscode-luogu.vsix
           path: vscode-luogu.vsix
