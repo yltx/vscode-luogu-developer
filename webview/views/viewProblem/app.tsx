@@ -113,28 +113,28 @@ export default function Problem({ children: data }: { children: ProblemData }) {
         </div>
       </header>
       <div>
-        {data.problem.background && (
+        {data.problem.content.background && (
           <div>
             <h2>题目背景</h2>
-            <Markdown>{data.problem.background}</Markdown>
+            <Markdown>{data.problem.content.background}</Markdown>
           </div>
         )}
-        {data.problem.description && (
+        {data.problem.content.description && (
           <div>
             <h2>题目描述</h2>
-            <Markdown>{data.problem.description}</Markdown>
+            <Markdown>{data.problem.content.description}</Markdown>
           </div>
         )}
-        {data.problem.inputFormat && (
+        {data.problem.content.formatI && (
           <div>
             <h2>输入格式</h2>
-            <Markdown>{data.problem.inputFormat}</Markdown>
+            <Markdown>{data.problem.content.formatI}</Markdown>
           </div>
         )}
-        {data.problem.outputFormat && (
+        {data.problem.content.formatO && (
           <div>
             <h2>输出格式</h2>
-            <Markdown>{data.problem.outputFormat}</Markdown>
+            <Markdown>{data.problem.content.formatO}</Markdown>
           </div>
         )}
         {data.problem.translation && (
@@ -166,10 +166,10 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             </div>
           </div>
         )}
-        {data.problem.hint && (
+        {data.problem.content.hint && (
           <div>
             <h2>说明/提示</h2>
-            <Markdown>{data.problem.hint}</Markdown>
+            <Markdown>{data.problem.content.hint}</Markdown>
           </div>
         )}
       </div>

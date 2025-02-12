@@ -265,46 +265,13 @@ export const csrfToken = async (
       return result[1].trim();
     });
 
-export const searchProblem = async (pid: string) =>
-  axios
-    .get<DataResponse<ProblemData>>(API.SEARCH_PROBLEM(pid))
-    .then(res => res.data)
-    .then(res => {
-      if (res.code !== 200) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        throw new Error((res.currentData as any).errorMessage || '');
-      }
-      return res.currentData.problem;
-    });
-
-export const searchContestProblem = async (pid: string, cid: string) =>
-  axios
-    .get<DataResponse<ProblemData>>(API.SEARCH_CONTESTPROBLEM(pid, cid))
-    .then(res => res.data)
-    .then(res => {
-      if (res.code !== 200) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        throw new Error((res.currentData as any).errorMessage || undefined);
-      }
-      return res.currentData.problem;
-    })
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
-    });
-
 export const getProblemData = async (pid: string, cid?: number) =>
   axios
     .get<
-      DataResponse<ProblemData>
+      LentilleDataResponse<ProblemData>
     >(cid ? API.SEARCH_CONTESTPROBLEM(pid, cid.toString()) : API.SEARCH_PROBLEM(pid))
     .then(x => {
-      return x.data.currentData;
+      return x.data.data;
     });
 
 export const searchContest = async (cid: number) =>
