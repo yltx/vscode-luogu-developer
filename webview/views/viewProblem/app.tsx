@@ -14,6 +14,7 @@ import { ProblemData } from 'luogu-api';
 import CphIcon from './cphIcon';
 import '@w/common.css';
 import './app.css';
+import { VSCodeDropdown, VSCodeOption } from '@vscode/webview-ui-toolkit/react';
 
 function formatTimeLimit(timeLimit: number[]) {
   const mintime = Math.min(...timeLimit),
@@ -34,11 +35,17 @@ function formatMemoryLimit(memoryLimit: number[]) {
 }
 
 export default function Problem({ children: data }: { children: ProblemData }) {
+  const languagesList = Object.keys(data.translations);
   const [cphType, setCphType] = useState(false);
+  const [choosedLanguage, setChoosedLanguage] = useState(
+    'zh-CN' in data.translations ? 'zh-CN' : languagesList[0]
+  );
   useEffect(
     () => void send('checkCph', undefined).then(res => setCphType(res)),
     []
   );
+  const problemContent =
+    data.translations[choosedLanguage] || data.problem.content;
   return (
     <>
       <header>
@@ -56,6 +63,19 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             {data.problem.title}
           </h1>
           <div>
+            {languagesList.length > 1 && (
+              <VSCodeDropdown
+                ariaLabelledby="选择语言"
+                value={choosedLanguage}
+                onChange={e => setChoosedLanguage(e.target.value)}
+              >
+                {languagesList.map(s => (
+                  <VSCodeOption value={s} key={s}>
+                    {s}
+                  </VSCodeOption>
+                ))}
+              </VSCodeDropdown>
+            )}
             {cphType && (
               <VSCodeButton
                 onClick={() => send('jumpToCph', undefined)}
@@ -113,31 +133,31 @@ export default function Problem({ children: data }: { children: ProblemData }) {
         </div>
       </header>
       <div>
-        {data.problem.content.background && (
+        {problemContent.background && (
           <div>
             <h2>题目背景</h2>
-            <Markdown>{data.problem.content.background}</Markdown>
+            <Markdown>{problemContent.background}</Markdown>
           </div>
         )}
-        {data.problem.content.description && (
+        {problemContent.description && (
           <div>
             <h2>题目描述</h2>
-            <Markdown>{data.problem.content.description}</Markdown>
+            <Markdown>{problemContent.description}</Markdown>
           </div>
         )}
-        {data.problem.content.formatI && (
+        {problemContent.formatI && (
           <div>
             <h2>输入格式</h2>
-            <Markdown>{data.problem.content.formatI}</Markdown>
+            <Markdown>{problemContent.formatI}</Markdown>
           </div>
         )}
-        {data.problem.content.formatO && (
+        {problemContent.formatO && (
           <div>
             <h2>输出格式</h2>
-            <Markdown>{data.problem.content.formatO}</Markdown>
+            <Markdown>{problemContent.formatO}</Markdown>
           </div>
         )}
-        {data.problem.translation && (
+        {data.problem.translation && choosedLanguage !== 'zh-CN' && (
           <div>
             <h2>题意翻译</h2>
             <Markdown>{data.problem.translation}</Markdown>
@@ -166,10 +186,10 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             </div>
           </div>
         )}
-        {data.problem.content.hint && (
+        {problemContent.hint && (
           <div>
             <h2>说明/提示</h2>
-            <Markdown>{data.problem.content.hint}</Markdown>
+            <Markdown>{problemContent.hint}</Markdown>
           </div>
         )}
       </div>
