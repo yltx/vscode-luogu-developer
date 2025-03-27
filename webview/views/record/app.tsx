@@ -12,6 +12,17 @@ await import('@w/copyablePreElement');
 import '@w/common.css';
 import './app.css';
 
+const AprilFoolTestcaseBackground = {
+  AC: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/AC.gif`,
+  WA: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/WA.gif`,
+  TLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/TLE.gif`,
+  MLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/MLE.gif`,
+  RE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/RE.gif`,
+  OLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/OLE.gif`,
+  UKE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/UKE.gif`,
+  Judging: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/Judging.gif`
+};
+
 export default function App() {
   const record = useRecordStatus();
   console.log(record);
@@ -160,9 +171,25 @@ function TestCaseWarp({
 }
 
 function TestCase({ children: data }: { children: TestCaseStatus }) {
+  const now = new Date();
+  const isAprilFool =
+    now.getFullYear() === 2025 &&
+    now.getMonth() + 1 === 4 &&
+    now.getDate() === 1;
   return (
     <div>
-      <div style={{ backgroundColor: RecordStatus[data.status].color }}>
+      <div
+        style={
+          !isAprilFool
+            ? { backgroundColor: RecordStatus[data.status].color }
+            : {
+                backgroundImage:
+                  `linear-gradient(hsl(from ${RecordStatus[data.status].color} h s l / 0.5), hsl(from ${RecordStatus[data.status].color} h s l / 0.5)),` +
+                  `url(${AprilFoolTestcaseBackground[RecordStatus[data.status].shortName]})`,
+                backgroundSize: 'cover'
+              }
+        }
+      >
         <div>#{data.id + 1}</div>
         <div>
           {data.status !== 1 ? (

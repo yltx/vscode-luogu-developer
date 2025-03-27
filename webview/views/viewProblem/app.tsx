@@ -157,12 +157,14 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             <Markdown>{problemContent.formatO}</Markdown>
           </div>
         )}
-        {data.problem.translation && choosedLanguage !== 'zh-CN' && (
-          <div>
-            <h2>题意翻译</h2>
-            <Markdown>{data.problem.translation}</Markdown>
-          </div>
-        )}
+        {data.problem.translation &&
+          Object.keys(data.translations).length === 1 &&
+          Object.keys(data.translations)[0] === 'zh-CN' && (
+            <div>
+              <h2>题意翻译</h2>
+              <Markdown>{data.problem.translation}</Markdown>
+            </div>
+          )}
         {data.problem.samples && (
           <div>
             <h2>输入输出样例</h2>
