@@ -22,6 +22,7 @@ const AprilFoolTestcaseBackground = {
   UKE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/UKE.gif`,
   Judging: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/Judging.gif`
 };
+const isRelativeColorSupported = CSS.supports('color', 'hsl(from red h s l)');
 
 export default function App() {
   const record = useRecordStatus();
@@ -180,14 +181,14 @@ function TestCase({ children: data }: { children: TestCaseStatus }) {
     <div>
       <div
         style={
-          !isAprilFool
-            ? { backgroundColor: RecordStatus[data.status].color }
-            : {
+          isAprilFool && isRelativeColorSupported
+            ? {
                 backgroundImage:
                   `linear-gradient(hsl(from ${RecordStatus[data.status].color} h s l / 0.5), hsl(from ${RecordStatus[data.status].color} h s l / 0.5)),` +
                   `url(${AprilFoolTestcaseBackground[RecordStatus[data.status].shortName]})`,
                 backgroundSize: 'cover'
               }
+            : { backgroundColor: RecordStatus[data.status].color }
         }
       >
         <div>#{data.id + 1}</div>
