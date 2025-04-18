@@ -32,25 +32,23 @@ export default function App() {
       />
       <div className="motto">在洛谷，享受 Coding 的欢乐！</div>
       <div style={{ display: !need2fa ? 'block' : 'none' }}>
-        <div className="menu">
-          <a
-            className={
-              'menu-item' + (page == 'password' ? ' menu-item-activate' : '')
-            }
-            href=""
+        <div className="menu" role="tablist" aria-label="选择登录方式">
+          <button
+            className="menu-item"
             onClick={() => setPage('password')}
+            role="tab"
+            aria-selected={page == 'password'}
           >
             密码登录
-          </a>
-          <a
-            className={
-              'menu-item' + (page == 'captcha' ? ' menu-item-activate' : '')
-            }
-            href=""
+          </button>
+          <button
+            className="menu-item"
             onClick={() => setPage('captcha')}
+            role="tab"
+            aria-selected={page == 'captcha'}
           >
             Cookie 登录
-          </a>
+          </button>
         </div>
         <div style={{ display: page === 'password' ? 'block' : 'none' }}>
           <PasswordLogin set2fa={setNeed2fa} />
@@ -80,6 +78,7 @@ function PasswordLogin({ set2fa }: { set2fa: (data: boolean) => void }) {
   useEffect(() => void changeCaptchaImage(), []);
   return (
     <form
+      role="tabpanel"
       onSubmit={async e => {
         e.preventDefault();
         setDisableState(true);
@@ -147,6 +146,7 @@ function CookieLogin() {
   const [disableState, setDisableState] = useState(false);
   return (
     <form
+      role="tabpanel"
       onSubmit={async e => {
         e.preventDefault();
         setDisableState(true);

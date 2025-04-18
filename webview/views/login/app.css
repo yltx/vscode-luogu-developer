@@ -15,6 +15,8 @@
   margin-bottom: 12px;
 }
 .menu-item {
+  background: unset;
+  border: unset;
   display: block;
   width: 100%;
   text-align: center;
@@ -24,10 +26,10 @@
   text-decoration-line: none;
   font-weight: bold;
   color: var(--vscode-editor-foreground);
-}
-.menu-item-activate {
-  padding-bottom: 3px;
-  border-bottom: 4px solid rgb(52, 152, 219);
+  &[aria-selected='true'] {
+    padding-bottom: 3px;
+    border-bottom: 4px solid rgb(52, 152, 219);
+  }
 }
 .luogu-logo {
   display: block;
