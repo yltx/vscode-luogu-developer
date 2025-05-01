@@ -159,7 +159,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
         )}
         {data.problem.translation &&
           Object.keys(data.translations).length === 1 &&
-          Object.keys(data.translations)[0] === 'zh-CN' && (
+          Object.keys(data.translations)[0] !== 'zh-CN' && (
             <div>
               <h2>题意翻译</h2>
               <Markdown>{data.problem.translation}</Markdown>
