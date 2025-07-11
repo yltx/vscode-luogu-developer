@@ -81,11 +81,6 @@
         "category": "Luogu"
       },
       {
-        "command": "luogu.selectLanguage",
-        "title": "设置默认语言(Select default language)",
-        "category": "Luogu"
-      },
-      {
         "command": "luogu.lastRecord",
         "title": "查看最近一次评测(Show last record)",
         "category": "Luogu"
@@ -194,10 +189,6 @@
       {
         "command": "luogu.about",
         "key": "Ctrl+Alt+G A"
-      },
-      {
-        "command": "luogu.selectLanguage",
-        "key": "Ctrl+Alt+G Ctrl+Alt+S"
       },
       {
         "command": "luogu.contest",
