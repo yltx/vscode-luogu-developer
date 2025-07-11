@@ -528,13 +528,6 @@
           "fontPath": "dist/icon.woff",
           "fontCharacter": "\\E000"
         }
-      },
-      "luogu-trumbs-up":{
-        "description": "voteup",
-        "default": {
-          "fontPath": "dist/icon.woff",
-          "fontCharacter": "\\E001"
-        }
       }
     }
   },
