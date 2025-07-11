@@ -41,7 +41,13 @@ const getDifficultyStatus = (difficulty: number) => {
 const getTagsStatus = (tags: number[]) => {
   let html = '';
   tags.forEach(index => {
-    html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${Tags[index].color}">${Tags[index].name}</span>&nbsp;`;
+    const tag = Tags[index];
+    if (tag) {
+      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
+    } else {
+      // 如果标签不存在，使用默认样式
+      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: #000000">未知标签(${index})</span>&nbsp;`;
+    }
   });
   return html;
 };

@@ -8,6 +8,9 @@
 
 一切就绪后，使用 `npm run compile` 来编译，或者直接在vscode内按 `F5` 进行调试运行。
 
+> [!TIP]
+> 构建前需要执行 `git submodule init` 和 `git submodule update` 确保 `luogu-api-docs` 存在
+
 ## 如何发布新版本
 
 代码全部修改完毕，已经准备好发布新版本时，先运行 `npm run pack` 确保插件可以正确打包，之后请在 `CHANGELOG.md` 中简要说明更新内容，并更新 `package.json` 中的版本号。
