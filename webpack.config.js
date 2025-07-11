@@ -39,7 +39,7 @@ const fs = require('fs');
     })
   ).woff;
   if (!fontBinary) throw new Error('fontBinary is null');
-  fs.writeFileSync(resolve(fontPath), fontBinary);
+  fs.writeFileSync(resolve(fontPath), new Uint8Array(fontBinary));
   console.log('Icon fonts built!');
 })();
 

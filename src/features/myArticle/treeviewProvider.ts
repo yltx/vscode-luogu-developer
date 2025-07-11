@@ -58,7 +58,7 @@ export default class MyArticleTreeviewProvider
             ...(element.promoteResult?.rejectReason
               ? ['拒绝原因：' + element.promoteResult.rejectReason]
               : []),
-            `置顶量：${element.top}`
+            `置顶量：${element.top} · $(luogu-trumbs-up) ${element.upvote} $(star-empty) ${element.favorCount} $(comment) ${element.replyCount}`
           ].join('  \n'),
           true
         );
