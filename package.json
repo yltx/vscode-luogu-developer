@@ -140,6 +140,10 @@
         "title": "修改关联的题目"
       },
       {
+        "command": "luogu.myarticle.setTop",
+        "title": "修改置顶量"
+      },
+      {
         "command": "luogu.myarticle.new",
         "title": "创建文章",
         "icon": "$(add)"
@@ -253,42 +257,47 @@
       "view/item/context": [
         {
           "command": "luogu.myarticle.rename",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@3"
         },
         {
           "command": "luogu.myarticle.setShowMode",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@5"
         },
         {
           "command": "luogu.myarticle.setCategory",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@4"
         },
         {
           "command": "luogu.myarticle.delete",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@7"
         },
         {
           "command": "luogu.myarticle.setPromoteStatus",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@6"
         },
         {
           "command": "luogu.myarticle.setSolutionFor",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem.solution/",
+          "group": "navigation@5"
+        },
+        {
+          "command": "luogu.myarticle.setTop",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@5"
         },
         {
           "command": "luogu.myarticle.copyLink",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@8"
         },
         {
           "command": "luogu.myarticle.openInBrowser",
-          "when": "view == luogu.myarticle && viewItem == luogu.article.articleitem",
+          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
           "group": "navigation@9"
         },
         {

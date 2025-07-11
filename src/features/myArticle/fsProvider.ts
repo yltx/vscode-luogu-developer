@@ -101,7 +101,8 @@ export default class myArticleFsProvider
         solutionFor: res.solutionFor?.pid ?? null,
         category: res.category,
         status: res.status,
-        content: new TextDecoder().decode(content)
+        content: new TextDecoder().decode(content),
+        top: res.top
       });
       this._onDidChangeFile.fire([
         { type: vscode.FileChangeType.Changed, uri }

@@ -68,7 +68,8 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           solutionFor: solutionFor,
           category: x,
           status: res.status,
-          content: res.content
+          content: res.content,
+          top: res.top
         }).catch(e => {
           if (isAxiosError(e) && e.response)
             vscode.window.showErrorMessage(e.response.data.errorMessage);
@@ -92,7 +93,8 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           solutionFor: res.solutionFor?.pid ?? null,
           category: res.category,
           status: choice === '显示' ? 2 : 1,
-          content: res.content
+          content: res.content,
+          top: res.top
         }).catch(e => {
           if (isAxiosError(e) && e.response)
             vscode.window.showErrorMessage(e.response.data.errorMessage);
@@ -112,7 +114,8 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           solutionFor: res.solutionFor?.pid ?? null,
           category: res.category,
           status: res.status,
-          content: res.content
+          content: res.content,
+          top: res.top
         }).catch(processAxiosError('重命名文章'));
         view.refresh();
       }
@@ -131,15 +134,11 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         title: '文章标题',
         ignoreFocusOut: true
       });
-      if (!title) {
-        return;
-      }
+      if (!title) return;
       const category = await vscode.window.showQuickPick(ArticleCategory, {
         title: '文章分类'
       });
-      if (!category) {
-        return;
-      }
+      if (!category) return;
       const solutionFor =
         category === ArticleCategory[1]
           ? await vscode.window.showInputBox({
@@ -149,21 +148,31 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
                 '输入题号，允许留空。注意，在你完成文章后还需手动申请推荐。'
             })
           : null;
-      if (solutionFor === undefined) {
-        return;
-      }
+      if (solutionFor === undefined) return;
       const status = await vscode.window.showQuickPick(['公开', '私有'], {
         title: '文章状态'
       });
-      if (!status) {
-        return;
-      }
+      if (!status) return;
+      const top = await vscode.window.showInputBox({
+        title: '置顶量',
+        ignoreFocusOut: true,
+        placeHolder: '0 到 255 之间的整数。越高的值越靠前。',
+        value: '2',
+        validateInput: value => {
+          if (!/^\d+$/.test(value)) return '请输入 0 到 255 之间的整数';
+          const num = parseInt(value);
+          if (num < 0 || num > 255) return '请输入 0 到 255 之间的整数';
+          return null;
+        }
+      });
+      if (top === undefined) return;
       fs.create({
         title,
         category: ArticleCategory.findIndex(x => x === category) + 1,
         content: title,
         solutionFor,
-        status: status === '公开' ? 2 : 1
+        status: status === '公开' ? 2 : 1,
+        top: parseInt(top)
       })
         .then(res =>
           vscode.commands.executeCommand('vscode.open', fs.getUri(res))
@@ -185,8 +194,37 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
           solutionFor: problem || null,
           category: res.category,
           status: res.status,
-          content: res.content
+          content: res.content,
+          top: res.top
         }).catch(processAxiosError('设置关联题目'));
+        view.refresh();
+      }
+    ),
+    vscode.commands.registerCommand(
+      'luogu.myarticle.setTop',
+      async (item: Article) => {
+        const res = (await getArticle(item.lid)).data.article;
+        const top = await vscode.window.showInputBox({
+          title: '置顶量',
+          ignoreFocusOut: true,
+          placeHolder: '0 到 255 之间的整数。越高的值越靠前。',
+          value: res.top.toString(),
+          validateInput: value => {
+            if (!/^\d+$/.test(value)) return '请输入 0 到 255 之间的整数';
+            const num = parseInt(value);
+            if (num < 0 || num > 255) return '请输入 0 到 255 之间的整数';
+            return null;
+          }
+        });
+        if (top === undefined) return;
+        await editArticle(item.lid, {
+          title: res.title,
+          solutionFor: res.solutionFor?.pid ?? null,
+          category: res.category,
+          status: res.status,
+          content: res.content,
+          top: parseInt(top)
+        }).catch(processAxiosError('设置置顶量'));
         view.refresh();
       }
     ),

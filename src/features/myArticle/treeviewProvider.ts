@@ -57,8 +57,10 @@ export default class MyArticleTreeviewProvider
                   : '公开'),
             ...(element.promoteResult?.rejectReason
               ? ['拒绝原因：' + element.promoteResult.rejectReason]
-              : [])
-          ].join('  \n')
+              : []),
+            `置顶量：${element.top}`
+          ].join('  \n'),
+          true
         );
         md.isTrusted = { enabledCommands: ['luogu.searchProblem'] };
         return md;
@@ -68,7 +70,11 @@ export default class MyArticleTreeviewProvider
         title: '编辑文章',
         arguments: [this.fsProvider.getUri(element)]
       },
-      contextValue: 'luogu.article.articleitem'
+      contextValue:
+        'luogu.article.articleitem' +
+        (element.category === 2 // 题解
+          ? '.solution'
+          : '')
     };
   }
   getChildren(element?: Article | undefined): vscode.ProviderResult<Article[]> {
