@@ -12,7 +12,7 @@
 
 代码全部修改完毕，已经准备好发布新版本时，先运行 `npm run pack` 确保插件可以正确打包，之后请在 `CHANGELOG.md` 中简要说明更新内容，并更新 `package.json` 中的版本号。
 
-将更新了版本号的代码上传到GitHub并在QQ群里通知其他开发者经同意后，在GitHub上创建新的Release并将最后一次commit自动生成的vsix文件上传至Release附件。Release发布后，GitHub action将自动将你的贡献发布至VSCode Marketplace.
+将更新了版本号的代码上传到GitHub并在QQ群里通知其他开发者经同意后，在GitHub上创建新的Release，并编写发布说明。Release发布后，GitHub action将自动打包，上传到release附件与VSCode Marketplace中。
 
 ## 编写时需要注意的问题
 
