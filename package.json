@@ -529,7 +529,13 @@
           "fontCharacter": "\\E000"
         }
       }
-    }
+    },
+    "authentication": [
+      {
+        "label": "Luogu",
+        "id": "luogu-auth"
+      }
+    ]
   },
   "scripts": {
     "pack": "vsce package --allow-star-activation -o vscode-luogu.vsix",
