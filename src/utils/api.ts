@@ -802,6 +802,6 @@ export const fetchLuoguTags = async (): Promise<TagsResponse> => {
     .then(res => res.data)
     .catch(err => {
       console.error('获取标签数据失败:', err);
-      throw new Error('获取标签数据失败');
+      throw new Error('获取标签数据失败', { cause: err });
     });
 };
