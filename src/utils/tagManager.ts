@@ -140,6 +140,7 @@ class TagManager {
 
   public clearCache(): void {
     this.tags.clear();
+    this.tagTypes.clear();
     this.lastFetch = 0;
   }
 }
