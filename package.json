@@ -492,12 +492,6 @@
           "scope": "window",
           "description": "Show select difficulty hint when randomize."
         },
-        "luogu.userIconCacheTime": {
-          "type": "integer",
-          "default": 21600000,
-          "scope": "window",
-          "description": "The time of cache user icon, in seconds."
-        },
         "luogu.showRecordPanel": {
           "type": "boolean",
           "default": true,
