@@ -3,7 +3,7 @@ import { SubtaskStatus, TestCaseStatus } from 'luogu-api';
 import useRecordStatus from './data';
 
 const { formatMemory, formatTime } = await import('@/utils/stringUtils');
-const { ProblemNameWithDifficulty, Spinner } = await import('@w/utils');
+const { ProblemNameWithDifficulty, Spinner } = await import('@w/components');
 const { RecordStatus, getScoreColor, LanguageString, vscodeLanguageId } =
   await import('@/utils/shared');
 const { formatDate } = await import('@/utils/stringUtils');

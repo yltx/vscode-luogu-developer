@@ -4,9 +4,9 @@ const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { faChevronDown, faBook } = await import(
   '@fortawesome/free-solid-svg-icons'
 );
-const { ProblemDifficultyTag } = await import('@w/utils');
+const { ProblemDifficultyTag } = await import('@w/components');
 const { default: Markdown } = await import('@w/markdownViewer');
-const { ProblemTag } = await import('@w/utils');
+const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
 import { ProblemData } from 'luogu-api';

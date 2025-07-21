@@ -6,7 +6,7 @@ const { VSCodeButton, VSCodeProgressRing, VSCodeTextArea } = await import(
 );
 const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
-const { sleep, UserIcon, UserName } = await import('@w/utils');
+const { sleep, UserIcon, UserName } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { default: Md } = await import('../../markdownViewer');
 const { formatDate } = await import('@/utils/stringUtils');

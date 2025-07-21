@@ -7,7 +7,7 @@ const { faThumbsDown, faThumbsUp } = await import(
   '@fortawesome/free-solid-svg-icons'
 );
 const { default: send } = await import('@w/webviewRequest');
-const { UserIcon, UserName } = await import('@w/utils');
+const { UserIcon, UserName } = await import('@w/components');
 const { default: Md } = await import('@w/markdownViewer');
 import '@w/common.css';
 import './app.css';
