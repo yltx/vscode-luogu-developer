@@ -6,7 +6,7 @@ const { formatMemory, formatTime } = await import('@/utils/stringUtils');
 const { ProblemNameWithDifficulty, Spinner } = await import('@w/components');
 const { RecordStatus, getScoreColor, LanguageString, vscodeLanguageId } =
   await import('@/utils/shared');
-const { formatDate } = await import('@/utils/stringUtils');
+const { default: Time } = await import('@w/components/time');
 await import('@w/copyablePreElement');
 
 import '@w/common.css';
@@ -78,7 +78,9 @@ export default function App() {
         )}
         <div>
           <span>提交时间</span>
-          <span>{formatDate(record.submitTime * 1000)}</span>
+          <span>
+            <Time time={record.submitTime * 1000} />
+          </span>
         </div>
         <div>
           <span>语言</span>

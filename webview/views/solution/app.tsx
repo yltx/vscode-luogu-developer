@@ -11,7 +11,7 @@ const { UserIcon, UserName } = await import('@w/components');
 const { default: Md } = await import('@w/markdownViewer');
 import '@w/common.css';
 import './app.css';
-import { formatDate } from '@/utils/stringUtils';
+const { default: Time } = await import('@w/components/time');
 import type ArticleData from '@/model/article';
 
 export default function App({ total }: { total: number }) {
@@ -55,7 +55,7 @@ function SolutionPage({
               <UserIcon url={article.author.icon} uid={article.author.uid} />
               <UserName user={article.author} />
               {'@ '}
-              {formatDate(article.createTime)}
+              <Time time={article.createTime} />
             </span>
             <span>
               文章 ID：

@@ -9,7 +9,7 @@ const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { sleep, UserIcon, UserName } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { default: Md } = await import('../../markdownViewer');
-const { formatDate } = await import('@/utils/stringUtils');
+const { default: Time } = await import('@w/components/time');
 
 import '@w/common.css';
 import './app.css';
@@ -90,8 +90,7 @@ function BenbenBlock({
         <header className="benben-comment-header">
           <UserName user={data.user} />
           <span className="benben-comment-time">
-            &thinsp;
-            {`at ${formatDate(data.time)}`}
+            &thinsp; at <Time time={data.time} />
           </span>
           <a
             href=""

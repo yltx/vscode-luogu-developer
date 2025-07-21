@@ -1,7 +1,10 @@
 const { default: dateFormat } = await import('dateformat');
 
-export const formatDate = (time: number) =>
-  dateFormat(new Date(time), 'yyyy-mm-dd HH:MM:ss');
+export const formatDate = (time: Date | number) =>
+  dateFormat(
+    typeof time === 'number' ? new Date(time) : time,
+    'yyyy-mm-dd HH:MM:ss'
+  );
 
 export function formatTime(time: number) {
   if (time < 1e3) return `${time}ms`;
