@@ -104,7 +104,7 @@ export default function registerSolutionFeature(
           return true;
         })
         .catch((e: unknown) => {
-          processAxiosError('查找题目')(e);
+          processAxiosError('获取题解')(e);
           return new Error('Error when fetch problem', { cause: e });
         });
     })

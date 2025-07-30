@@ -75,7 +75,10 @@ export function processAxiosError(verb?: string) {
   return (x: unknown) => {
     if (isAxiosError(x) && x.response?.data)
       vscode.window.showErrorMessage(
-        verb + '时出现错误：' + x.response.data.errorMessage
+        verb +
+          '时出现错误：' +
+          (x.response.data.errorMessage ||
+            x.response.data.currentData.errorMessage)
       );
     else if (x instanceof Error)
       vscode.window.showErrorMessage(verb + '时出现错误：' + x.message);
