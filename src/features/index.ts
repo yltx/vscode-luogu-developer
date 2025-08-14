@@ -8,6 +8,7 @@ import submit from './submit';
 import record from './record';
 import solution from './solution';
 import benben from './benben';
+import contest from './contest';
 
 export default function registerFeatures(context: vscode.ExtensionContext) {
   for (const registerFeature of [
@@ -18,7 +19,8 @@ export default function registerFeatures(context: vscode.ExtensionContext) {
     submit,
     record,
     solution,
-    benben
+    benben,
+    contest
   ])
     registerFeature(context);
 }

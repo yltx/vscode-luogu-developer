@@ -1,9 +1,9 @@
 const { default: dateFormat } = await import('dateformat');
 
-export const formatDate = (time: Date | number) =>
+export const formatDate = (time: Date | number, withSecond = true) =>
   dateFormat(
     typeof time === 'number' ? new Date(time) : time,
-    'yyyy-mm-dd HH:MM:ss'
+    'yyyy-mm-dd HH:MM' + (withSecond ? ':ss' : '')
   );
 
 export function formatTime(time: number) {

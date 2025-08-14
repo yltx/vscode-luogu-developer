@@ -4,16 +4,28 @@ const { difficultyColor, difficultyName, tagsData } = await import(
 );
 import { UserInfo } from '@/model/user';
 
-export function Tag({
-  color,
-  children
-}: {
-  color: string;
-  children: React.ReactNode;
-}) {
+export function Tag(
+  params:
+    | {
+        color: string;
+        children: React.ReactNode;
+      }
+    | {
+        children: {
+          name: string;
+          color: string;
+        };
+      }
+) {
   return (
-    <span className="tag" style={{ backgroundColor: color }}>
-      {children}
+    <span
+      className="tag"
+      style={{
+        backgroundColor:
+          'color' in params ? params.color : params.children.color
+      }}
+    >
+      {'color' in params ? params.children : params.children.name}
     </span>
   );
 }

@@ -1,5 +1,7 @@
 'use strict';
 
+import { mapColorsToValues } from './color';
+
 export enum UserStatus {
   SignedIn = 1,
   SignedOut = 2
@@ -101,46 +103,109 @@ export enum colorStyle {
   'cheater' = 'rgb(173, 139, 0)',
   'Cheater' = 'rgb(173, 139, 0)'
 }
-export const contestType: string[] = [
-  '',
-  'OI',
-  'ACM',
-  '乐多',
-  'IOI',
-  'CodeForces (暂不可用)'
-];
-export const contestStyle: string[] = [
-  '',
-  'color: rgb(255, 255, 255); background: rgb(243, 156, 17);', // OI
-  'color: rgb(255, 255, 255); background: rgb(157, 61, 207);', // ACM
-  'color: rgb(255, 255, 255); background: rgb(255, 193, 22);', // 乐多
-  'color: rgb(255, 255, 255); background: rgb(255, 193, 22);', // IOI
-  'color: rgb(255, 255, 255); background: rgb(255, 193, 22);' // CodeForces (暂不可用)
-];
-export enum contestRated {
-  'false' = 'display: none',
-  'true' = 'color: rgb(255, 255, 255); background: rgb(82, 196, 26);'
-}
-export const contestVisibility: string[] = [
-  '封禁比赛',
-  '官方比赛',
-  '团队公开赛',
-  '团队内部赛',
-  '个人公开赛',
-  '个人邀请赛',
-  '团队邀请赛',
-  '团队公开赛 (待审核)',
-  '个人公开赛 (待审核)'
-];
-export const contestVisibilityStyle: string[] = [
-  '',
-  'color: rgb(255, 255, 255); background: rgb(231, 76, 60);',
-  'color: rgb(255, 255, 255); background: rgb(34, 112, 10);',
-  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
-  'color: rgb(255, 255, 255); background: rgb(52, 152, 219);',
-  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);',
-  'color: rgb(255, 255, 255); background: rgb(41, 73, 180);'
-];
+
+export const ContestRuleTypes = mapColorsToValues({
+  '1': {
+    id: 1,
+    name: 'OI',
+    color: 'orange-3'
+  },
+  '2': {
+    id: 2,
+    name: 'ICPC',
+    color: 'purple-3'
+  },
+  '3': {
+    id: 3,
+    name: '乐多',
+    color: 'gold-3'
+  },
+  '4': {
+    id: 4,
+    name: 'IOI',
+    color: 'gold-3'
+  },
+  '5': {
+    id: 5,
+    name: 'CodeForces (暂不可用)',
+    color: 'gold-3'
+  }
+} as const);
+
+export const ContestVisibilityTypes = mapColorsToValues([
+  {
+    id: 0,
+    name: '封禁比赛',
+    color: 'grey-5',
+    userCreatable: false,
+    scope: 'disabled',
+    invitation: false
+  },
+  {
+    id: 1,
+    name: '官方比赛',
+    color: 'red-3',
+    userCreatable: false,
+    scope: 'global',
+    invitation: false
+  },
+  {
+    id: 2,
+    name: '团队公开赛',
+    color: 'green-4',
+    userCreatable: false,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 3,
+    name: '团队内部赛',
+    color: 'blue-3',
+    userCreatable: true,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 4,
+    name: '个人公开赛',
+    color: 'blue-3',
+    userCreatable: false,
+    scope: 'personal',
+    invitation: false
+  },
+  {
+    id: 5,
+    name: '个人邀请赛',
+    color: 'lapis-3',
+    userCreatable: true,
+    scope: 'personal',
+    invitation: true
+  },
+  {
+    id: 6,
+    name: '团队邀请赛',
+    color: 'lapis-3',
+    userCreatable: true,
+    scope: 'team',
+    invitation: true
+  },
+  {
+    id: 7,
+    name: '团队公开赛 (待审核)',
+    color: 'green-4',
+    userCreatable: false,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 8,
+    name: '个人公开赛 (待审核)',
+    color: 'blue-3',
+    userCreatable: false,
+    scope: 'personal',
+    invitation: false
+  }
+] as const);
 
 export enum difficultyID {
   '暂无评定' = 0,
