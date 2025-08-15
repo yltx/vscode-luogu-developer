@@ -4,13 +4,16 @@ const { ContestRuleTypes, ContestVisibilityTypes } = await import(
   '@/utils/shared'
 );
 const { default: Time } = await import('@w/components/time');
+const { UserName } = await import('@w/components');
+const { default: ColorPalette } = await import('@/utils/color');
+const { UserInfo } = await import('@/model/user');
+const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
+const { faCheck } = await import('@fortawesome/free-solid-svg-icons');
 
 import type { ContestData } from 'luogu-api';
 
 import '@w/common.css';
-import ColorPalette from '@/utils/color';
-import { UserName } from '@w/components';
-import { UserInfo } from '@/model/user';
+import './app.css';
 
 export default function App({
   children: contestData
@@ -23,7 +26,12 @@ export default function App({
         <h1>{contestData.contest.name}</h1>
         <div>
           <div>
-            比赛 ID：{contestData.contest.id}{' '}
+            比赛 ID：
+            <a
+              href={`https://www.luogu.com.cn/contest/${contestData.contest.id}`}
+            >
+              {contestData.contest.id}
+            </a>{' '}
             <Tag>{ContestRuleTypes[contestData.contest.ruleType]}</Tag>
             <Tag>
               {ContestVisibilityTypes[contestData.contest.visibilityType]}
@@ -85,6 +93,54 @@ export default function App({
           </div>
         </div>
       </header>
+      {contestData.contestProblems && (
+        <>
+          <hr />
+          <div className="contest-problems">
+            <div className="cp-table">
+              <div className="cp-row cp-header" role="row">
+                <div className="cp-col cp-col-index">#</div>
+                <div className="cp-col cp-col-score">倍率(%)</div>
+                <div className="cp-col cp-col-title">题目名称</div>
+                <div className="cp-col cp-col-submitted"></div>
+              </div>
+              {contestData.contestProblems.map((p, i) => (
+                <div className="cp-row" role="row" key={p.problem.pid}>
+                  <div className="cp-col cp-col-index">
+                    {String.fromCharCode(65 + i)}
+                  </div>
+                  <div className="cp-col cp-col-score">
+                    {formatScore(p.score)}
+                  </div>
+                  <div className="cp-col cp-col-title" title={p.problem.title}>
+                    <a
+                      href={
+                        'command:luogu.searchProblem?' +
+                        encodeURIComponent(
+                          JSON.stringify({
+                            pid: p.problem.pid,
+                            cid: contestData.contest.id
+                          })
+                        )
+                      }
+                    >
+                      {p.problem.title}
+                    </a>
+                  </div>
+                  <div className="cp-col cp-col-submitted">
+                    {p.submitted && (
+                      <FontAwesomeIcon
+                        icon={faCheck}
+                        className="submitted-icon"
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
@@ -106,4 +162,14 @@ function ContestDuringTime({ start, end }: { start: number; end: number }) {
             : ds + 's'}
     </time>
   );
+}
+
+function formatScore(n: number) {
+  if (!isFinite(n)) return 'N/A';
+  const abs = Math.abs(n);
+  if (abs >= 1e5) {
+    const s = n.toExponential(1);
+    return s.replace('e+', 'e');
+  }
+  return String(n);
 }

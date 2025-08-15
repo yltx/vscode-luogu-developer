@@ -13,7 +13,8 @@ export default function showContestWebview(data: ContestData) {
       localResourceRoots: [
         vscode.Uri.file(globalThis.resourcesPath),
         vscode.Uri.file(globalThis.distPath)
-      ]
+      ],
+      enableCommandUris: ['luogu.searchProblem']
     }
   );
   panel.webview.html = `

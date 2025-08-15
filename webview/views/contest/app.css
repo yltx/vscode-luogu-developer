@@ -1,0 +1,71 @@
+/* Contest problems list using CSS flexbox for a table-like layout */
+.contest-problems {
+  width: 100%;
+}
+
+.cp-table {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.cp-row {
+  display: flex;
+  align-items: center;
+  padding: 0.5em 0.5em;
+  gap: 1em;
+}
+
+.cp-header {
+  font-weight: 600;
+  border-bottom: 2px solid #7773;
+}
+.cp-row:not(.cp-header):not(:last-child) {
+  border-bottom: 1px solid #7773;
+}
+
+/* Column base */
+.cp-col {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline-block;
+}
+
+/* Fixed narrow column for index */
+.cp-col-index {
+  flex: 0 0 1em;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Score column which can be hidden on small screens */
+.cp-col-score {
+  flex: 0 0 4em;
+  text-align: center;
+  justify-content: center;
+}
+
+/* Title column - flexible and grows to fill remaining space */
+.cp-col-title {
+  flex: 1 1 auto; /* flexible */
+  min-width: 0; /* allow ellipsis */
+}
+
+/* Submitted column fixed */
+.cp-col-submitted {
+  flex: 0 0 1.5em;
+  text-align: center;
+  justify-content: center;
+}
+
+/* When viewport is narrow, hide the score column */
+@media (max-width: 400px) {
+  .cp-col-score {
+    display: none;
+  }
+}
+
+.submitted-icon {
+  color: rgb(82, 196, 26);
+}
