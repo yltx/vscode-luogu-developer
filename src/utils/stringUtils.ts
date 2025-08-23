@@ -12,7 +12,6 @@ export function formatTime(time: number) {
   else return `${(time / 60e3).toFixed(2)}min`;
 }
 export function formatMemory(memory: number) {
-  memory *= 2 ** 10;
   if (memory < 2 ** 10) return `${memory}B`;
   else if (memory < 2 ** 20) return `${(memory / 2 ** 10).toFixed(2)}KiB`;
   else if (memory < 2 ** 30) return `${(memory / 2 ** 20).toFixed(2)}MiB`;
