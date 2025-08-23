@@ -377,7 +377,9 @@
                 "C++17",
                 "C++17 with O2",
                 "C++20",
-                "C++20 with O2"
+                "C++20 with O2",
+                "C++23",
+                "C++23 with O2"
               ],
               "description": "C++ 语言版本"
             },
