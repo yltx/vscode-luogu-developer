@@ -101,7 +101,9 @@ export default function App() {
           <span>用时/内存</span>
           <span>
             {record.time !== null ? formatTime(record.time) : '-'} /{' '}
-            {record.memory !== null ? formatMemory(record.memory) : '-'}
+            {record.memory !== null
+              ? formatMemory(record.memory * 2 ** 10)
+              : '-'}
           </span>
         </div>
         {record.sourceCode !== undefined && (
@@ -203,7 +205,7 @@ function TestCase({ children: data }: { children: TestCaseStatus }) {
         </div>
         {data.status !== 1 && (
           <div>
-            {formatTime(data.time)}/{formatMemory(data.memory)}
+            {formatTime(data.time)}/{formatMemory(data.memory * 2 ** 10)}
           </div>
         )}
       </div>

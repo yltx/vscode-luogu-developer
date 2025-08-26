@@ -3036,7 +3036,9 @@ export const languageFamily = {
     'C++17': { id: 12 },
     'C++17 with O2': { id: 12, O2: true },
     'C++20': { id: 27 },
-    'C++20 with O2': { id: 27, O2: true }
+    'C++20 with O2': { id: 27, O2: true },
+    'C++23': { id: 34 },
+    'C++23 with O2': { id: 34, O2: true }
   },
   Python: {
     'Python 3': { id: 7 },
@@ -3135,7 +3137,8 @@ export const LanguageString: Record<number, string> = {
   30: 'OCaml',
   31: 'Julia',
   32: 'Lua',
-  33: 'Java 21'
+  33: 'Java 21',
+  34: 'C++23'
 };
 
 export const vscodeLanguageId: Record<number, string> = {
@@ -3171,5 +3174,6 @@ export const vscodeLanguageId: Record<number, string> = {
   30: 'ocaml',
   31: 'julia',
   32: 'lua',
-  33: 'java'
+  33: 'java',
+  34: 'cpp'
 };

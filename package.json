@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.11.10",
+  "version": "4.11.12",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -377,7 +377,9 @@
                 "C++17",
                 "C++17 with O2",
                 "C++20",
-                "C++20 with O2"
+                "C++20 with O2",
+                "C++23",
+                "C++23 with O2"
               ],
               "description": "C++ 语言版本"
             },
