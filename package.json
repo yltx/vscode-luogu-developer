@@ -163,6 +163,12 @@
       {
         "command": "luogu.openUntitledTextDocument",
         "title": "打开新文档"
+      },
+      {
+        "command": "luogu.history.delete",
+        "title": "删除历史记录",
+        "icon": "$(trash)",
+        "tooltip": "双击删除"
       }
     ],
     "keybindings": [
@@ -302,7 +308,12 @@
         },
         {
           "command": "luogu.sumbitCode",
-          "when": "view == luogu.history && viewItem == luogu.history.problemItem",
+          "when": "view == luogu.history && viewItem =~ /^luogu.history.(problemItem|contestProblemItem)/",
+          "group": "inline"
+        },
+        {
+          "command": "luogu.history.delete",
+          "when": "view == luogu.history && viewItem =~ /^luogu.history.(problemItem|contestItem|trainingItem)/",
           "group": "inline"
         }
       ],
