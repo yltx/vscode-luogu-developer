@@ -20,8 +20,6 @@ export default class historyTreeviewProvider
   implements vscode.TreeDataProvider<HistoryItem | ContestProblemItem>, vscode.Disposable
 {
   private _contestProblemsCache = new Map<number, { pid: string, title: string, score: number }[]>();
-  private _lastClickTime = new Map<string, number>();
-  private _clickTimeout = 300; // 双击时间间隔（毫秒）
   
   constructor(
     protected getStorage: () => MaybeThenable<HistoryItem[]>,
@@ -40,7 +38,7 @@ export default class historyTreeviewProvider
   getTreeItem(element: HistoryItem | ContestProblemItem): vscode.TreeItem {
     if (element.type === 'contestProblem') {
       const treeItem: vscode.TreeItem = {
-        label: `${element.pid} ${element.title} (满分:${element.score})`,
+        label: `${element.pid} ${element.title}`,
         command: {
           command: 'luogu.searchProblem',
           title: '打开题目',
@@ -186,7 +184,6 @@ export default class historyTreeviewProvider
   }
   dispose() {
     this._onDidChangeTreeData.dispose();
-    this._lastClickTime.clear();
   }
   async addItem(item: HistoryItem) {
     let dat = await this.getStorage();
@@ -234,34 +231,20 @@ export default class historyTreeviewProvider
     if (item.type === 'contestProblem') {
       return;
     }
-    
-    // 为普通历史记录项生成唯一标识符
-    const itemKey = historyTreeviewProvider.getItemLabel(item);
-    
-    // 检查是否是双击
-    const now = Date.now();
-    const lastClick = this._lastClickTime.get(itemKey) || 0;
-    
-    if (now - lastClick < this._clickTimeout) {
-      // 双击，执行删除操作
-      this._lastClickTime.delete(itemKey); // 清除点击记录
-      
-      // 使用原有的删除逻辑
+
+    // 使用提示确认的方式删除历史记录项
+    const confirm = await vscode.window.showWarningMessage(
+      `确定要从历史记录中删除 "${historyTreeviewProvider.getItemLabel(item as HistoryItem)}" 吗?`,
+      { modal: true },
+      '删除'
+    );
+
+    if (confirm === '删除') {
       const dat = (await this.getStorage()).filter(
-        x => historyTreeviewProvider.getItemLabel(item) !== historyTreeviewProvider.getItemLabel(x)
+        x => historyTreeviewProvider.getItemLabel(item as HistoryItem) !== historyTreeviewProvider.getItemLabel(x)
       );
       this.setStorage(dat);
       this.refresh();
-    } else {
-      // 单击，记录点击时间
-      this._lastClickTime.set(itemKey, now);
-      
-      // 设置定时器，在一定时间后清除点击记录
-      setTimeout(() => {
-        if (this._lastClickTime.get(itemKey) === now) {
-          this._lastClickTime.delete(itemKey);
-        }
-      }, this._clickTimeout);
     }
   }
 }

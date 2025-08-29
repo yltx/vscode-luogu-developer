@@ -168,7 +168,7 @@
         "command": "luogu.history.delete",
         "title": "删除历史记录",
         "icon": "$(trash)",
-        "tooltip": "双击删除"
+        "tooltip": "删除历史记录"
       }
     ],
     "keybindings": [

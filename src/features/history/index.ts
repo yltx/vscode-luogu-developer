@@ -19,19 +19,7 @@ export default function registerHistory(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand('luogu.history.delete', async (item) => {
       if (!item) return;
-      
-      // 双击删除实现
-      if (deleteClickTimeout) {
-        // 如果存在定时器，说明是双击
-        clearTimeout(deleteClickTimeout);
-        deleteClickTimeout = null;
-        view.removeItem(item);
-      } else {
-        // 第一次点击，设置定时器
-        deleteClickTimeout = setTimeout(() => {
-          deleteClickTimeout = null;
-        }, 500);
-      }
+      view.removeItem(item);
     })
   );
   
