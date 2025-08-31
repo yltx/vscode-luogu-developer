@@ -2,8 +2,8 @@ import { Problem, ProblemSetDetails, UserSummary } from 'luogu-api';
 import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
-import { tagsData as Tags } from './shared';
 import { getScoreColor } from './shared';
+import { tagManager } from './tagManager';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {
@@ -38,17 +38,23 @@ const getDifficultyStatus = (difficulty: number) => {
       return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
   }
 };
-const getTagsStatus = (tags: number[]) => {
+const getTagsStatus = async (tags: number[]) => {
   let html = '';
-  tags.forEach(index => {
-    const tag = Tags[index];
-    if (tag) {
-      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
-    } else {
-      // 如果标签不存在，使用默认样式
-      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: #000000">未知标签(${index})</span>&nbsp;`;
+  for (const index of tags) {
+    try {
+      const tag = await tagManager.getTag(index);
+      if (tag) {
+        html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
+      } else {
+        // 如果标签不存在，使用默认样式
+        html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: #666666">未知标签(${index})</span>&nbsp;`;
+      }
+    } catch (error) {
+      console.warn(`获取标签 ${index} 失败:`, error);
+      // 获取失败时显示未知标签
+      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: #666666">未知标签(${index})</span>&nbsp;`;
     }
-  });
+  }
   return html;
 };
 export class TrainDetals {
@@ -75,7 +81,7 @@ export class TrainDetals {
     this.userScore = fields.userScore;
   }
 
-  toHTML(): string {
+  async toHTML(): Promise<string> {
     let problemlist = '<div>\n';
     if (this.problemCount > 0) {
       problemlist += '<table border="0" width="100%">\n';
@@ -88,7 +94,9 @@ export class TrainDetals {
       problemlist += '    <th nowrap>通过率</th>\n';
       problemlist += '  </tr>\n';
     }
-    this.problemlist.forEach(index => {
+    
+    for (const index of this.problemlist) {
+      const tagsHtml = await getTagsStatus(index['problem']['tags']);
       problemlist += `  <tr>
     <td nowrap>${index['problem']['pid']}</td>
     <td style="text-align: center;" nowrap>${getUserScoreStatus(
@@ -104,7 +112,7 @@ export class TrainDetals {
     }" class="pid" id="${index['problem']['pid']}">${md.render(
       index['problem']['title']
     )}</a></td>
-    <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
+    <td align="left" nowrap>${tagsHtml}</td>
     <td nowrap>${getDifficultyStatus(index['problem']['difficulty']!)}</td>
     <td nowrap>
       <progress value="${index['problem']['totalAccepted']}" max="${
@@ -112,7 +120,8 @@ export class TrainDetals {
       }" style="height: 30px;width: 100px;"></progress>
     </td>
 </tr>`;
-    });
+    }
+    
     if (this.problemCount > 0) {
       problemlist += '</table>\n';
     }
@@ -144,12 +153,14 @@ export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
     });
     return new TrainDetals(res['training']);
   });
-  return generateTrainDetailsHTML(webview, train);
+  return await generateTrainDetailsHTML(webview, train);
 };
-export const generateTrainDetailsHTML = (
+export const generateTrainDetailsHTML = async (
   webview: vscode.Webview,
   train: TrainDetals
-) => `
+) => {
+  const trainHTML = await train.toHTML();
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -254,6 +265,7 @@ export const generateTrainDetailsHTML = (
 <span id="Pro">
   <a style="color: rgb(0,0,0);font-size: large;" title="题目列表" href="javascript:void(0)" onclick="changechannel(1)" id="pro">题目列表</a>
 </span>
-${train.toHTML()}
+${trainHTML}
 </body>
 </html>`;
+};
