@@ -94,7 +94,7 @@ export class TrainDetals {
       problemlist += '    <th nowrap>通过率</th>\n';
       problemlist += '  </tr>\n';
     }
-    
+
     for (const index of this.problemlist) {
       const tagsHtml = await getTagsStatus(index['problem']['tags']);
       problemlist += `  <tr>
@@ -121,7 +121,7 @@ export class TrainDetals {
     </td>
 </tr>`;
     }
-    
+
     if (this.problemCount > 0) {
       problemlist += '</table>\n';
     }

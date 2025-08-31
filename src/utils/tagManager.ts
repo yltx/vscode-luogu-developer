@@ -26,17 +26,17 @@ class TagManager {
   private getTagColorFromType(typeId: number): string {
     const tagType = this.tagTypes.get(typeId);
     if (!tagType) return '#666666';
-    
+
     // 将洛谷的颜色格式转换为标准的颜色格式
     const colorMap: { [key: string]: string } = {
       'green-3': '#52C41A',
-      'lapis-3': '#1890FF', 
+      'lapis-3': '#1890FF',
       'cyan-3': '#13C2C2',
       'blue-3': '#1890FF',
       'orange-3': '#FA8C16',
       'grey-5': '#666666'
     };
-    
+
     return colorMap[tagType.color] || '#666666';
   }
 
@@ -45,12 +45,12 @@ class TagManager {
       const response = await fetchLuoguTags();
       this.tags.clear();
       this.tagTypes.clear();
-      
+
       // 首先处理标签类型信息
       response.types.forEach(tagType => {
         this.tagTypes.set(tagType.id, tagType);
       });
-      
+
       // 然后处理标签信息，为每个标签设置正确的颜色
       response.tags.forEach(tag => {
         this.tags.set(tag.id, {
@@ -58,7 +58,7 @@ class TagManager {
           color: this.getTagColorFromType(tag.type)
         });
       });
-      
+
       this.lastFetch = Date.now();
       console.log(`成功获取 ${this.tags.size} 个标签数据`);
     } catch (error) {
@@ -69,33 +69,8 @@ class TagManager {
   }
 
   private loadFallbackTags(): void {
-    // 加载一些基本的标签作为后备
-    const fallbackTags = [
-      { id: 1, name: '模拟', type: 2, parent: 110 },
-      { id: 2, name: '字符串', type: 2, parent: null },
-      { id: 3, name: '动态规划 DP', type: 2, parent: null },
-      { id: 4, name: '搜索', type: 2, parent: null },
-      { id: 5, name: '数学', type: 2, parent: null },
-      { id: 6, name: '图论', type: 2, parent: null },
-      { id: 7, name: '贪心', type: 2, parent: 110 },
-      { id: 8, name: '计算几何', type: 2, parent: null },
-      // 可以添加更多基础标签
-    ];
-
-    // 设置基本的标签类型
-    this.tagTypes.set(1, { id: 1, type: 'Region', name: '区域', color: 'green-3', order: 4 });
-    this.tagTypes.set(2, { id: 2, type: 'Algorithm', name: '算法', color: 'lapis-3', order: 1 });
-    this.tagTypes.set(3, { id: 3, type: 'Origin', name: '来源', color: 'cyan-3', order: 2 });
-    this.tagTypes.set(4, { id: 4, type: 'Time', name: '时间', color: 'blue-3', order: 3 });
-    this.tagTypes.set(5, { id: 5, type: 'SpecialProblem', name: '特殊题目', color: 'orange-3', order: 5 });
-    this.tagTypes.set(6, { id: 6, type: 'Others', name: '其他', color: 'grey-5', order: null });
-
-    fallbackTags.forEach(tag => {
-      this.tags.set(tag.id, {
-        ...tag,
-        color: this.getTagColorFromType(tag.type)
-      });
-    });
+    // 不再使用硬编码的后备标签，完全依赖API获取
+    console.warn('标签数据获取失败，将显示为未知标签');
   }
 
   public async getTag(tagId: number): Promise<Tag | null> {
