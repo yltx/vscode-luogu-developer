@@ -3,7 +3,6 @@ import historyTreeviewProvider from './treeviewProvider';
 import { getStorage, setStorage } from '@/utils/storage';
 
 const globalStateKey = 'luogu.history';
-let deleteClickTimeout: NodeJS.Timeout | null = null;
 
 export default function registerHistory(context: vscode.ExtensionContext) {
   globalThis.luogu.insertHistory = item =>
@@ -14,14 +13,14 @@ export default function registerHistory(context: vscode.ExtensionContext) {
   );
   globalThis.luogu.historyTreeviewProvider = view;
   vscode.window.registerTreeDataProvider('luogu.history', view);
-  
+
   // 注册删除历史记录命令
   context.subscriptions.push(
-    vscode.commands.registerCommand('luogu.history.delete', async (item) => {
+    vscode.commands.registerCommand('luogu.history.delete', async item => {
       if (!item) return;
       view.removeItem(item);
     })
   );
-  
+
   context.subscriptions.push(view);
 }

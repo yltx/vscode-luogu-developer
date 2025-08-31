@@ -1,5 +1,4 @@
 import * as vscode from 'vscode';
-import HistoryItem, { ProblemHistoryItem, ContestHistoryItem, trainingHistoryItem } from './historyItem';
 import {
   contestType,
   contestVisibility,
@@ -8,24 +7,29 @@ import {
 } from '@/utils/shared';
 import { searchContest } from '@/utils/api';
 
-type ContestProblemItem = { 
-  type: 'contestProblem'; 
-  pid: string; 
-  title: string; 
+type ContestProblemItem = {
+  type: 'contestProblem';
+  pid: string;
+  title: string;
   contestId: number;
   score: number;
 };
 
 export default class historyTreeviewProvider
-  implements vscode.TreeDataProvider<HistoryItem | ContestProblemItem>, vscode.Disposable
+  implements
+    vscode.TreeDataProvider<HistoryItem | ContestProblemItem>,
+    vscode.Disposable
 {
-  private _contestProblemsCache = new Map<number, { pid: string, title: string, score: number }[]>();
-  
+  private _contestProblemsCache = new Map<
+    number,
+    { pid: string; title: string; score: number }[]
+  >();
+
   constructor(
     protected getStorage: () => MaybeThenable<HistoryItem[]>,
     protected setStorage: (items: HistoryItem[]) => void
   ) {}
-  
+
   static getItemLabel(element: HistoryItem) {
     return element.type === 'problem'
       ? `${element.pid} ${element.title}` +
@@ -34,7 +38,7 @@ export default class historyTreeviewProvider
         ? `${element.title}`
         : `${element.title}`;
   }
-  
+
   getTreeItem(element: HistoryItem | ContestProblemItem): vscode.TreeItem {
     if (element.type === 'contestProblem') {
       const treeItem: vscode.TreeItem = {
@@ -50,7 +54,7 @@ export default class historyTreeviewProvider
       };
       return treeItem;
     }
-    
+
     if (element.type === 'problem')
       return {
         label: historyTreeviewProvider.getItemLabel(element),
@@ -114,23 +118,27 @@ export default class historyTreeviewProvider
       };
     throw new TypeError('Unknown history element type', { cause: element });
   }
-  
-  async getChildren(element?: HistoryItem | ContestProblemItem): Promise<(HistoryItem | ContestProblemItem)[]> {
+
+  async getChildren(
+    element?: HistoryItem | ContestProblemItem
+  ): Promise<(HistoryItem | ContestProblemItem)[]> {
     // 如果element存在且是比赛类型，则获取比赛题目列表
     if (element && element.type === 'contest') {
       return await this.getContestProblems(element.contestId);
     }
-    
+
     // 如果是比赛题目类型，不返回子元素
     if (element && element.type === 'contestProblem') {
       return [];
     }
-    
+
     // 默认情况，返回历史记录列表
     return [...(await this.getStorage())].reverse();
   }
-  
-  private async getContestProblems(contestId: number): Promise<ContestProblemItem[]> {
+
+  private async getContestProblems(
+    contestId: number
+  ): Promise<ContestProblemItem[]> {
     // 检查缓存
     if (this._contestProblemsCache.has(contestId)) {
       const cached = this._contestProblemsCache.get(contestId)!;
@@ -142,11 +150,11 @@ export default class historyTreeviewProvider
         score: p.score
       }));
     }
-    
+
     try {
       // 获取比赛详情
       const contestData = await searchContest(contestId);
-      
+
       // 提取题目列表
       if (contestData.contestProblems) {
         const problems = contestData.contestProblems.map(p => ({
@@ -154,10 +162,10 @@ export default class historyTreeviewProvider
           title: p.problem.title,
           score: p.score
         }));
-        
+
         // 缓存结果
         this._contestProblemsCache.set(contestId, problems);
-        
+
         // 返回格式化后的题目列表
         return problems.map(p => ({
           type: 'contestProblem',
@@ -171,10 +179,10 @@ export default class historyTreeviewProvider
       console.error('获取比赛题目列表失败:', e);
       vscode.window.showErrorMessage(`获取比赛 ${contestId} 的题目列表失败`);
     }
-    
+
     return [];
   }
-  
+
   private _onDidChangeTreeData = new vscode.EventEmitter<void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
   refresh() {
@@ -187,14 +195,14 @@ export default class historyTreeviewProvider
   }
   async addItem(item: HistoryItem) {
     let dat = await this.getStorage();
-    
+
     // 如果添加的是比赛题目，则将对应的比赛置顶而不是添加题目本身
     if (item.type === 'problem' && item.contest) {
       // 查找是否已有该比赛的历史记录
       const contestIndex = dat.findIndex(
         x => x.type === 'contest' && x.contestId === item.contest!.contestId
       );
-      
+
       if (contestIndex !== -1) {
         // 如果找到该比赛，将其移至顶部
         const contestItem = dat.splice(contestIndex, 1)[0];
@@ -203,13 +211,13 @@ export default class historyTreeviewProvider
         // 如果未找到该比赛，不添加题目到历史记录
         // 这种情况下，我们不修改历史记录
       }
-      
+
       // 更新存储
       this.setStorage(dat);
       this.refresh();
       return;
     }
-    
+
     // 原有的历史记录逻辑
     dat = dat.filter(
       x =>
@@ -225,7 +233,7 @@ export default class historyTreeviewProvider
     this.setStorage(dat);
     this.refresh();
   }
-  
+
   async removeItem(item: HistoryItem | ContestProblemItem) {
     // 比赛题目不需要删除功能，直接返回
     if (item.type === 'contestProblem') {
@@ -241,7 +249,9 @@ export default class historyTreeviewProvider
 
     if (confirm === '删除') {
       const dat = (await this.getStorage()).filter(
-        x => historyTreeviewProvider.getItemLabel(item as HistoryItem) !== historyTreeviewProvider.getItemLabel(x)
+        x =>
+          historyTreeviewProvider.getItemLabel(item as HistoryItem) !==
+          historyTreeviewProvider.getItemLabel(x)
       );
       this.setStorage(dat);
       this.refresh();
