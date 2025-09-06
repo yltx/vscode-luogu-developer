@@ -8,8 +8,11 @@ export const formatDate = (time: Date | number, withSecond = true) =>
 
 export function formatTime(time: number) {
   if (time < 1e3) return `${time}ms`;
-  else if (time < 60e3) return `${(time / 1e3).toFixed(2)}s`;
-  else return `${(time / 60e3).toFixed(2)}min`;
+  else if (time < 60 * 1e3) return `${(time / 1e3).toFixed(2)}s`;
+  else if (time < 60 * 60 * 1e3) return `${(time / (60 * 1e3)).toFixed(2)}min`;
+  else if (time < 24 * 60 * 60 * 1e3)
+    return `${(time / (60 * 60 * 1e3)).toFixed(2)}h`;
+  else return `${(time / (24 * 60 * 60 * 1e3)).toFixed(2)}d`;
 }
 export function formatMemory(memory: number) {
   if (memory < 2 ** 10) return `${memory}B`;

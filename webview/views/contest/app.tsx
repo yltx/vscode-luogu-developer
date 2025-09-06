@@ -7,9 +7,14 @@ const { default: Time } = await import('@w/components/time');
 const { UserName } = await import('@w/components');
 const { default: ColorPalette } = await import('@/utils/color');
 const { UserInfo } = await import('@/model/user');
+
+const { default: ArticleViewer } = await import('@w/markdownViewer');
+const { default: Navbar } = await import('@w/components/navbar');
+
+import Ranklist from './ranklist';
+import { FormatScore } from './scoreUtils';
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { faCheck } = await import('@fortawesome/free-solid-svg-icons');
-
 import type { ContestData } from 'luogu-api';
 
 import '@w/common.css';
@@ -20,6 +25,7 @@ export default function App({
 }: {
   children: ContestData;
 }) {
+  const [tab, setTab] = React.useState<'detail' | 'ranklist'>('detail');
   return (
     <>
       <header>
@@ -100,17 +106,17 @@ export default function App({
             <div className="cp-table">
               <div className="cp-row cp-header" role="row">
                 <div className="cp-col cp-col-index">#</div>
-                <div className="cp-col cp-col-score">倍率(%)</div>
+                <div className="cp-col cp-col-maxscore">倍率(%)</div>
                 <div className="cp-col cp-col-title">题目名称</div>
-                <div className="cp-col cp-col-submitted"></div>
+                <div className="cp-col cp-col-submitted">已提交</div>
               </div>
               {contestData.contestProblems.map((p, i) => (
                 <div className="cp-row" role="row" key={p.problem.pid}>
                   <div className="cp-col cp-col-index">
                     {String.fromCharCode(65 + i)}
                   </div>
-                  <div className="cp-col cp-col-score">
-                    {formatScore(p.score)}
+                  <div className="cp-col cp-col-maxscore">
+                    <FormatScore score={p.score} />
                   </div>
                   <div className="cp-col cp-col-title" title={p.problem.title}>
                     <a
@@ -141,6 +147,28 @@ export default function App({
           </div>
         </>
       )}
+      <Navbar
+        actions={[
+          {
+            id: 'detail',
+            label: '比赛详情',
+            checked: tab === 'detail',
+            onClick: () => setTab('detail')
+          },
+          {
+            id: 'rank',
+            label: '排行榜',
+            checked: tab === 'ranklist',
+            onClick: () => setTab('ranklist')
+          }
+        ]}
+      />
+      {tab === 'detail' && (
+        <ArticleViewer>{contestData.contest.description}</ArticleViewer>
+      )}
+      {tab === 'ranklist' && contestData.contestProblems && (
+        <Ranklist problems={contestData.contestProblems} />
+      )}
     </>
   );
 }
@@ -162,14 +190,4 @@ function ContestDuringTime({ start, end }: { start: number; end: number }) {
             : ds + 's'}
     </time>
   );
-}
-
-function formatScore(n: number) {
-  if (!isFinite(n)) return 'N/A';
-  const abs = Math.abs(n);
-  if (abs >= 1e5) {
-    const s = n.toExponential(1);
-    return s.replace('e+', 'e');
-  }
-  return String(n);
 }

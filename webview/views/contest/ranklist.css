@@ -1,0 +1,65 @@
+.cr-table-wrapper {
+  overflow-x: auto;
+}
+
+.cr-table {
+  min-width: min-content;
+}
+
+.cr-row {
+  display: flex;
+  align-items: center;
+  padding: 0.5em 0;
+}
+
+.cr-row:not(.cr-header):not(:last-child) {
+  border-bottom: 1px solid #7773;
+}
+
+.cr-col-rank {
+  flex: 0 0 2.2em;
+  text-align: center;
+}
+
+.cr-col-user {
+  flex: 3 1 14em;
+  min-width: 14em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cr-col-score {
+  flex: 1 1 4em;
+  min-width: 4em;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+:not(.cr-header) > .cr-col-score {
+  > :nth-child(1) {
+    font-family: var(--luogu-font);
+    font-weight: bold;
+  }
+  > :nth-child(2) {
+    opacity: 0.8;
+    font-size: 0.8em;
+  }
+}
+
+.cr-header {
+  font-weight: bold;
+  border-bottom: 2px solid #7773;
+}
+
+.cr-loading {
+  text-align: center;
+  padding: 20px;
+}
+
+.cr-loading > vscode-progress-ring {
+  display: inline-block;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}

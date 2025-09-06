@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { getDistFilePath } from '@/utils/html';
 import { ContestData } from 'luogu-api';
+import useWebviewResponseHandle from '@/utils/webviewResponse';
+import { getRanklist } from '@/utils/api';
 
 export default function showContestWebview(data: ContestData) {
   const panel = vscode.window.createWebviewPanel(
@@ -31,4 +33,7 @@ export default function showContestWebview(data: ContestData) {
     </body>
     </html>
   `;
+  useWebviewResponseHandle(panel.webview, {
+    ContestRanklist: ({ page }) => getRanklist(data.contest.id, page)
+  });
 }

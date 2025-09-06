@@ -1,0 +1,55 @@
+.pagination {
+  display: flex;
+  width: 100%; /* occupy available horizontal space so items can be right-aligned */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: flex-end; /* align buttons to the right */
+  gap: 6px;
+  flex-wrap: wrap; /* allow wrapping when space is insufficient */
+}
+
+.page-item {
+  display: inline-flex;
+}
+
+.page-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 13px;
+  color: var(--vscode-editor-foreground);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.page-item:not(.active) > .page-link:hover {
+  background: var(--vscode-button-secondaryBackground);
+}
+
+.page-item.active > .page-link {
+  background: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  border-color: transparent;
+  font-weight: 600;
+}
+
+.page-item.active > .page-link:hover {
+  background: var(--vscode-button-hoverBackground);
+}
+
+/* compact responsiveness for narrow webviews */
+@media (max-width: 420px) {
+  .page-link {
+    min-width: 28px;
+    height: 24px;
+    font-size: 12px;
+    padding: 0 6px;
+  }
+}

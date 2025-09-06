@@ -91,6 +91,10 @@ type VoteArticleMessageType = WebviewMessage<
   WebviewRequestMessage<'voteArticle', { lid: string; type: 1 | 0 | -1 }>,
   WebviewResponseMessage<{ upvotes: number; voted: 1 | 0 | -1 }>
 >;
+type ContestRanklist = WebviewMessage<
+  WebviewRequestMessage<'ContestRanklist', { page: number }>,
+  WebviewResponseMessage<import('luogu-api').GetScoreboardResponse>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -109,7 +113,8 @@ type MessageTypes = MessageTypesBase<
     JumpToCphMessageType,
     SearchSolutionFromViewProblemMessageType,
     GetSolutionDetailsMessageType,
-    VoteArticleMessageType
+    VoteArticleMessageType,
+    ContestRanklist
   ]
 >;
 export default MessageTypes;

@@ -4,15 +4,12 @@
 }
 
 .cp-table {
-  display: flex;
-  flex-direction: column;
   width: 100%;
 }
 
 .cp-row {
   display: flex;
-  align-items: center;
-  padding: 0.5em 0.5em;
+  padding: 0.5em;
   gap: 1em;
 }
 
@@ -24,48 +21,39 @@
   border-bottom: 1px solid #7773;
 }
 
-/* Column base */
 .cp-col {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  display: inline-block;
 }
 
-/* Fixed narrow column for index */
 .cp-col-index {
-  flex: 0 0 1em;
   text-align: center;
-  justify-content: center;
+  width: 1em;
 }
 
-/* Score column which can be hidden on small screens */
-.cp-col-score {
-  flex: 0 0 4em;
+.cp-col-maxscore {
   text-align: center;
-  justify-content: center;
+  width: 4em;
 }
 
-/* Title column - flexible and grows to fill remaining space */
 .cp-col-title {
-  flex: 1 1 auto; /* flexible */
+  flex: auto;
   min-width: 0; /* allow ellipsis */
 }
 
-/* Submitted column fixed */
 .cp-col-submitted {
-  flex: 0 0 1.5em;
   text-align: center;
-  justify-content: center;
+  width: 3em;
+}
+
+:not(.cp-header) > .cp-col-submitted {
+  color: #52c41a;
 }
 
 /* When viewport is narrow, hide the score column */
 @media (max-width: 400px) {
-  .cp-col-score {
+  .cp-col-maxscore {
     display: none;
   }
-}
-
-.submitted-icon {
-  color: rgb(82, 196, 26);
 }
