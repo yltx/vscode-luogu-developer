@@ -63,3 +63,24 @@
   margin-top: 15px;
   margin-bottom: 15px;
 }
+
+.cr-options {
+  display: flex;
+  border-top: 1px solid #7773;
+  padding: 10px 0;
+  position: sticky;
+  bottom: 0;
+  background-color: var(--vscode-editor-background);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  > .cr-pagination {
+    flex: 1 1 auto;
+  }
+}
+
+.cr-last-refresh {
+  font-size: 0.9em;
+  opacity: 0.8;
+  white-space: nowrap;
+}

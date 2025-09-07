@@ -1,10 +1,14 @@
 const { default: React, useEffect, useState } = await import('react');
-const { VSCodeProgressRing } = await import('@vscode/webview-ui-toolkit/react');
+const { VSCodeProgressRing, VSCodeButton, VSCodeCheckbox } = await import(
+  '@vscode/webview-ui-toolkit/react'
+);
+const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
+const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
 const { default: send } = await import('@w/webviewRequest');
 const { UserName } = await import('@w/components');
 const { default: Pagination } = await import('@w/components/pagination');
 const { UserInfo } = await import('@/model/user');
-const { formatTime } = await import('@/utils/stringUtils');
+const { formatTime, formatDate } = await import('@/utils/stringUtils');
 
 import type {
   GetScoreboardResponse,
@@ -22,13 +26,20 @@ export default function Ranklist({
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [scoreboard, setScoreboard] = useState<GetScoreboardResponse | null>(
     null
   );
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
 
-  useEffect(() => {
+  const refreshData = (isRefresh = false) => {
     let mounted = true;
-    setLoading(true);
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     send('ContestRanklist', { page })
       .then(res => {
         if (!mounted) return;
@@ -45,16 +56,44 @@ export default function Ranklist({
             setTotalPages(Math.max(1, Math.ceil(list.count / per)));
           }
         }
+        setLastRefreshTime(new Date());
       })
       .finally(() => {
         if (mounted) {
-          setLoading(false);
+          if (isRefresh) {
+            setRefreshing(false);
+          } else {
+            setLoading(false);
+          }
         }
       });
     return () => {
       mounted = false;
     };
+  };
+
+  useEffect(() => {
+    const cleanup = refreshData(false);
+    return cleanup;
   }, [page]);
+
+  // 自动刷新逻辑
+  useEffect(() => {
+    let interval: number | null = null;
+
+    if (autoRefresh) {
+      // 立即刷新一次
+      refreshData(true);
+      // 然后每60秒刷新一次
+      interval = window.setInterval(() => {
+        refreshData(true);
+      }, 60000);
+    }
+
+    return () => {
+      if (interval) window.clearInterval(interval);
+    };
+  }, [autoRefresh, page]);
 
   const contestFullScore = problems.reduce(
     (a, b) => a + Math.floor((b.score / 100) * b.problem.fullScore),
@@ -134,8 +173,28 @@ export default function Ranklist({
           <VSCodeProgressRing />
         </div>
       )}
-      <div>
+      <div className="cr-options">
+        <VSCodeButton
+          appearance="icon"
+          onClick={() => refreshData(true)}
+          disabled={refreshing}
+        >
+          <FontAwesomeIcon icon={faRotateRight} spin={refreshing} />
+          刷新
+        </VSCodeButton>
+        <VSCodeCheckbox
+          checked={autoRefresh}
+          onChange={e => setAutoRefresh((e.target as HTMLInputElement).checked)}
+        >
+          自动刷新
+        </VSCodeCheckbox>
+        {lastRefreshTime && (
+          <span className="cr-last-refresh">
+            上次刷新: {formatDate(lastRefreshTime.getTime())}
+          </span>
+        )}
         <Pagination
+          className="cr-pagination"
           current={page}
           total={totalPages}
           onChange={p => setPage(p)}

@@ -117,11 +117,6 @@ hr {
   border-radius: 50%;
 }
 
-vscode-button[appearance='icon'] {
-  margin-left: 15px;
-  margin-right: 15px;
-}
-
 .copy-button {
   position: absolute;
   top: 2px;

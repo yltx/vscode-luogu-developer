@@ -36,6 +36,9 @@ body {
       grid-area: vote;
       display: flex;
       align-items: center;
+      gap: 30px;
+      margin-left: 15px;
+      margin-right: 15px;
     }
     & > .pageShow {
       grid-area: pageShow;
