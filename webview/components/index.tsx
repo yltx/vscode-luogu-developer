@@ -1,7 +1,5 @@
 const { default: React } = await import('react');
-const { difficultyColor, difficultyName, tagsData } = await import(
-  '@/utils/shared'
-);
+const { difficultyColor, difficultyName } = await import('@/utils/shared');
 import { UserInfo } from '@/model/user';
 
 export function Tag({
@@ -75,9 +73,9 @@ export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
 }
 
 export function ProblemTag({ tag }: { tag: number }) {
-  const obj = tagsData[tag];
-  if (obj === undefined) return <Tag color="black">Unknown Tag: id ${tag}</Tag>;
-  return <Tag color={obj.color}>{obj.name}</Tag>;
+  // 由于tagsData已被删除，显示为未知标签
+  // 实际的标签数据现在通过tagManager动态获取
+  return <Tag color="#666666">标签 ${tag}</Tag>;
 }
 
 export async function sleep(ms: number) {
