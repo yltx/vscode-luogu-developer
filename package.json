@@ -584,7 +584,6 @@
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.8.2",
     "bufferutil": "^4.0.8",
-    "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
     "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",
