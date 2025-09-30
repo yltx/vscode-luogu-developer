@@ -13,14 +13,14 @@ import '@w/common.css';
 import './app.css';
 
 const AprilFoolTestcaseBackground = {
-  AC: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/AC.gif`,
-  WA: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/WA.gif`,
-  TLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/TLE.gif`,
-  MLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/MLE.gif`,
-  RE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/RE.gif`,
-  OLE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/OLE.gif`,
-  UKE: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/UKE.gif`,
-  Judging: `https://jsdelivrcn.netlify.app/gh/chenyuxuan2009/luogu_submission_better/Judging.gif`
+  AC: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/AC.gif`,
+  WA: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/WA.gif`,
+  TLE: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/TLE.gif`,
+  MLE: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/MLE.gif`,
+  RE: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/RE.gif`,
+  OLE: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/OLE.gif`,
+  UKE: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/UKE.gif`,
+  Judging: `https://cdn.mengze.vip/gh/chenyuxuan2009/luogu_submission_better/Judging.gif`
 };
 const isRelativeColorSupported = CSS.supports('color', 'hsl(from red h s l)');
 
