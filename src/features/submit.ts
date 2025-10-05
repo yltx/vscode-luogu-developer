@@ -18,12 +18,18 @@ export default function registerSubmitFeature(
           | import('@/features/history/historyItem').ProblemHistoryItem
           | { pid: string; cid?: number }
       ) => {
-        const editor = vscode.window.activeTextEditor;
+        let editor: vscode.TextEditor | undefined =
+          vscode.window.activeTextEditor;
+
         if (!editor) {
-          vscode.window.showErrorMessage(
-            '您没有打开任何文件，请打开一个文件后重试'
-          );
-          return false;
+          const selectedDocument = await selectOpenDocument();
+          if (!selectedDocument) {
+            vscode.window.showErrorMessage(
+              '您没有选择任何文件，请选择一个文件后重试'
+            );
+            return false;
+          }
+          editor = selectedDocument;
         }
         if (!problem) {
           const guessed = guessProblemId(editor.document.fileName);
@@ -64,4 +70,18 @@ export default function registerSubmitFeature(
       }
     )
   );
+}
+
+async function selectOpenDocument(): Promise<vscode.TextEditor | undefined> {
+  const res = await vscode.window.showOpenDialog({
+    canSelectFiles: true,
+    canSelectMany: false,
+    canSelectFolders: false,
+    title: '选择要提交的文件'
+  });
+  if (res && res.length > 0) {
+    const document = await vscode.workspace.openTextDocument(res[0]);
+    return await vscode.window.showTextDocument(document);
+  }
+  return undefined;
 }
