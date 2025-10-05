@@ -95,6 +95,10 @@ type ContestRanklist = WebviewMessage<
   WebviewRequestMessage<'ContestRanklist', { page: number }>,
   WebviewResponseMessage<import('luogu-api').GetScoreboardResponse>
 >;
+type ContestReload = WebviewMessage<
+  WebviewRequestMessage<'ContestReload', void>,
+  WebviewResponseMessage<import('luogu-api').ContestData>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -114,7 +118,8 @@ type MessageTypes = MessageTypesBase<
     SearchSolutionFromViewProblemMessageType,
     GetSolutionDetailsMessageType,
     VoteArticleMessageType,
-    ContestRanklist
+    ContestRanklist,
+    ContestReload
   ]
 >;
 export default MessageTypes;

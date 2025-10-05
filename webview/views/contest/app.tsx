@@ -10,11 +10,15 @@ const { UserInfo } = await import('@/model/user');
 
 const { default: ArticleViewer } = await import('@w/markdownViewer');
 const { default: Navbar } = await import('@w/components/navbar');
+const { default: send } = await import('@w/webviewRequest');
 
 import Ranklist from './ranklist';
 import { FormatScore } from './scoreUtils';
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
-const { faCheck } = await import('@fortawesome/free-solid-svg-icons');
+const { faCheck, faRotateRight } = await import(
+  '@fortawesome/free-solid-svg-icons'
+);
+const { VSCodeButton } = await import('@vscode/webview-ui-toolkit/react');
 import type { ContestData } from 'luogu-api';
 
 import '@w/common.css';
@@ -26,80 +30,71 @@ export default function App({
   children: ContestData;
 }) {
   const [tab, setTab] = React.useState<'detail' | 'ranklist'>('detail');
+  const [data, setData] = React.useState<ContestData>(contestData);
+  const [reloading, setReloading] = React.useState(false);
   return (
     <>
       <header>
-        <h1>{contestData.contest.name}</h1>
+        <h1>{data.contest.name}</h1>
         <div>
           <div>
             比赛 ID：
-            <a
-              href={`https://www.luogu.com.cn/contest/${contestData.contest.id}`}
-            >
-              {contestData.contest.id}
+            <a href={`https://www.luogu.com.cn/contest/${data.contest.id}`}>
+              {data.contest.id}
             </a>{' '}
             <Tag>{ContestRuleTypes[contestData.contest.ruleType]}</Tag>
             <Tag>
               {ContestVisibilityTypes[contestData.contest.visibilityType]}
             </Tag>
-            {contestData.contest.rated && (
-              <Tag color={ColorPalette['cyan-3']}>咕</Tag>
-            )}
-            {contestData.contest.eloThreshold !== null &&
-              contestData.contest.eloThreshold >= 0 && (
+            {data.contest.rated && <Tag color={ColorPalette['cyan-3']}>咕</Tag>}
+            {data.contest.eloThreshold !== null &&
+              data.contest.eloThreshold >= 0 && (
                 <Tag
                   color={
                     ColorPalette[
-                      contestData.contest.eloThreshold <= 1200
+                      data.contest.eloThreshold <= 1200
                         ? 'blue-3'
-                        : contestData.contest.eloThreshold <= 1600
+                        : data.contest.eloThreshold <= 1600
                           ? 'green-3'
-                          : contestData.contest.eloThreshold <= 2000
+                          : data.contest.eloThreshold <= 2000
                             ? 'orange-3'
                             : 'red-3'
                     ]
                   }
                 >
                   ELO
-                  {contestData.contest.eloThreshold < 9999 &&
-                    ' for ≤' + contestData.contest.eloThreshold}
+                  {data.contest.eloThreshold < 9999 &&
+                    ' for ≤' + data.contest.eloThreshold}
                 </Tag>
               )}
           </div>
           <div>
             比赛时间：
-            <Time
-              time={contestData.contest.startTime * 1000}
-              withoutSecond
-            /> ~{' '}
-            <Time time={contestData.contest.endTime * 1000} withoutSecond /> (
+            <Time time={data.contest.startTime * 1000} withoutSecond /> ~{' '}
+            <Time time={data.contest.endTime * 1000} withoutSecond /> (
             <ContestDuringTime
-              start={contestData.contest.startTime}
-              end={contestData.contest.endTime}
+              start={data.contest.startTime}
+              end={data.contest.endTime}
             />
             )
           </div>
           <div>
             举办者：
-            {'uid' in contestData.contest.host ? (
-              <UserName user={new UserInfo(contestData.contest.host)} />
+            {'uid' in data.contest.host ? (
+              <UserName user={new UserInfo(data.contest.host)} />
             ) : (
-              <a
-                href={
-                  'https://www.luogu.com.cn/team/' + contestData.contest.host.id
-                }
-              >
-                {contestData.contest.name}
+              <a href={'https://www.luogu.com.cn/team/' + data.contest.host.id}>
+                {data.contest.name}
               </a>
             )}
           </div>
           <div>
-            共 {contestData.contest.problemCount} 题 ·{' '}
-            {contestData.contest.totalParticipants} 人报名
+            共 {data.contest.problemCount} 题 · {data.contest.totalParticipants}{' '}
+            人报名
           </div>
         </div>
       </header>
-      {contestData.contestProblems && (
+      {data.contestProblems && (
         <>
           <hr />
           <div className="contest-problems">
@@ -110,7 +105,7 @@ export default function App({
                 <div className="cp-col cp-col-title">题目名称</div>
                 <div className="cp-col cp-col-submitted">已提交</div>
               </div>
-              {contestData.contestProblems.map((p, i) => (
+              {data.contestProblems.map((p, i) => (
                 <div className="cp-row" role="row" key={p.problem.pid}>
                   <div className="cp-col cp-col-index">
                     {String.fromCharCode(65 + i)}
@@ -125,7 +120,7 @@ export default function App({
                         encodeURIComponent(
                           JSON.stringify({
                             pid: p.problem.pid,
-                            cid: contestData.contest.id
+                            cid: data.contest.id
                           })
                         )
                       }
@@ -164,11 +159,29 @@ export default function App({
         ]}
       />
       {tab === 'detail' && (
-        <ArticleViewer>{contestData.contest.description}</ArticleViewer>
+        <ArticleViewer>{data.contest.description}</ArticleViewer>
       )}
-      {tab === 'ranklist' && contestData.contestProblems && (
-        <Ranklist problems={contestData.contestProblems} />
+      {tab === 'ranklist' && data.contestProblems && (
+        <Ranklist problems={data.contestProblems} />
       )}
+      <VSCodeButton
+        className="benben-reload"
+        appearance="icon"
+        disabled={reloading}
+        onClick={async () => {
+          setReloading(true);
+          try {
+            const fresh = await send('ContestReload', undefined);
+            setData(fresh);
+          } catch (err) {
+            // ignore - send will surface errors via webview response handling
+          } finally {
+            setReloading(false);
+          }
+        }}
+      >
+        <FontAwesomeIcon icon={faRotateRight} spin={reloading} />
+      </VSCodeButton>
     </>
   );
 }

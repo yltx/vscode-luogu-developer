@@ -57,3 +57,10 @@
     display: none;
   }
 }
+
+/* reuse benben reload button positioning */
+.benben-reload {
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+}
