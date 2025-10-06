@@ -15,11 +15,9 @@ const { default: send } = await import('@w/webviewRequest');
 import Ranklist from './ranklist';
 import { FormatScore } from './scoreUtils';
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
-const { faCheck, faRotateRight } = await import(
-  '@fortawesome/free-solid-svg-icons'
-);
-const { VSCodeButton } = await import('@vscode/webview-ui-toolkit/react');
+const { faCheck } = await import('@fortawesome/free-solid-svg-icons');
 import type { ContestData } from 'luogu-api';
+const { default: ReloadButton } = await import('@w/components/reload');
 
 import '@w/common.css';
 import './app.css';
@@ -32,8 +30,23 @@ export default function App({
   const [tab, setTab] = React.useState<'detail' | 'ranklist'>('detail');
   const [data, setData] = React.useState<ContestData>(contestData);
   const [reloading, setReloading] = React.useState(false);
+  async function reloadPage() {
+    setReloading(true);
+    try {
+      const fresh = await send('ContestReload', undefined);
+      setData(fresh);
+    } finally {
+      setReloading(false);
+    }
+  }
   return (
     <>
+      <ContestTimeline
+        start={data.contest.startTime}
+        end={data.contest.endTime}
+        onStart={reloadPage}
+        onEnd={reloadPage}
+      />
       <header>
         <h1>{data.contest.name}</h1>
         <div>
@@ -164,24 +177,7 @@ export default function App({
       {tab === 'ranklist' && data.contestProblems && (
         <Ranklist problems={data.contestProblems} />
       )}
-      <VSCodeButton
-        className="benben-reload"
-        appearance="icon"
-        disabled={reloading}
-        onClick={async () => {
-          setReloading(true);
-          try {
-            const fresh = await send('ContestReload', undefined);
-            setData(fresh);
-          } catch (err) {
-            // ignore - send will surface errors via webview response handling
-          } finally {
-            setReloading(false);
-          }
-        }}
-      >
-        <FontAwesomeIcon icon={faRotateRight} spin={reloading} />
-      </VSCodeButton>
+      <ReloadButton disabled={reloading} onClick={reloadPage} />
     </>
   );
 }
@@ -194,13 +190,68 @@ function ContestDuringTime({ start, end }: { start: number; end: number }) {
   const dd = Math.floor((d /= 24));
   return (
     <time dateTime={`${dd}d ${dh}h ${dm}m ${ds}s`}>
-      {dd > 1
-        ? dd.toFixed(2) + 'd'
-        : dh > 1
-          ? dh.toFixed(2) + 'h'
-          : dm > 1
-            ? dm.toFixed(2) + 'm'
-            : ds + 's'}
+      {dd > 0 && String(dd).padStart(2, '0') + ':'}
+      {String(dh).padStart(2, '0')}:{String(dm).padStart(2, '0')}:
+      {String(ds).padStart(2, '0')}
     </time>
+  );
+}
+
+function ContestTimeline({
+  start,
+  end,
+  onStart,
+  onEnd
+}: {
+  start: number;
+  end: number;
+  onStart?: () => void;
+  onEnd?: () => void;
+}) {
+  const [nowSecond, setNowSecond] = React.useState(
+    Math.floor(Date.now() / 1000)
+  );
+  React.useEffect(() => {
+    let cancel = false;
+    // 组件挂载后已经超过时间就不再运行了
+    const mountTimeSeconds = Date.now() / 1000;
+    let calledOnStart = mountTimeSeconds >= start;
+    let calledOnEnd = mountTimeSeconds >= end;
+    function tick() {
+      if (cancel) return;
+      setNowSecond(prevNowSecond => {
+        const newNowSecond = Math.floor(Date.now() / 1000);
+        if (prevNowSecond !== newNowSecond) {
+          if (!calledOnStart && onStart && newNowSecond >= start) {
+            onStart();
+            calledOnStart = true;
+          }
+          if (!calledOnEnd && onEnd && newNowSecond >= end) {
+            onEnd();
+            calledOnEnd = true;
+          }
+        }
+        if (newNowSecond <= end) requestAnimationFrame(tick);
+        return newNowSecond;
+      });
+    }
+    tick();
+    return () => {
+      cancel = true;
+    };
+  }, [start, end, onStart, onEnd]);
+  return (
+    nowSecond >= start &&
+    nowSecond <= end && (
+      <div className="contest-timeline">
+        <div
+          className="contest-timeline-line"
+          style={{ width: `${((nowSecond - start) / (end - start)) * 100}%` }}
+        ></div>
+        <div className="contest-timeline-time">
+          <ContestDuringTime start={nowSecond} end={end} />
+        </div>
+      </div>
+    )
   );
 }

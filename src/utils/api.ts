@@ -279,7 +279,6 @@ export const searchContest = async (cid: number) =>
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
     .then(res => res?.data?.currentData)
     .then(async res => {
-      // console.log(res)
       if ((res || null) === null) {
         throw new Error('比赛不存在');
       }

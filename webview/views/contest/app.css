@@ -58,9 +58,27 @@
   }
 }
 
-/* reuse benben reload button positioning */
-.benben-reload {
+.contest-timeline {
   position: fixed;
-  right: 10px;
-  bottom: 10px;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  box-sizing: border-box;
+  > .contest-timeline-line {
+    height: 2px;
+    background-color: var(--vscode-button-background);
+    z-index: 20;
+  }
+  > .contest-timeline-time {
+    display: inline-block;
+    position: fixed;
+    right: 0;
+    top: 0;
+    background-color: var(--vscode-textPreformat-background);
+    color: var(--vscode-textPreformat-foreground);
+    font-family: var(--vscode-editor-font-family);
+    padding: 3px 2px 2px 2px;
+    border-bottom-left-radius: 4px;
+    z-index: 10;
+  }
 }
