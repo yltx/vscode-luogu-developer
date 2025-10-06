@@ -283,15 +283,6 @@ export const searchContest = async (cid: number) =>
         throw new Error('比赛不存在');
       }
       return res;
-    })
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
     });
 
 export const getSolution = async (pid: string, page: number) =>

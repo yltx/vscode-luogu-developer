@@ -31,6 +31,7 @@ export default function App({
   const [tab, setTab] = React.useState<'detail' | 'ranklist'>('detail');
   const [data, setData] = React.useState<ContestData>(contestData);
   const [reloading, setReloading] = React.useState(false);
+  const [monitoring, setMonitoring] = React.useState(false);
   const [joinState, setJoinState] = React.useState<
     'notJoined' | 'joining' | 'joined'
   >('notJoined');
@@ -46,6 +47,18 @@ export default function App({
       setReloading(false);
     }
   }
+  React.useEffect(() => {
+    let mounted = true;
+    const interval = setInterval(async () => {
+      const cur = await send('ContestMonitorGet', undefined);
+      if (!mounted) return;
+      setMonitoring(cur === data.contest.id);
+    }, 1000);
+    return () => {
+      mounted = false;
+      clearInterval(interval);
+    };
+  }, [data.contest.id]);
   return (
     <>
       <ContestTimeline
@@ -114,6 +127,20 @@ export default function App({
           </div>
         </div>
         <div className="header-actions">
+          <VSCodeButton
+            appearance="secondary"
+            onClick={async () => {
+              if (monitoring) {
+                const ok = await send('ContestMonitorStop', undefined);
+                if (ok) setMonitoring(false);
+              } else {
+                const ok = await send('ContestEnterContestMode', undefined);
+                if (ok) setMonitoring(true);
+              }
+            }}
+          >
+            {monitoring ? '已在比赛模式' : '进入比赛模式'}
+          </VSCodeButton>
           <VSCodeButton
             appearance="primary"
             disabled={joinState !== 'notJoined'}

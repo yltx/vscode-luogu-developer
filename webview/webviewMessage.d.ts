@@ -103,6 +103,18 @@ type ContestJoin = WebviewMessage<
   WebviewRequestMessage<'ContestJoin', void>,
   WebviewResponseMessage<boolean>
 >;
+type ContestEnterContestMode = WebviewMessage<
+  WebviewRequestMessage<'ContestEnterContestMode', void>,
+  WebviewResponseMessage<boolean>
+>;
+type ContestMonitorGet = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorGet', void>,
+  WebviewResponseMessage<number | undefined>
+>;
+type ContestMonitorStop = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorStop', void>,
+  WebviewResponseMessage<boolean>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -124,7 +136,10 @@ type MessageTypes = MessageTypesBase<
     VoteArticleMessageType,
     ContestRanklist,
     ContestReload,
-    ContestJoin
+    ContestJoin,
+    ContestEnterContestMode,
+    ContestMonitorGet,
+    ContestMonitorStop
   ]
 >;
 export default MessageTypes;

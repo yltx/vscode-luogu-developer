@@ -5,6 +5,11 @@ import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { getRanklist, searchContest, joinContest } from '@/utils/api';
 import { ContestVisibilityTypes } from '@/utils/shared';
 import { processAxiosError } from '@/utils/workspaceUtils';
+import {
+  setContestMonitor,
+  clearContestMonitor,
+  getContestMonitor
+} from './contestMonitor';
 
 export default function showContestWebview(data: ContestData) {
   const panel = vscode.window.createWebviewPanel(
@@ -66,6 +71,24 @@ export default function showContestWebview(data: ContestData) {
         return true;
       } catch (e) {
         processAxiosError('报名比赛')(e);
+        return false;
+      }
+    },
+    ContestEnterContestMode: async () => {
+      try {
+        await setContestMonitor(data.contest.id);
+        return true;
+      } catch (e) {
+        processAxiosError('进入比赛模式')(e);
+        return false;
+      }
+    },
+    ContestMonitorGet: async () => getContestMonitor(),
+    ContestMonitorStop: async () => {
+      try {
+        await clearContestMonitor();
+        return true;
+      } catch {
         return false;
       }
     }

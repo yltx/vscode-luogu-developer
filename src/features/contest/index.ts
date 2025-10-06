@@ -2,8 +2,10 @@ import { searchContest } from '@/utils/api';
 import * as vscode from 'vscode';
 import showContestWebview from './webview';
 import { processAxiosError } from '@/utils/workspaceUtils';
+import registerContestMonitor from './contestMonitor';
 
 export default function registerContest(context: vscode.ExtensionContext) {
+  registerContestMonitor(context);
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'luogu.contest',
