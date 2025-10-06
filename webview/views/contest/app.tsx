@@ -117,7 +117,7 @@ export default function App({
               <UserName user={new UserInfo(data.contest.host)} />
             ) : (
               <a href={'https://www.luogu.com.cn/team/' + data.contest.host.id}>
-                {data.contest.name}
+                {data.contest.host.name}
               </a>
             )}
           </div>

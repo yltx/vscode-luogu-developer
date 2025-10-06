@@ -93,7 +93,7 @@ export default function Ranklist({
     return () => {
       if (interval) window.clearInterval(interval);
     };
-  }, [autoRefresh, page]);
+  }, [autoRefresh, page, refreshData]);
 
   const contestFullScore = problems.reduce(
     (a, b) => a + Math.floor((b.score / 100) * b.problem.fullScore),

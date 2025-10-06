@@ -69,7 +69,7 @@ export default function Pagination({
             key={item}
             className={`page-item ${item === current ? 'active' : ''}`}
           >
-            <button className="page-link" onClick={() => goto(item as number)}>
+            <button className="page-link" onClick={() => goto(item)}>
               {item}
             </button>
           </li>
