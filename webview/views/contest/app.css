@@ -1,3 +1,10 @@
+.header-actions {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  margin-top: 4px;
+}
+
 /* Contest problems list using CSS flexbox for a table-like layout */
 .contest-problems {
   width: 100%;

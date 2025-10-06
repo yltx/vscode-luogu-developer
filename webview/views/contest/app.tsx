@@ -16,6 +16,7 @@ import Ranklist from './ranklist';
 import { FormatScore } from './scoreUtils';
 const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { faCheck } = await import('@fortawesome/free-solid-svg-icons');
+const { VSCodeButton } = await import('@vscode/webview-ui-toolkit/react');
 import type { ContestData } from 'luogu-api';
 const { default: ReloadButton } = await import('@w/components/reload');
 
@@ -30,6 +31,12 @@ export default function App({
   const [tab, setTab] = React.useState<'detail' | 'ranklist'>('detail');
   const [data, setData] = React.useState<ContestData>(contestData);
   const [reloading, setReloading] = React.useState(false);
+  const [joinState, setJoinState] = React.useState<
+    'notJoined' | 'joining' | 'joined'
+  >('notJoined');
+  React.useEffect(() => {
+    setJoinState(data.joined ? 'joined' : 'notJoined');
+  }, [data]);
   async function reloadPage() {
     setReloading(true);
     try {
@@ -105,6 +112,19 @@ export default function App({
             共 {data.contest.problemCount} 题 · {data.contest.totalParticipants}{' '}
             人报名
           </div>
+        </div>
+        <div className="header-actions">
+          <VSCodeButton
+            appearance="primary"
+            disabled={joinState !== 'notJoined'}
+            onClick={async () => {
+              setJoinState('joining');
+              if (await send('ContestJoin', undefined)) reloadPage();
+              else setJoinState('notJoined');
+            }}
+          >
+            {joinState === 'joined' ? '已报名' : '报名比赛'}
+          </VSCodeButton>
         </div>
       </header>
       {data.contestProblems && (

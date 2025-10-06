@@ -99,6 +99,10 @@ type ContestReload = WebviewMessage<
   WebviewRequestMessage<'ContestReload', void>,
   WebviewResponseMessage<import('luogu-api').ContestData>
 >;
+type ContestJoin = WebviewMessage<
+  WebviewRequestMessage<'ContestJoin', void>,
+  WebviewResponseMessage<boolean>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -119,7 +123,8 @@ type MessageTypes = MessageTypesBase<
     GetSolutionDetailsMessageType,
     VoteArticleMessageType,
     ContestRanklist,
-    ContestReload
+    ContestReload,
+    ContestJoin
   ]
 >;
 export default MessageTypes;

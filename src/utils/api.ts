@@ -405,6 +405,11 @@ export const login = async (
     }));
 };
 
+export const joinContest = async (
+  cid: number,
+  body: { code?: string; unrated?: boolean }
+) => axios.post(`/fe/api/contest/join/${cid}`, body).then(() => {});
+
 export const unlock = async (code: string, cookie?: Cookie) => {
   return await axios.post<void>(
     API.UNLOCK_ENDPOINT,
