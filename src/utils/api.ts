@@ -279,20 +279,10 @@ export const searchContest = async (cid: number) =>
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
     .then(res => res?.data?.currentData)
     .then(async res => {
-      // console.log(res)
       if ((res || null) === null) {
         throw new Error('比赛不存在');
       }
       return res;
-    })
-    .catch(err => {
-      if (err.response) {
-        throw err.response.data;
-      } else if (err.request) {
-        throw new Error('请求超时，请重试');
-      } else {
-        throw err;
-      }
     });
 
 export const getSolution = async (pid: string, page: number) =>
@@ -405,6 +395,11 @@ export const login = async (
       uid: praseCookie(x.headers['set-cookie']).uid
     }));
 };
+
+export const joinContest = async (
+  cid: number,
+  body: { code?: string; unrated?: boolean }
+) => axios.post(`/fe/api/contest/join/${cid}`, body).then(() => {});
 
 export const unlock = async (code: string, cookie?: Cookie) => {
   return await axios.post<void>(

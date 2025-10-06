@@ -91,6 +91,30 @@ type VoteArticleMessageType = WebviewMessage<
   WebviewRequestMessage<'voteArticle', { lid: string; type: 1 | 0 | -1 }>,
   WebviewResponseMessage<{ upvotes: number; voted: 1 | 0 | -1 }>
 >;
+type ContestRanklist = WebviewMessage<
+  WebviewRequestMessage<'ContestRanklist', { page: number }>,
+  WebviewResponseMessage<import('luogu-api').GetScoreboardResponse>
+>;
+type ContestReload = WebviewMessage<
+  WebviewRequestMessage<'ContestReload', void>,
+  WebviewResponseMessage<import('luogu-api').ContestData>
+>;
+type ContestJoin = WebviewMessage<
+  WebviewRequestMessage<'ContestJoin', void>,
+  WebviewResponseMessage<boolean>
+>;
+type ContestEnterContestMode = WebviewMessage<
+  WebviewRequestMessage<'ContestEnterContestMode', void>,
+  WebviewResponseMessage<boolean>
+>;
+type ContestMonitorGet = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorGet', void>,
+  WebviewResponseMessage<number | undefined>
+>;
+type ContestMonitorStop = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorStop', void>,
+  WebviewResponseMessage<boolean>
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -109,7 +133,13 @@ type MessageTypes = MessageTypesBase<
     JumpToCphMessageType,
     SearchSolutionFromViewProblemMessageType,
     GetSolutionDetailsMessageType,
-    VoteArticleMessageType
+    VoteArticleMessageType,
+    ContestRanklist,
+    ContestReload,
+    ContestJoin,
+    ContestEnterContestMode,
+    ContestMonitorGet,
+    ContestMonitorStop
   ]
 >;
 export default MessageTypes;

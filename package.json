@@ -577,13 +577,13 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-brands-svg-icons": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@fortawesome/fontawesome-svg-core": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.3",
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.8.2",
-    "bufferutil": "^4.0.8",
     "dateformat": "^5.0.3",
     "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",

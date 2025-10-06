@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
 import HistoryItem from './historyItem';
 import {
-  contestType,
-  contestVisibility,
+  ContestVisibilityTypes,
+  ContestRuleTypes,
   formatTime,
   TrainingTypes
 } from '@/utils/shared';
@@ -62,7 +62,7 @@ export default class historyTreeviewProvider
         tooltip: new vscode.MarkdownString(
           `[${element.contestId}](https://www.luogu.com.cn/contest/${element.contestId}) ${element.title}  \n` +
             `举办者：[${element.owner.name}](https://www.luogu.com.cn${'uid' in element.owner ? `/user/${element.owner.uid}` : `/team/${element.owner.teamId}`})  \n` +
-            `${contestType[element.ruleType]} · ${contestVisibility[element.visibilityType]}${element.rated ? ' · rated' : ''}  \n` +
+            `${ContestRuleTypes[element.ruleType].name} · ${ContestVisibilityTypes[element.visibilityType].name}${element.rated ? ' · rated' : ''}  \n` +
             `${formatTime(element.startTime * 1000)} - ${formatTime(element.endTime * 1000)}`
         ),
         contextValue: 'luogu.history.contestItem'

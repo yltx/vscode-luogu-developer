@@ -1,0 +1,91 @@
+.header-actions {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  margin-top: 4px;
+}
+
+/* Contest problems list using CSS flexbox for a table-like layout */
+.contest-problems {
+  width: 100%;
+}
+
+.cp-table {
+  width: 100%;
+}
+
+.cp-row {
+  display: flex;
+  padding: 0.5em;
+  gap: 1em;
+}
+
+.cp-header {
+  font-weight: 600;
+  border-bottom: 2px solid #7773;
+}
+.cp-row:not(.cp-header):not(:last-child) {
+  border-bottom: 1px solid #7773;
+}
+
+.cp-col {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.cp-col-index {
+  text-align: center;
+  width: 1em;
+}
+
+.cp-col-maxscore {
+  text-align: center;
+  width: 4em;
+}
+
+.cp-col-title {
+  flex: auto;
+  min-width: 0; /* allow ellipsis */
+}
+
+.cp-col-submitted {
+  text-align: center;
+  width: 3em;
+}
+
+:not(.cp-header) > .cp-col-submitted {
+  color: #52c41a;
+}
+
+/* When viewport is narrow, hide the score column */
+@media (max-width: 400px) {
+  .cp-col-maxscore {
+    display: none;
+  }
+}
+
+.contest-timeline {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  box-sizing: border-box;
+  > .contest-timeline-line {
+    height: 2px;
+    background-color: var(--vscode-button-background);
+    z-index: 20;
+  }
+  > .contest-timeline-time {
+    display: inline-block;
+    position: fixed;
+    right: 0;
+    top: 0;
+    background-color: var(--vscode-textPreformat-background);
+    color: var(--vscode-textPreformat-foreground);
+    font-family: var(--vscode-editor-font-family);
+    padding: 3px 2px 2px 2px;
+    border-bottom-left-radius: 4px;
+    z-index: 10;
+  }
+}
