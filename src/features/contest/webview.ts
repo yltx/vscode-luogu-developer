@@ -41,10 +41,19 @@ export default function showContestWebview(data: ContestData) {
     </html>
   `;
   useWebviewResponseHandle(panel.webview, {
-    ContestRanklist: ({ page }) => getRanklist(data.contest.id, page),
+    ContestRanklist: ({ page }) =>
+      getRanklist(data.contest.id, page).catch(e => {
+        processAxiosError('获取排行榜')(e);
+        throw e;
+      }),
     ContestReload: async () => {
-      const fresh = await searchContest(data.contest.id);
-      return fresh;
+      try {
+        const fresh = await searchContest(data.contest.id);
+        return fresh;
+      } catch (e) {
+        processAxiosError('刷新比赛')(e);
+        throw e;
+      }
     },
     ContestJoin: async () => {
       const body: { code?: string; unrated?: boolean } = {};
