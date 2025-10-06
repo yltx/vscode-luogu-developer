@@ -75,10 +75,8 @@ export default function App({
             <a href={`https://www.luogu.com.cn/contest/${data.contest.id}`}>
               {data.contest.id}
             </a>{' '}
-            <Tag>{ContestRuleTypes[contestData.contest.ruleType]}</Tag>
-            <Tag>
-              {ContestVisibilityTypes[contestData.contest.visibilityType]}
-            </Tag>
+            <Tag>{ContestRuleTypes[data.contest.ruleType]}</Tag>
+            <Tag>{ContestVisibilityTypes[data.contest.visibilityType]}</Tag>
             {data.contest.rated && <Tag color={ColorPalette['cyan-3']}>咕</Tag>}
             {data.contest.eloThreshold !== null &&
               data.contest.eloThreshold >= 0 && (

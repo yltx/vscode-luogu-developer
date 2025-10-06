@@ -34,6 +34,7 @@ export default function Ranklist({
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
 
   const refreshData = (isRefresh = false) => {
+    let mounted = true;
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -41,6 +42,7 @@ export default function Ranklist({
     }
     send('ContestRanklist', { page })
       .then(res => {
+        if (!mounted) return;
         const data = res;
         if (data && data.scoreboard) {
           setScoreboard(data);
@@ -57,18 +59,19 @@ export default function Ranklist({
         setLastRefreshTime(new Date());
       })
       .finally(() => {
+        if (!mounted) return;
         if (isRefresh) {
           setRefreshing(false);
         } else {
           setLoading(false);
         }
       });
+    return () => {
+      mounted = false;
+    };
   };
 
-  useEffect(() => {
-    const cleanup = refreshData(false);
-    return cleanup;
-  }, [page]);
+  useEffect(() => refreshData(false), [page]);
 
   // 自动刷新逻辑
   useEffect(() => {
@@ -86,7 +89,7 @@ export default function Ranklist({
     return () => {
       if (interval) window.clearInterval(interval);
     };
-  }, [autoRefresh, page, refreshData]);
+  }, [autoRefresh, page]);
 
   const contestFullScore = problems.reduce(
     (a, b) => a + Math.floor((b.score / 100) * b.problem.fullScore),
