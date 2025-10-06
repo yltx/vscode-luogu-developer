@@ -1,3 +1,4 @@
+/** @type {import('eslint').Linter.Config} */
 module.exports = {
   env: {
     browser: true,
@@ -37,5 +38,10 @@ module.exports = {
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-duplicate-enum-values': 'off',
     '@typescript-eslint/ban-ts-comment': 'off'
+  },
+  settings: {
+    react: {
+      version: 'detect'
+    }
   }
 };

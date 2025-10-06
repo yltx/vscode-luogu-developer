@@ -201,7 +201,7 @@ function BenbenList({
       window.removeEventListener('scroll', request);
       window.removeEventListener('resize', request);
     };
-  }, []);
+  }, [SetText, reload]);
 
   useEffect(() => {}, [loadingState]);
 
