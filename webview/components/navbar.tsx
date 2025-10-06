@@ -1,4 +1,4 @@
-import React from 'react';
+const { default: React } = await import('react');
 import './navbar.css';
 
 type Action = {

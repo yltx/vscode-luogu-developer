@@ -8,6 +8,7 @@ let monitoredContest:
   | undefined = undefined;
 
 let minuteTimer: NodeJS.Timeout | undefined = undefined;
+let initialDelayTimeout: NodeJS.Timeout | undefined = undefined;
 let tickTimer: NodeJS.Timeout | undefined = undefined; // 100ms update for time display
 let startEdgeTimer: NodeJS.Timeout | undefined = undefined;
 let endEdgeTimer: NodeJS.Timeout | undefined = undefined;
@@ -15,6 +16,8 @@ let lastRankText: string | undefined = undefined;
 
 function clearTimers() {
   if (minuteTimer) clearInterval(minuteTimer), (minuteTimer = undefined);
+  if (initialDelayTimeout)
+    clearTimeout(initialDelayTimeout), (initialDelayTimeout = undefined);
   if (tickTimer) clearInterval(tickTimer), (tickTimer = undefined);
   if (startEdgeTimer)
     clearTimeout(startEdgeTimer), (startEdgeTimer = undefined);
@@ -78,14 +81,18 @@ async function updateStatus() {
     arguments: [monitoredContest.id]
   };
 }
-
 function scheduleMinuteTick() {
+  // clear any existing interval or pending timeout to avoid duplicates
   if (minuteTimer) clearInterval(minuteTimer);
+  if (initialDelayTimeout) clearTimeout(initialDelayTimeout);
+
   const now = Date.now();
   const delay = 60000 - (now % 60000);
-  setTimeout(() => {
+  initialDelayTimeout = setTimeout(() => {
     void updateStatus();
     minuteTimer = setInterval(() => void updateStatus(), 60000);
+    // the timeout has fired, clear its handle
+    initialDelayTimeout = undefined;
   }, delay);
 }
 

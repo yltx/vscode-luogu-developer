@@ -34,7 +34,6 @@ export default function Ranklist({
   const [lastRefreshTime, setLastRefreshTime] = useState<Date | null>(null);
 
   const refreshData = (isRefresh = false) => {
-    let mounted = true;
     if (isRefresh) {
       setRefreshing(true);
     } else {
@@ -42,7 +41,6 @@ export default function Ranklist({
     }
     send('ContestRanklist', { page })
       .then(res => {
-        if (!mounted) return;
         const data = res;
         if (data && data.scoreboard) {
           setScoreboard(data);
@@ -59,17 +57,12 @@ export default function Ranklist({
         setLastRefreshTime(new Date());
       })
       .finally(() => {
-        if (mounted) {
-          if (isRefresh) {
-            setRefreshing(false);
-          } else {
-            setLoading(false);
-          }
+        if (isRefresh) {
+          setRefreshing(false);
+        } else {
+          setLoading(false);
         }
       });
-    return () => {
-      mounted = false;
-    };
   };
 
   useEffect(() => {

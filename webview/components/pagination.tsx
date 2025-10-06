@@ -1,4 +1,4 @@
-import React from 'react';
+const { default: React } = await import('react');
 import './pagination.css';
 
 type Props = {
