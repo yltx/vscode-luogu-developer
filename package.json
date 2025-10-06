@@ -536,10 +536,10 @@
   "scripts": {
     "pack": "vsce package --allow-star-activation -o vscode-luogu.vsix",
     "vscode:prepublish": "npm run package",
-    "compile": "webpack --mode development",
+    "build:icons": "node ./scripts/build-icons.mjs",
     "prepackage": "del dist/",
-    "watch": "webpack --mode development --watch",
-    "package": "webpack --mode production",
+    "watch": "npm run build:icons && webpack --mode development --watch",
+    "package": "npm run build:icons && webpack --mode production",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "prettier": "npx prettier . -w"
