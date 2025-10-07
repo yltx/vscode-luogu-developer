@@ -192,6 +192,7 @@ export const formatTime = (
 ): string => {
   const dateObj = typeof date === 'number' ? new Date(date) : date;
   const o = {
+    'y+': dateObj.getFullYear(),
     'M+': dateObj.getMonth() + 1,
     'd+': dateObj.getDate(),
     'h+': dateObj.getHours(),
