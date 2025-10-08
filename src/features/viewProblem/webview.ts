@@ -3,6 +3,7 @@ import { ProblemData } from 'luogu-api';
 import * as vscode from 'vscode';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { checkCPH, sendCphMessage } from './cph';
+import jumpToCphEventEmitter from './jumpToCphEventEmitter';
 
 export default function showProblemWebview(data: ProblemData) {
   const panel = vscode.window.createWebviewPanel(
@@ -15,15 +16,18 @@ export default function showProblemWebview(data: ProblemData) {
       localResourceRoots: [
         vscode.Uri.file(globalThis.resourcesPath),
         vscode.Uri.file(globalThis.distPath)
-      ]
+      ],
+      enableCommandUris: ['luogu.solution']
     }
   );
   useWebviewResponseHandle(panel.webview, {
     checkCph: checkCPH,
-    jumpToCph: () => sendCphMessage(data),
-    searchSolution: () =>
-      vscode.commands.executeCommand('luogu.solution', data.problem.pid)
+    jumpToCph: () => sendCphMessage(data)
   });
+  const jumpToCphListener = jumpToCphEventEmitter.event(() => {
+    if (panel.active) sendCphMessage(data);
+  });
+  panel.onDidDispose(() => jumpToCphListener.dispose());
   panel.webview.html = `
     <!DOCTYPE html>
     <html>

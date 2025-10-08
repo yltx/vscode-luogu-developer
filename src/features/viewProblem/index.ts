@@ -6,6 +6,7 @@ import {
 } from '@/utils/workspaceUtils';
 import * as vscode from 'vscode';
 import showProblemWebview from './webview';
+import jumpToCphEventEmitter from './jumpToCphEventEmitter';
 
 export default function registerViewProblem(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -46,6 +47,10 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
             return new Error('Error when fetch problem', { cause: e });
           });
       }
-    )
+    ),
+    vscode.commands.registerCommand('luogu.jumpToCph', () =>
+      jumpToCphEventEmitter.fire()
+    ),
+    jumpToCphEventEmitter
   );
 }

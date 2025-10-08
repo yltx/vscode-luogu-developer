@@ -87,12 +87,13 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             {data.problem.type !== 'T' &&
               data.problem.type !== 'U' &&
               !data.contest && (
-                <VSCodeButton
-                  appearance="primary"
-                  onClick={() => send('searchSolution', undefined)}
+                <a
+                  href={`command:luogu.solution?${encodeURIComponent(JSON.stringify([data.problem.pid]))}`}
                 >
-                  <FontAwesomeIcon icon={faBook} /> 查看题解
-                </VSCodeButton>
+                  <VSCodeButton appearance="primary">
+                    <FontAwesomeIcon icon={faBook} /> 查看题解
+                  </VSCodeButton>
+                </a>
               )}
           </div>
         </div>

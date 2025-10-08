@@ -163,6 +163,10 @@
       {
         "command": "luogu.openUntitledTextDocument",
         "title": "打开新文档"
+      },
+      {
+        "command": "luogu.jumpToCph",
+        "title": "在 CPH 中打开当前题目"
       }
     ],
     "keybindings": [
@@ -205,6 +209,11 @@
       {
         "command": "luogu.traininglist",
         "key": "Ctrl+Alt+G T"
+      },
+      {
+        "command": "luogu.jumpToCph",
+        "key": "Ctrl+Alt+G H",
+        "when": "activeWebviewPanelId == 'problem'"
       }
     ],
     "viewsContainers": {
@@ -307,6 +316,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "luogu.jumpToCph",
+          "when": "activeWebviewPanelId == 'problem'"
+        },
         {
           "command": "luogu.myarticle.refresh",
           "when": "false"

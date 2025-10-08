@@ -79,10 +79,6 @@ type JumpToCphMessageType = WebviewMessage<
   WebviewRequestMessage<'jumpToCph', void>,
   WebviewResponseMessage<void>
 >;
-type SearchSolutionFromViewProblemMessageType = WebviewMessage<
-  WebviewRequestMessage<'searchSolution', void>,
-  WebviewResponseMessage<void>
->;
 type GetSolutionDetailsMessageType = WebviewMessage<
   WebviewRequestMessage<'getSolutionDetails', { index: number }>,
   WebviewResponseMessage<import('@/model/article').default>
@@ -131,7 +127,6 @@ type MessageTypes = MessageTypesBase<
     clearLoginCookieMessageType,
     checkCphMessageType,
     JumpToCphMessageType,
-    SearchSolutionFromViewProblemMessageType,
     GetSolutionDetailsMessageType,
     VoteArticleMessageType,
     ContestRanklist,
