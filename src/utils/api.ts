@@ -81,7 +81,7 @@ export namespace API {
     CREATE_ARTICLE = '/api/article/new';
   export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
   export const CSRF_TOKEN = `/ranking`;
-  export const CLIENT_ID = `/user/679581?_contentOnly`;
+  export const CLIENT_ID = `/auth/login`;
 }
 
 declare module 'axios' {
@@ -146,50 +146,6 @@ export const axios = (() => {
           get.uid != res.config.myInterceptors_cookie.uid
         )
           throw Error('UnknownCookie');
-      }
-      return res;
-    },
-    async err => {
-      if (!isAxiosError(err) || !err.response) throw err;
-      if (
-        err.response.data.errorMessage === '未登录' ||
-        err.response.data.data?.errorType ===
-          'LuoguWeb\\Spilopelia\\Exception\\UserUnloginException'
-      ) {
-        needLogin();
-        throw new Error('未登录', { cause: err });
-      }
-      if (err.config?.myInterceptors_notCheckCookie) throw err;
-      if (err.config?.myInterceptors_cookie?.uid) {
-        const get = praseCookie(err.response.headers['set-cookie']);
-        if (
-          get.uid !== undefined &&
-          get.uid != err.config.myInterceptors_cookie.uid
-        ) {
-          const sessions = await globalThis.luogu.authProvider.getSessions();
-          if (sessions.length > 0) {
-            globalThis.luogu.authProvider.removeSession(sessions[0].id);
-            vscode.window
-              .showErrorMessage('登录信息已经失效，请重新登录。', '登录')
-              .then(async c => {
-                if (c) vscode.commands.executeCommand('luogu.signin');
-              });
-          }
-        }
-      }
-      throw err;
-    }
-  );
-  axios.interceptors.response.use(
-    res => {
-      if (res.config.myInterceptors_notCheckCookie) return res;
-      if (res.config.myInterceptors_cookie?.uid) {
-        const get = praseCookie(res.headers['set-cookie']);
-        if (
-          get.uid !== undefined &&
-          get.uid != res.config.myInterceptors_cookie.uid
-        )
-          throw new Error('UnknownCookie');
       }
       return res;
     },
@@ -384,7 +340,7 @@ export const login = async (
         username,
         password,
         captcha
-      } as LoginRequest,
+      } satisfies LoginRequest,
       {
         myInterceptors_cookie: cookie,
         myInterceptors_notCheckCookie: true
@@ -657,21 +613,16 @@ export async function submitCode(
       return submitCode({ pid, cid }, code, language, enableO2, input);
     });
 }
-export async function checkCookie(c: Cookie) {
+export async function checkCookie(oldCookie: Cookie) {
   const res = await axios.get(API.CLIENT_ID, {
     myInterceptors_notCheckCookie: true,
-    myInterceptors_cookie: c
+    myInterceptors_cookie: oldCookie
   });
-  const cookie = res.headers['set-cookie'];
-  let flag = false;
-  if (cookie)
-    for (const cookie_info of cookie) {
-      if (cookie_info.match('_uid')?.index == 0) {
-        const match_res = cookie_info.match('(?<==).*?(?=;)');
-        if (match_res && match_res[0] === c.uid.toString()) flag = true;
-      }
-    }
-  return flag;
+  const newCookie = praseCookie(res.headers['set-cookie']);
+  return (
+    (newCookie.uid ?? oldCookie.uid) === oldCookie.uid &&
+    (newCookie.clientID ?? oldCookie.clientID) === oldCookie.clientID
+  );
 }
 export const getLoginCaptcha = async (c?: Cookie) =>
     axios
