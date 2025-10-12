@@ -13,7 +13,7 @@ import {
 
 export default function showContestWebview(data: ContestData) {
   const panel = vscode.window.createWebviewPanel(
-    'contest',
+    'luogu.contestPanel',
     `${data.contest.id} ${data.contest.name}`,
     vscode.ViewColumn.Two,
     {

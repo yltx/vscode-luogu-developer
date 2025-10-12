@@ -318,7 +318,7 @@
       "commandPalette": [
         {
           "command": "luogu.jumpToCph",
-          "when": "activeWebviewPanelId == 'problem'"
+          "when": "activeWebviewPanelId == 'luogu.problemPanel'"
         },
         {
           "command": "luogu.myarticle.refresh",

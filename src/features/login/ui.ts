@@ -16,7 +16,7 @@ import { promisify } from 'util';
 
 export default async function showLoginView() {
   const panel = vscode.window.createWebviewPanel(
-    'login',
+    'luogu.loginPanel',
     `洛谷 - 登录`,
     vscode.ViewColumn.Active,
     {

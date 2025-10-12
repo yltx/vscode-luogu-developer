@@ -8,7 +8,7 @@ import { MessageTypes } from '@w/views/record/data';
 
 async function record(record: RecordData) {
   const panel = vscode.window.createWebviewPanel(
-    'record',
+    'luogu.recordPanel',
     `R${record.record.id} 记录详情`,
     vscode.ViewColumn.Two,
     {
