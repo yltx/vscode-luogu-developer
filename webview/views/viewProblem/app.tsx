@@ -81,7 +81,9 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                 onClick={() => send('jumpToCph', undefined)}
                 appearance="primary"
               >
-                <CphIcon /> 传送至 CPH
+                <div>
+                  <CphIcon /> 传送至 CPH
+                </div>
               </VSCodeButton>
             )}
             {data.problem.type !== 'T' &&
@@ -91,7 +93,9 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                   href={`command:luogu.solution?${encodeURIComponent(JSON.stringify([data.problem.pid]))}`}
                 >
                   <VSCodeButton appearance="primary">
-                    <FontAwesomeIcon icon={faBook} /> 查看题解
+                    <div>
+                      <FontAwesomeIcon icon={faBook} /> 查看题解
+                    </div>
                   </VSCodeButton>
                 </a>
               )}
