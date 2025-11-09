@@ -528,6 +528,14 @@
           "default": "ProblemID",
           "description": "传送至 CPH 时，CPH 创建文件时的文件名形式。"
         }
+        ,
+        "luogu.cphPort": {
+          "type": "integer",
+          "default": 27121,
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "传送至 CPH 时使用的本地端口号（默认 27121，与 CPH 默认一致）。"
+        }
       }
     },
     "icons": {
