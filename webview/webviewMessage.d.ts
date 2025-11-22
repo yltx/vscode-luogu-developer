@@ -79,10 +79,6 @@ type JumpToCphMessageType = WebviewMessage<
   WebviewRequestMessage<'jumpToCph', void>,
   WebviewResponseMessage<void>
 >;
-type SearchSolutionFromViewProblemMessageType = WebviewMessage<
-  WebviewRequestMessage<'searchSolution', void>,
-  WebviewResponseMessage<void>
->;
 type GetSolutionDetailsMessageType = WebviewMessage<
   WebviewRequestMessage<'getSolutionDetails', { index: number }>,
   WebviewResponseMessage<import('@/model/article').default>
@@ -90,6 +86,36 @@ type GetSolutionDetailsMessageType = WebviewMessage<
 type VoteArticleMessageType = WebviewMessage<
   WebviewRequestMessage<'voteArticle', { lid: string; type: 1 | 0 | -1 }>,
   WebviewResponseMessage<{ upvotes: number; voted: 1 | 0 | -1 }>
+>;
+type ContestRanklist = WebviewMessage<
+  WebviewRequestMessage<'ContestRanklist', { page: number }>,
+  WebviewResponseMessage<import('luogu-api').GetScoreboardResponse>
+>;
+type ContestReload = WebviewMessage<
+  WebviewRequestMessage<'ContestReload', void>,
+  WebviewResponseMessage<import('luogu-api').ContestData>
+>;
+type ContestJoin = WebviewMessage<
+  WebviewRequestMessage<'ContestJoin', void>,
+  WebviewResponseMessage<boolean>
+>;
+type ContestEnterContestMode = WebviewMessage<
+  WebviewRequestMessage<'ContestEnterContestMode', void>,
+  WebviewResponseMessage<boolean>
+>;
+type ContestMonitorGet = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorGet', void>,
+  WebviewResponseMessage<number | undefined>
+>;
+type ContestMonitorStop = WebviewMessage<
+  WebviewRequestMessage<'ContestMonitorStop', void>,
+  WebviewResponseMessage<boolean>
+>;
+type GetTags = WebviewMessage<
+  WebviewRequestMessage<'GetTags', void>,
+  WebviewResponseMessage<
+    (import('@/utils/shared').RawTag & { color: string })[]
+  >
 >;
 
 type MessageTypes = MessageTypesBase<
@@ -107,9 +133,15 @@ type MessageTypes = MessageTypesBase<
     clearLoginCookieMessageType,
     checkCphMessageType,
     JumpToCphMessageType,
-    SearchSolutionFromViewProblemMessageType,
     GetSolutionDetailsMessageType,
-    VoteArticleMessageType
+    VoteArticleMessageType,
+    ContestRanklist,
+    ContestReload,
+    ContestJoin,
+    ContestEnterContestMode,
+    ContestMonitorGet,
+    ContestMonitorStop,
+    GetTags
   ]
 >;
 export default MessageTypes;

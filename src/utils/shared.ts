@@ -1,3 +1,6 @@
+import axios from 'axios';
+import { mapColorsToValues } from './color';
+
 'use strict';
 
 export enum UserStatus {
@@ -101,6 +104,109 @@ export enum colorStyle {
   'cheater' = 'rgb(173, 139, 0)',
   'Cheater' = 'rgb(173, 139, 0)'
 }
+
+export const ContestRuleTypes = mapColorsToValues({
+  '1': {
+    id: 1,
+    name: 'OI',
+    color: 'orange-3'
+  },
+  '2': {
+    id: 2,
+    name: 'ICPC',
+    color: 'purple-3'
+  },
+  '3': {
+    id: 3,
+    name: '乐多',
+    color: 'gold-3'
+  },
+  '4': {
+    id: 4,
+    name: 'IOI',
+    color: 'gold-3'
+  },
+  '5': {
+    id: 5,
+    name: 'CodeForces (暂不可用)',
+    color: 'gold-3'
+  }
+} as const);
+
+export const ContestVisibilityTypes = mapColorsToValues([
+  {
+    id: 0,
+    name: '封禁比赛',
+    color: 'grey-5',
+    userCreatable: false,
+    scope: 'disabled',
+    invitation: false
+  },
+  {
+    id: 1,
+    name: '官方比赛',
+    color: 'red-3',
+    userCreatable: false,
+    scope: 'global',
+    invitation: false
+  },
+  {
+    id: 2,
+    name: '团队公开赛',
+    color: 'green-4',
+    userCreatable: false,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 3,
+    name: '团队内部赛',
+    color: 'blue-3',
+    userCreatable: true,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 4,
+    name: '个人公开赛',
+    color: 'blue-3',
+    userCreatable: false,
+    scope: 'personal',
+    invitation: false
+  },
+  {
+    id: 5,
+    name: '个人邀请赛',
+    color: 'lapis-3',
+    userCreatable: true,
+    scope: 'personal',
+    invitation: true
+  },
+  {
+    id: 6,
+    name: '团队邀请赛',
+    color: 'lapis-3',
+    userCreatable: true,
+    scope: 'team',
+    invitation: true
+  },
+  {
+    id: 7,
+    name: '团队公开赛 (待审核)',
+    color: 'green-4',
+    userCreatable: false,
+    scope: 'team',
+    invitation: false
+  },
+  {
+    id: 8,
+    name: '个人公开赛 (待审核)',
+    color: 'lapis-3',
+    userCreatable: false,
+    scope: 'personal',
+    invitation: false
+  }
+] as const);
 export const contestType: string[] = [
   '',
   'OI',
@@ -184,22 +290,109 @@ export const difficultyColor = [
   '#0E1D69'
 ];
 
-// 硬编码标签数据已删除，现在使用 tagManager 动态获取标签数据
+// 动态加载标签数据，并缓存至本地
+export type RawTag = { id: number; name: string; type: number; parent: number | null };
+type TagsCache = { tags: RawTag[]; version?: number };
+const TAG_SOURCE = 'https://www.luogu.com.cn/_lfe/tags';
+const TAG_CACHE_KEY = 'luogu-tags-cache';
+const TAG_COLORS: Record<number, string> = {
+  1: '#52c41a',
+  2: '#2949b4',
+  3: '#13c2c2',
+  4: '#3498db',
+  5: '#f39c11',
+  6: '#072401'
+};
+
+const globalTagCache =
+  (globalThis as { __luoguTagsCache?: Partial<TagsCache> }).__luoguTagsCache ??
+  {};
+(globalThis as { __luoguTagsCache?: Partial<TagsCache> }).__luoguTagsCache =
+  globalTagCache;
+
+export const tagsData: Record<number, RawTag & { color: string }> = {};
+export let tagsVersion: number | undefined;
+let loadingTags: Promise<void> | undefined;
+
+function applyTags(tags: TagsCache['tags'], version?: number) {
+  for (const key of Object.keys(tagsData))
+    delete (tagsData as Record<string, unknown>)[key];
+  for (const tag of tags)
+    tagsData[tag.id] = { ...tag, color: TAG_COLORS[tag.type] ?? '#000000' };
+  tagsVersion = version;
+}
+
+function loadTagsFromCache() {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const cached = localStorage.getItem(TAG_CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached) as TagsCache;
+        if (Array.isArray(parsed.tags)) {
+          applyTags(parsed.tags, parsed.version);
+          globalTagCache.tags = parsed.tags;
+          globalTagCache.version = parsed.version;
+          return;
+        }
+      }
+    }
+  } catch (err) {
+    console.error('读取标签缓存失败', err);
+  }
+  if (Array.isArray(globalTagCache.tags))
+    applyTags(globalTagCache.tags, globalTagCache.version);
+}
+
+function persistTagsCache(cache: TagsCache) {
+  globalTagCache.tags = cache.tags;
+  globalTagCache.version = cache.version;
+  try {
+    if (typeof localStorage !== 'undefined')
+      localStorage.setItem(TAG_CACHE_KEY, JSON.stringify(cache));
+  } catch (err) {
+    console.error('写入标签缓存失败', err);
+  }
+}
+
+async function fetchTagsFromRemote() {
+  const { data } = await axios.get<{ tags: TagsCache['tags']; version?: number }>(
+    TAG_SOURCE,
+    { headers: { 'Cache-Control': 'no-cache' } }
+  );
+  if (Array.isArray(data.tags)) {
+    applyTags(data.tags, data.version);
+    persistTagsCache({ tags: data.tags, version: data.version });
+  }
+}
+
+export function ensureTagsData(force = false) {
+  if (loadingTags && !force) return loadingTags;
+  loadingTags = fetchTagsFromRemote().catch(err => {
+    console.error('Failed to refresh tags from Luogu', err);
+  }).finally(() => {
+    loadingTags = undefined;
+  });
+  return loadingTags;
+}
+
+loadTagsFromCache();
+void ensureTagsData();
+
 
 export const formatTime = (
   date: Date | number,
   fmt: string = 'yyyy-MM-dd hh:mm:ss'
-): string => {
-  const dateObj = typeof date === 'number' ? new Date(date) : date;
+) => {
+  if (typeof date == 'number') date = new Date(date);
   const o = {
-    'y+': dateObj.getFullYear(),
-    'M+': dateObj.getMonth() + 1,
-    'd+': dateObj.getDate(),
-    'h+': dateObj.getHours(),
-    'm+': dateObj.getMinutes(),
-    's+': dateObj.getSeconds(),
-    'q+': Math.floor((dateObj.getMonth() + 3) / 3),
-    'S+': dateObj.getMilliseconds()
+    'y+': date.getFullYear(),
+    'M+': date.getMonth() + 1,
+    'd+': date.getDate(),
+    'h+': date.getHours(),
+    'm+': date.getMinutes(),
+    's+': date.getSeconds(),
+    'q+': Math.floor((date.getMonth() + 3) / 3),
+    'S+': date.getMilliseconds()
   };
   for (const k in o) {
     if (new RegExp('(' + k + ')').test(fmt)) {
@@ -283,9 +476,7 @@ export const languageFamily = {
     'C++17': { id: 12 },
     'C++17 with O2': { id: 12, O2: true },
     'C++20': { id: 27 },
-    'C++20 with O2': { id: 27, O2: true },
-    'C++23': { id: 34 },
-    'C++23 with O2': { id: 34, O2: true }
+    'C++20 with O2': { id: 27, O2: true }
   },
   Python: {
     'Python 3': { id: 7 },
@@ -384,8 +575,7 @@ export const LanguageString: Record<number, string> = {
   30: 'OCaml',
   31: 'Julia',
   32: 'Lua',
-  33: 'Java 21',
-  34: 'C++23'
+  33: 'Java 21'
 };
 
 export const vscodeLanguageId: Record<number, string> = {
@@ -421,6 +611,5 @@ export const vscodeLanguageId: Record<number, string> = {
   30: 'ocaml',
   31: 'julia',
   32: 'lua',
-  33: 'java',
-  34: 'cpp'
+  33: 'java'
 };

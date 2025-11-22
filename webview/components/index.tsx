@@ -1,17 +1,31 @@
 const { default: React } = await import('react');
-const { difficultyColor, difficultyName } = await import('@/utils/shared');
+const { difficultyColor, difficultyName, tagsData } = await import(
+  '@/utils/shared'
+);
 import { UserInfo } from '@/model/user';
 
-export function Tag({
-  color,
-  children
-}: {
-  color: string;
-  children: React.ReactNode;
-}) {
+export function Tag(
+  params:
+    | {
+        color: string;
+        children: React.ReactNode;
+      }
+    | {
+        children: {
+          name: string;
+          color: string;
+        };
+      }
+) {
   return (
-    <span className="tag" style={{ backgroundColor: color }}>
-      {children}
+    <span
+      className="tag"
+      style={{
+        backgroundColor:
+          'color' in params ? params.color : params.children.color
+      }}
+    >
+      {'color' in params ? params.children : params.children.name}
     </span>
   );
 }
@@ -72,10 +86,16 @@ export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
   );
 }
 
-export function ProblemTag({ tag }: { tag: number }) {
-  // 由于tagsData已被删除，显示为未知标签
-  // 实际的标签数据现在通过tagManager动态获取
-  return <Tag color="#666666">标签 ${tag}</Tag>;
+export function ProblemTag({
+  tag,
+  tagMap
+}: {
+  tag: number;
+  tagMap?: Record<number, { name: string; color: string }>;
+}) {
+  const obj = tagMap?.[tag] ?? tagsData[tag];
+  if (obj === undefined) return <Tag color="black">Unknown Tag: id ${tag}</Tag>;
+  return <Tag color={obj.color}>{obj.name}</Tag>;
 }
 
 export async function sleep(ms: number) {

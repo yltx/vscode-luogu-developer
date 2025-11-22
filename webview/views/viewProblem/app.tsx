@@ -40,10 +40,22 @@ export default function Problem({ children: data }: { children: ProblemData }) {
   const [choosedLanguage, setChoosedLanguage] = useState(
     'zh-CN' in data.translations ? 'zh-CN' : languagesList[0]
   );
+  const [tagsMap, setTagsMap] = useState<
+    Record<number, { name: string; color: string }>
+  >({});
   useEffect(
     () => void send('checkCph', undefined).then(res => setCphType(res)),
     []
   );
+  useEffect(() => {
+    send('GetTags', undefined)
+      .then(tags => {
+        const map: Record<number, { name: string; color: string }> = {};
+        for (const t of tags) map[t.id] = { name: t.name, color: t.color };
+        setTagsMap(map);
+      })
+      .catch(err => console.error('Failed to load tags', err));
+  }, []);
   const problemContent =
     data.translations[choosedLanguage] || data.problem.content;
   return (
@@ -81,18 +93,23 @@ export default function Problem({ children: data }: { children: ProblemData }) {
                 onClick={() => send('jumpToCph', undefined)}
                 appearance="primary"
               >
-                <CphIcon /> 传送至 CPH
+                <div>
+                  <CphIcon /> 传送至 CPH
+                </div>
               </VSCodeButton>
             )}
             {data.problem.type !== 'T' &&
               data.problem.type !== 'U' &&
               !data.contest && (
-                <VSCodeButton
-                  appearance="primary"
-                  onClick={() => send('searchSolution', undefined)}
+                <a
+                  href={`command:luogu.solution?${encodeURIComponent(JSON.stringify([data.problem.pid]))}`}
                 >
-                  <FontAwesomeIcon icon={faBook} /> 查看题解
-                </VSCodeButton>
+                  <VSCodeButton appearance="primary">
+                    <div>
+                      <FontAwesomeIcon icon={faBook} /> 查看题解
+                    </div>
+                  </VSCodeButton>
+                </a>
               )}
           </div>
         </div>
@@ -124,7 +141,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
               <div>
                 <div>
                   {data.problem.tags.map((x, i) => (
-                    <ProblemTag key={i} tag={x} />
+                    <ProblemTag key={i} tag={x} tagMap={tagsMap} />
                   ))}
                 </div>
               </div>
