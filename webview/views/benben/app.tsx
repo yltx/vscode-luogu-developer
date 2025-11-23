@@ -4,12 +4,11 @@ const { default: React, useState, useRef, useEffect } = await import('react');
 const { VSCodeButton, VSCodeProgressRing, VSCodeTextArea } = await import(
   '@vscode/webview-ui-toolkit/react'
 );
-const { faRotateRight } = await import('@fortawesome/free-solid-svg-icons');
-const { FontAwesomeIcon } = await import('@fortawesome/react-fontawesome');
 const { sleep, UserIcon, UserName } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { default: Md } = await import('../../markdownViewer');
 const { default: Time } = await import('@w/components/time');
+const { default: ReloadButton } = await import('@w/components/reload');
 
 import '@w/common.css';
 import './app.css';
@@ -22,13 +21,7 @@ export default function App() {
     <>
       <BenbenEditor reload={reload} text={text} SetText={SetText} />
       <BenbenList key={version} SetText={SetText} reload={reload} />
-      <VSCodeButton
-        className="benben-reload"
-        appearance="icon"
-        onClick={reload}
-      >
-        <FontAwesomeIcon icon={faRotateRight} />
-      </VSCodeButton>
+      <ReloadButton onClick={reload} />
     </>
   );
 }
@@ -201,7 +194,7 @@ function BenbenList({
       window.removeEventListener('scroll', request);
       window.removeEventListener('resize', request);
     };
-  }, []);
+  }, [SetText, reload]);
 
   useEffect(() => {}, [loadingState]);
 

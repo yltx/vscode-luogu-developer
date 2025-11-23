@@ -177,7 +177,7 @@ export default function registerBenben(context: vscode.ExtensionContext) {
         return;
       }
       const panel = vscode.window.createWebviewPanel(
-        `benben`,
+        `luogu.benbenPanel`,
         `犇犇 - ${mode === 0 ? '全网动态' : mode === 1 ? '我关注的' : mode === 2 ? '我发布的' : `${user!.name} 的动态`}`,
         vscode.ViewColumn.Two,
         {

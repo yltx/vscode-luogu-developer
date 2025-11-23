@@ -39,7 +39,7 @@ export default function registerSolutionFeature(
         }))
         .then(({ realPid, count, solutions }) => {
           const panel = vscode.window.createWebviewPanel(
-            'solution',
+            'luogu.solutionPanel',
             realPid + ' 题解',
             vscode.ViewColumn.Two,
             {

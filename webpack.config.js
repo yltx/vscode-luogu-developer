@@ -7,42 +7,6 @@ const terser = require('terser-webpack-plugin');
 const fs = require('fs');
 /** @typedef {import('webpack').Configuration} WebpackConfig **/
 
-/* build icon
- * 放这里可能不太合适 改天再换
- */
-(async function () {
-  console.log('Building icon fonts...');
-  try {
-    fs.mkdirSync(resolve('dist'));
-  } catch {
-    /* empty */
-  }
-  const fontPath = 'dist/icon.woff';
-  /**@type {Record<string,{"description": string,"default":{"fontPath": "dist/icon.woff","fontCharacter": string}}>}*/
-  const iconData = JSON.parse(
-    fs.readFileSync(resolve('package.json')).toString()
-  ).contributes.icons;
-  const fontBinary = (
-    await require('webfont').webfont({
-      files: Object.entries(iconData).map(
-        ([name]) => `productIcons/${name}.svg`
-      ),
-      formats: ['woff'],
-      glyphTransformFn: obj => {
-        (obj.unicode || (obj.unicode = ['']))[0] = String.fromCharCode(
-          parseInt(iconData[obj.name].default.fontCharacter.substring(1), 16)
-        );
-        return obj;
-      },
-      normalize: true,
-      sort: false
-    })
-  ).woff;
-  if (!fontBinary) throw new Error('fontBinary is null');
-  fs.writeFileSync(resolve(fontPath), new Uint8Array(fontBinary));
-  console.log('Icon fonts built!');
-})();
-
 /**
  * @param { 'production' | 'development' | 'none' } mode
  * @returns {WebpackConfig}
@@ -176,6 +140,7 @@ function GetWebviewConfig(mode, entry) {
 module.exports =
   /**
    * @param {{ mode: 'production' | 'development' | 'none' | undefined; }} argv
+   * @param {{ [k: string]: any }} env
    * @returns { Promise<WebpackConfig[]> }
    */
   function (env, argv) {

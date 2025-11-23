@@ -3,6 +3,8 @@ import { mapColorsToValues } from './color';
 
 'use strict';
 
+import { mapColorsToValues } from './color';
+
 export enum UserStatus {
   SignedIn = 1,
   SignedOut = 2
@@ -416,26 +418,6 @@ export const formatTime = (
     }
   }
   return fmt;
-};
-
-export const changeTime = (x: number) => {
-  let res = '';
-  if (x >= 86400) {
-    res += Math.floor(x / 86400).toString() + ' 天 ';
-    x -= Math.floor(x / 86400) * 86400;
-  }
-  if (x >= 3600) {
-    res += Math.floor(x / 3600).toString() + ' 小时 ';
-    x -= Math.floor(x / 3600) * 3600;
-  }
-  if (x >= 60) {
-    res += Math.floor(x / 60).toString() + ' 分 ';
-    x -= Math.floor(x / 60) * 60;
-  }
-  if (x > 0) {
-    res += x.toString() + ' 秒 ';
-  }
-  return res;
 };
 
 export const ArticleCategory = [

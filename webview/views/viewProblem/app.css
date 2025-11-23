@@ -15,8 +15,15 @@
         margin-bottom: 0.67em;
         gap: 5px;
         flex-wrap: wrap;
-        > vscode-button > svg {
-          margin-right: 2px;
+        vscode-button {
+          > * {
+            display: flex;
+            align-items: center;
+            > svg {
+              margin-right: 2px;
+              height: 1em;
+            }
+          }
         }
       }
     }

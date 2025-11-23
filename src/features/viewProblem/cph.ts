@@ -3,7 +3,12 @@ import axios from 'axios';
 import { ProblemData } from 'luogu-api';
 import { processAxiosError } from '@/utils/workspaceUtils';
 
-const cphPort = 27121;
+// 端口改为可配置：luogu.cphPort，默认 27121（与 CPH 默认一致）
+function getCphPort() {
+  return vscode.workspace
+    .getConfiguration('luogu')
+    .get<number>('cphPort', 27121);
+}
 
 // https://github.com/agrawal-d/cph/blob/63977514a5cc021f181cb86a1a482f6bccb8f904/src/types.ts#L64-L80
 interface CphRequestType {
@@ -21,8 +26,9 @@ interface CphRequestType {
 }
 
 export async function checkCPH() {
+  const port = getCphPort();
   return await axios
-    .get(`http://localhost:${cphPort}`)
+    .get(`http://localhost:${port}`)
     .then(() => true)
     .catch(() => false);
 }
@@ -32,8 +38,9 @@ export async function sendCphMessage(data: ProblemData) {
     'ProblemName',
     'ProblemIDwithProblemName'
   ][number];
+  const port = getCphPort();
   await axios
-    .post(`http://localhost:${cphPort}`, {
+    .post(`http://localhost:${port}`, {
       name:
         'Luogu' +
         (config === 'ProblemID' || config === 'ProblemIDwithProblemName'

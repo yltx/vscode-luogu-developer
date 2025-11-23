@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.11.12",
+  "version": "4.12.1",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -31,7 +31,7 @@
   ],
   "preview": true,
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "extensionKind": [
@@ -163,6 +163,10 @@
       {
         "command": "luogu.openUntitledTextDocument",
         "title": "打开新文档"
+      },
+      {
+        "command": "luogu.jumpToCph",
+        "title": "在 CPH 中打开当前题目"
       }
     ],
     "keybindings": [
@@ -205,6 +209,11 @@
       {
         "command": "luogu.traininglist",
         "key": "Ctrl+Alt+G T"
+      },
+      {
+        "command": "luogu.jumpToCph",
+        "key": "Ctrl+Alt+G H",
+        "when": "activeWebviewPanelId == 'problem'"
       }
     ],
     "viewsContainers": {
@@ -307,6 +316,10 @@
         }
       ],
       "commandPalette": [
+        {
+          "command": "luogu.jumpToCph",
+          "when": "activeWebviewPanelId == 'luogu.problemPanel'"
+        },
         {
           "command": "luogu.myarticle.refresh",
           "when": "false"
@@ -515,6 +528,14 @@
           "default": "ProblemID",
           "description": "传送至 CPH 时，CPH 创建文件时的文件名形式。"
         }
+        ,
+        "luogu.cphPort": {
+          "type": "integer",
+          "default": 27121,
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "传送至 CPH 时使用的本地端口号（默认 27121，与 CPH 默认一致）。"
+        }
       }
     },
     "icons": {
@@ -536,10 +557,10 @@
   "scripts": {
     "pack": "vsce package --allow-star-activation -o vscode-luogu.vsix",
     "vscode:prepublish": "npm run package",
-    "compile": "webpack --mode development",
+    "build:icons": "node ./scripts/build-icons.mjs",
     "prepackage": "del dist/",
-    "watch": "webpack --mode development --watch",
-    "package": "webpack --mode production",
+    "watch": "npm run build:icons && webpack --mode development --watch",
+    "package": "npm run build:icons && webpack --mode production",
     "lint": "eslint .",
     "fix": "eslint . --fix",
     "prettier": "npx prettier . -w"
@@ -559,7 +580,7 @@
     "@types/ws": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
-    "@vscode/vsce": "^2.32.0",
+    "@vscode/vsce": "^3.6.2",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "css-loader": "^6.11.0",
     "css-minimizer-webpack-plugin": "^7.0.0",
@@ -577,14 +598,13 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-brands-svg-icons": "^6.4.2",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
+    "@fortawesome/free-brands-svg-icons": "^7.1.0",
+    "@fortawesome/free-regular-svg-icons": "^7.1.0",
+    "@fortawesome/free-solid-svg-icons": "^7.1.0",
+    "@fortawesome/react-fontawesome": "^3.1.0",
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.8.2",
-    "bufferutil": "^4.0.8",
-    "copy-paste": "^1.5.3",
     "dateformat": "^5.0.3",
     "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",

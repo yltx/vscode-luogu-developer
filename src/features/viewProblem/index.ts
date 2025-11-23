@@ -6,6 +6,7 @@ import {
 } from '@/utils/workspaceUtils';
 import * as vscode from 'vscode';
 import showProblemWebview from './webview';
+import jumpToCphEventEmitter from './jumpToCphEventEmitter';
 
 export default function registerViewProblem(context: vscode.ExtensionContext) {
   context.subscriptions.push(
@@ -26,19 +27,19 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
           else if (!(id = await askForPid(guessed))) return false;
         }
         return await getProblemData(id.pid, id.cid)
-          .then(problemDetails => {
+          .then(problemData => {
             globalThis.luogu.historyTreeviewProvider.addItem({
               type: 'problem',
-              pid: problemDetails.problem.pid,
-              contest: problemDetails.contest
+              pid: problemData.problem.pid,
+              contest: problemData.contest
                 ? {
-                    contestId: problemDetails.contest.id,
-                    title: problemDetails.contest.name
+                    contestId: problemData.contest.id,
+                    title: problemData.contest.name
                   }
                 : undefined,
-              title: problemDetails.problem.title
+              title: problemData.problem.title
             });
-            showProblemWebview(problemDetails);
+            showProblemWebview(problemData);
             return true;
           })
           .catch((e: unknown) => {
@@ -46,6 +47,10 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
             return new Error('Error when fetch problem', { cause: e });
           });
       }
-    )
+    ),
+    vscode.commands.registerCommand('luogu.jumpToCph', () =>
+      jumpToCphEventEmitter.fire()
+    ),
+    jumpToCphEventEmitter
   );
 }

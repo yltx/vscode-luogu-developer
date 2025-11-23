@@ -1,15 +1,18 @@
 const { default: dateFormat } = await import('dateformat');
 
-export const formatDate = (time: Date | number) =>
+export const formatDate = (time: Date | number, withSecond = true) =>
   dateFormat(
     typeof time === 'number' ? new Date(time) : time,
-    'yyyy-mm-dd HH:MM:ss'
+    'yyyy-mm-dd HH:MM' + (withSecond ? ':ss' : '')
   );
 
 export function formatTime(time: number) {
   if (time < 1e3) return `${time}ms`;
-  else if (time < 60e3) return `${(time / 1e3).toFixed(2)}s`;
-  else return `${(time / 60e3).toFixed(2)}min`;
+  else if (time < 60 * 1e3) return `${(time / 1e3).toFixed(2)}s`;
+  else if (time < 60 * 60 * 1e3) return `${(time / (60 * 1e3)).toFixed(2)}min`;
+  else if (time < 24 * 60 * 60 * 1e3)
+    return `${(time / (60 * 60 * 1e3)).toFixed(2)}h`;
+  else return `${(time / (24 * 60 * 60 * 1e3)).toFixed(2)}d`;
 }
 export function formatMemory(memory: number) {
   if (memory < 2 ** 10) return `${memory}B`;

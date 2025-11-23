@@ -4,7 +4,6 @@ import debug from '../utils/debug';
 import About from './about';
 import userInfo from './userinfo';
 import Fate from './fate';
-import contest from './contest';
 import random from './random';
 import paintboard from './paintboard';
 import traininglist from './traininglist';
@@ -13,7 +12,6 @@ const commands = [
   About,
   userInfo,
   Fate,
-  contest,
   random,
   paintboard,
   traininglist,
