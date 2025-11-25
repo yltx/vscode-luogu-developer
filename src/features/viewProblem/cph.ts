@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import axios from 'axios';
 import { ProblemData } from 'luogu-api';
 import { processAxiosError } from '@/utils/workspaceUtils';
+import { randomUUID } from 'crypto';
 
 // 端口改为可配置：luogu.cphPort，默认 27121（与 CPH 默认一致）
 function getCphPort() {
@@ -11,6 +12,7 @@ function getCphPort() {
 }
 
 // https://github.com/agrawal-d/cph/blob/63977514a5cc021f181cb86a1a482f6bccb8f904/src/types.ts#L64-L80
+// https://github.com/jmerle/competitive-companion/blob/4bf4fa04f51dc9ae6868534b1dabd5b3bfc300b7/src/models/TaskBuilder.ts#L13-L41
 interface CphRequestType {
   name: string;
   url: string;
@@ -23,6 +25,29 @@ interface CphRequestType {
     output: string;
     id: number;
   }[];
+  // The following fields are not used by CPH currently
+  // But is provided by Competitive Companion
+  // Define them for compatibility
+  testType: 'single' | 'multiNumber';
+  input: {
+    type: 'stdin' | 'file' | 'regex';
+    fileName?: string;
+    pattern?: string;
+  };
+  output: {
+    type: 'stdout' | 'file';
+    fileName?: string;
+  };
+  languages: {
+    java: {
+      mainClass: string;
+      taskClass: string;
+    };
+  };
+  batch: {
+    id: string;
+    size: number;
+  };
 }
 
 export async function checkCPH() {
@@ -60,7 +85,20 @@ export async function sendCphMessage(data: ProblemData) {
         output: d[1],
         id: i
       })),
-      group: 'luogu' + (data.contest ? ' - ' + data.contest.id : '')
+      group: 'luogu' + (data.contest ? ' - ' + data.contest.id : ''),
+      testType: 'single',
+      input: { type: 'stdin' },
+      output: { type: 'stdout' },
+      languages: {
+        java: {
+          mainClass: 'Main',
+          taskClass: ''
+        }
+      },
+      batch: {
+        id: randomUUID(),
+        size: 1
+      }
     } satisfies CphRequestType)
     .catch(processAxiosError('传送 CPH '));
 }
