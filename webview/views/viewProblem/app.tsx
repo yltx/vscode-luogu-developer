@@ -40,10 +40,22 @@ export default function Problem({ children: data }: { children: ProblemData }) {
   const [choosedLanguage, setChoosedLanguage] = useState(
     'zh-CN' in data.translations ? 'zh-CN' : languagesList[0]
   );
+  const [tagsMap, setTagsMap] = useState<
+    Record<number, { name: string; color: string }>
+  >({});
   useEffect(
     () => void send('checkCph', undefined).then(res => setCphType(res)),
     []
   );
+  useEffect(() => {
+    send('GetTags', undefined)
+      .then(tags => {
+        const map: Record<number, { name: string; color: string }> = {};
+        for (const t of tags) map[t.id] = { name: t.name, color: t.color };
+        setTagsMap(map);
+      })
+      .catch(err => console.error('Failed to load tags', err));
+  }, []);
   const problemContent =
     data.translations[choosedLanguage] || data.problem.content;
   return (
@@ -129,7 +141,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
               <div>
                 <div>
                   {data.problem.tags.map((x, i) => (
-                    <ProblemTag key={i} tag={x} />
+                    <ProblemTag key={i} tag={x} tagMap={tagsMap} />
                   ))}
                 </div>
               </div>

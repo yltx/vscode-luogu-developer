@@ -111,6 +111,12 @@ type ContestMonitorStop = WebviewMessage<
   WebviewRequestMessage<'ContestMonitorStop', void>,
   WebviewResponseMessage<boolean>
 >;
+type GetTags = WebviewMessage<
+  WebviewRequestMessage<'GetTags', void>,
+  WebviewResponseMessage<
+    (import('@/utils/shared').RawTag & { color: string })[]
+  >
+>;
 
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
@@ -134,7 +140,8 @@ type MessageTypes = MessageTypesBase<
     ContestJoin,
     ContestEnterContestMode,
     ContestMonitorGet,
-    ContestMonitorStop
+    ContestMonitorStop,
+    GetTags
   ]
 >;
 export default MessageTypes;

@@ -86,8 +86,14 @@ export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
   );
 }
 
-export function ProblemTag({ tag }: { tag: number }) {
-  const obj = tagsData[tag];
+export function ProblemTag({
+  tag,
+  tagMap
+}: {
+  tag: number;
+  tagMap?: Record<number, { name: string; color: string }>;
+}) {
+  const obj = tagMap?.[tag] ?? tagsData[tag];
   if (obj === undefined) return <Tag color="black">Unknown Tag: id ${tag}</Tag>;
   return <Tag color={obj.color}>{obj.name}</Tag>;
 }

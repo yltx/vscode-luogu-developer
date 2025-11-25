@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { checkCPH, sendCphMessage } from './cph';
 import jumpToCphEventEmitter from './jumpToCphEventEmitter';
+import { ensureTagsData, tagsData } from '@/utils/shared';
 
 export default function showProblemWebview(data: ProblemData) {
   const panel = vscode.window.createWebviewPanel(
@@ -22,7 +23,11 @@ export default function showProblemWebview(data: ProblemData) {
   );
   useWebviewResponseHandle(panel.webview, {
     checkCph: checkCPH,
-    jumpToCph: () => sendCphMessage(data)
+    jumpToCph: () => sendCphMessage(data),
+    GetTags: async () => {
+      await ensureTagsData();
+      return Object.values(tagsData);
+    }
   });
   const jumpToCphListener = jumpToCphEventEmitter.event(() => {
     if (panel.active) sendCphMessage(data);
