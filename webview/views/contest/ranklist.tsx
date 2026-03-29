@@ -18,6 +18,29 @@ import type {
 import './ranklist.css';
 import { ColoredScore } from './scoreUtils';
 
+type ScoreDetail = { score: number; runningTime?: number | undefined };
+
+function getProblemDetail(
+  details: { [k: string]: ScoreDetail | undefined },
+  pid: string,
+  index: number,
+  problemCount: number
+) {
+  const candidateKeys = [
+    pid,
+    String.fromCharCode(65 + index),
+    String(index),
+    String(index + 1)
+  ];
+  for (const key of candidateKeys) {
+    const detail = details[key];
+    if (detail !== undefined) return detail;
+  }
+  const detailValues = Object.values(details);
+  if (detailValues.length === problemCount) return detailValues[index];
+  return undefined;
+}
+
 export default function Ranklist({
   problems
 }: {
@@ -133,14 +156,13 @@ export default function Ranklist({
                     <ColoredScore full={contestFullScore} score={s.score} />
                     <span>({formatTime(s.runningTime)})</span>
                   </div>
-                  {problems.map(p => {
-                    const detail = (
-                      s.details as {
-                        [k: string]:
-                          | { score: number; runningTime?: number | undefined }
-                          | undefined;
-                      }
-                    )[p.problem.pid];
+                  {problems.map((p, problemIndex) => {
+                    const detail = getProblemDetail(
+                      s.details as { [k: string]: ScoreDetail | undefined },
+                      p.problem.pid,
+                      problemIndex,
+                      problems.length
+                    );
                     return (
                       <div className="cr-col cr-col-score" key={p.problem.pid}>
                         {detail !== undefined && (
