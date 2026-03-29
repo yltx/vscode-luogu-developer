@@ -59,6 +59,7 @@ export default function App({
       clearInterval(interval);
     };
   }, [data.contest.id]);
+  const isRatedContest = !!data.contest.rated;
   return (
     <>
       <ContestTimeline
@@ -77,7 +78,7 @@ export default function App({
             </a>{' '}
             <Tag>{ContestRuleTypes[data.contest.ruleType]}</Tag>
             <Tag>{ContestVisibilityTypes[data.contest.visibilityType]}</Tag>
-            {data.contest.rated && <Tag color={ColorPalette['cyan-3']}>咕</Tag>}
+            {isRatedContest && <Tag color={ColorPalette['cyan-3']}>咕</Tag>}
             {data.contest.eloThreshold !== null &&
               data.contest.eloThreshold >= 0 && (
                 <Tag
@@ -187,7 +188,7 @@ export default function App({
                     </a>
                   </div>
                   <div className="cp-col cp-col-submitted">
-                    {p.submitted && (
+                    {p.submitted === true && (
                       <FontAwesomeIcon
                         icon={faCheck}
                         className="submitted-icon"

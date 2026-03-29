@@ -284,6 +284,26 @@ const normalizeContestData = (contestData: ContestData): ContestData => ({
     : null
 });
 
+async function getContestSubmittedProblemIds(contestId: number) {
+  const sessions = await globalThis.luogu.authProvider.getSessions();
+  if (sessions.length === 0) return new Set<string>();
+  const cookie = await globalThis.luogu.authProvider.cookie();
+  const records = await axios
+    .get<DataResponse<{ records: List<RecordBase> }>>(`/record/list?_contentOnly=1`, {
+      params: {
+        user: cookie.uid,
+        contestId
+      }
+    })
+    .then(data => data.data.currentData.records.result)
+    .catch(() => []);
+  return new Set(
+    Object.values(records)
+      .map(record => record.problem?.pid)
+      .filter((pid): pid is string => !!pid)
+  );
+}
+
 export const searchContest = async (cid: number) =>
   axios
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
@@ -295,7 +315,20 @@ export const searchContest = async (cid: number) =>
       if (res === undefined) {
         throw new Error('比赛数据格式无法识别');
       }
-      return normalizeContestData(res);
+      const normalized = normalizeContestData(res);
+      if (!normalized.contestProblems) return normalized;
+      const submittedProblems = await getContestSubmittedProblemIds(
+        normalized.contest.id
+      );
+      return {
+        ...normalized,
+        contestProblems: normalized.contestProblems.map(problem => ({
+          ...problem,
+          submitted:
+            problem.submitted === true ||
+            submittedProblems.has(problem.problem.pid)
+        }))
+      };
     });
 
 export const getSolution = async (pid: string, page: number) =>
