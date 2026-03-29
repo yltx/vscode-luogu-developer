@@ -230,15 +230,72 @@ export const getProblemData = async (pid: string, cid?: number) =>
       return x.data.data;
     });
 
+const extractLentilleCurrentData = (payload: unknown) => {
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    'currentData' in payload &&
+    (payload as { currentData?: unknown }).currentData !== undefined
+  )
+    return (payload as { currentData: ContestData }).currentData;
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    'data' in payload &&
+    (payload as { data?: unknown }).data !== undefined
+  )
+    return (payload as { data: ContestData }).data;
+  if (typeof payload !== 'string') return undefined;
+  const matched = payload.match(
+    /<script id="lentille-context" type="application\/json">([\s\S]*?)<\/script>/
+  );
+  if (!matched?.[1]) return undefined;
+  const parsed = JSON.parse(matched[1]) as
+    | { currentData?: ContestData; data?: ContestData }
+    | undefined;
+  return parsed?.currentData ?? parsed?.data;
+};
+
+const normalizeContestData = (contestData: ContestData): ContestData => ({
+  ...contestData,
+  contest: {
+    ...contestData.contest,
+    ruleType:
+      (contestData.contest as ContestData['contest'] & { method?: number })
+        .ruleType ??
+      (contestData.contest as ContestData['contest'] & { method?: number })
+        .method,
+    visibilityType:
+      (
+        contestData.contest as ContestData['contest'] & { visibility?: number }
+      ).visibilityType ??
+      (
+        contestData.contest as ContestData['contest'] & { visibility?: number }
+      ).visibility
+  },
+  contestProblems: contestData.contestProblems
+    ? contestData.contestProblems.map(problem => ({
+        ...problem,
+        problem: {
+          ...problem.problem,
+          fullScore: problem.problem.fullScore ?? 100
+        }
+      }))
+    : null
+});
+
 export const searchContest = async (cid: number) =>
   axios
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
-    .then(res => res?.data?.currentData)
+    .then(res => extractLentilleCurrentData(res?.data))
     .then(async res => {
       if ((res || null) === null) {
         throw new Error('比赛不存在');
       }
-      return res;
+      if (res === undefined) {
+        throw new Error('比赛数据格式无法识别');
+      }
+      return normalizeContestData(res);
     });
 
 export const getSolution = async (pid: string, page: number) =>
