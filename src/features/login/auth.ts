@@ -8,9 +8,16 @@ class LuoguSession implements vscode.AuthenticationSession {
   readonly accessToken: string;
   readonly account: vscode.AuthenticationSessionAccountInformation;
   readonly scopes = [];
-  constructor(data: { uid: number; clientID: string; name: string }) {
+  readonly extraCookies?: Record<string, string>;
+  constructor(data: {
+    uid: number;
+    clientID: string;
+    name: string;
+    extraCookies?: Record<string, string>;
+  }) {
     this.accessToken = data.clientID;
     this.account = { id: data.uid.toString(), label: data.name };
+    this.extraCookies = data.extraCookies;
   }
 }
 
@@ -130,6 +137,10 @@ export default class LuoguAuthProvider
   }
   async cookie(): Promise<Cookie> {
     await this.cacheLock;
-    return { uid: +this.cache.account.id, clientID: this.cache.accessToken };
+    return {
+      uid: +this.cache.account.id,
+      clientID: this.cache.accessToken,
+      extraCookies: this.cache.extraCookies
+    };
   }
 }

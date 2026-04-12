@@ -48,20 +48,30 @@ export async function sleep(ms: number): Promise<void> {
     setTimeout(() => resolve(), ms);
   });
 }
-export const cookieString = (c: Cookie) =>
-  `_uid=${c.uid};__client_id=${c.clientID}`;
+export const cookieString = (c: Cookie) => {
+  const pairs = [
+    ['_uid', String(c.uid)],
+    ['__client_id', c.clientID],
+    ...Object.entries(c.extraCookies ?? {}).filter(
+      ([key]) => key !== '_uid' && key !== '__client_id'
+    )
+  ];
+  return pairs.map(([key, value]) => `${key}=${value}`).join(';');
+};
 export function praseCookie(cookie: string[] | undefined) {
-  const s: { uid?: number; clientID?: string } = {};
+  const s: {
+    uid?: number;
+    clientID?: string;
+    extraCookies?: Record<string, string>;
+  } = {};
   if (cookie)
     for (const cookie_info of cookie) {
-      if (cookie_info.match('_uid')?.index == 0) {
-        const match_res = cookie_info.match('(?<==).*?(?=;)');
-        if (match_res) s.uid = +match_res[0];
-      }
-      if (cookie_info.match('__client_id')?.index == 0) {
-        const match_res = cookie_info.match('(?<==).*?(?=;)');
-        if (match_res) s.clientID = match_res[0];
-      }
+      const matchRes = /^([^=]+)=([^;]*)/.exec(cookie_info);
+      if (!matchRes) continue;
+      const [, key, value] = matchRes;
+      if (key === '_uid') s.uid = +value;
+      else if (key === '__client_id') s.clientID = value;
+      else (s.extraCookies ??= {})[key] = value;
     }
   return s;
 }

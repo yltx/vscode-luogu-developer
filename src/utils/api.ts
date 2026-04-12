@@ -34,6 +34,7 @@ export const CSRF_TOKEN_REGEX = /<meta name="csrf-token" content="(.*)">/;
 
 export namespace API {
   export const baseURL = 'https://www.luogu.com.cn/';
+  export const syncLoginURL = 'https://www.luogu.org/api/auth/syncLogin';
   export const apiURL = '/api';
   export const cookieDomain = 'luogu.com.cn';
   export const SEARCH_PROBLEM = (pid: string) =>
@@ -195,6 +196,10 @@ export const axios = (() => {
 export default axios;
 
 export const genClientID = async function (): Promise<string> {
+  return (await genLoginCookie()).clientID;
+};
+
+export const genLoginCookie = async function (): Promise<Cookie> {
   const cookies = (
     await axios.get(API.CLIENT_ID, {
       myInterceptors_notCheckCookie: true,
@@ -202,9 +207,13 @@ export const genClientID = async function (): Promise<string> {
     })
   ).headers['set-cookie'];
   if (!cookies) throw new Error('Cookie not found in header');
-  const s = praseCookie(cookies).clientID;
-  if (!s) throw new Error('Cookie not found in header');
-  return s;
+  const parsed = praseCookie(cookies);
+  if (!parsed.clientID) throw new Error('Cookie not found in header');
+  return {
+    uid: parsed.uid ?? 0,
+    clientID: parsed.clientID,
+    extraCookies: parsed.extraCookies
+  };
 };
 
 export const csrfToken = async (
@@ -436,11 +445,43 @@ export const login = async (
         myInterceptors_notCheckCookie: true
       }
     )
-    .then(x => ({
-      ...x.data,
-      uid: praseCookie(x.headers['set-cookie']).uid
-    }));
+    .then(x => {
+      const parsed = praseCookie(x.headers['set-cookie']);
+      return {
+        ...x.data,
+        uid: parsed.uid,
+        clientID: parsed.clientID ?? cookie?.clientID,
+        extraCookies: {
+          ...(cookie?.extraCookies ?? {}),
+          ...(parsed.extraCookies ?? {})
+        }
+      };
+    });
 };
+
+export const syncLogin = async (syncToken: string, cookie: Cookie) =>
+  axios
+    .post<{ uid: number }>(
+      API.syncLoginURL,
+      { syncToken },
+      {
+        myInterceptors_cookie: cookie,
+        myInterceptors_notCheckCookie: true
+      }
+    )
+    .then(res => {
+      const parsed = praseCookie(res.headers['set-cookie']);
+      const uid = parsed.uid ?? res.data.uid ?? cookie.uid;
+      if (!uid) throw new Error('同步登录状态失败：未获取到用户信息');
+      return {
+        uid,
+        clientID: parsed.clientID ?? cookie.clientID,
+        extraCookies: {
+          ...(cookie.extraCookies ?? {}),
+          ...(parsed.extraCookies ?? {})
+        }
+      } satisfies Cookie;
+    });
 
 export const joinContest = async (
   cid: number,

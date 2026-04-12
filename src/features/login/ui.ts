@@ -3,12 +3,13 @@ import { getDistFilePath } from '@/utils/html';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import {
   checkCookie,
-  genClientID,
+  genLoginCookie,
   getCaptcha,
   getLoginCaptcha,
   login,
   searchUser,
   sendMail2fa,
+  syncLogin,
   unlock
 } from '@/utils/api';
 import { isAxiosError } from 'axios';
@@ -28,30 +29,33 @@ export default async function showLoginView() {
       ]
     }
   );
-  let uid = 0,
-    clientID = await genClientID();
+  let cookie = await genLoginCookie();
+  let syncToken: string | undefined;
   let successful = false;
   useWebviewResponseHandle(panel.webview, {
     NeedLoginCaptcha: async () => ({
-      captchaImage: (await getLoginCaptcha({ uid: uid, clientID })).toString(
+      captchaImage: (await getLoginCaptcha(cookie)).toString(
         'base64'
       )
     }),
     Need2faCaptcha: async () => ({
-      captchaImage: (await getCaptcha({ uid: uid, clientID })).toString(
-        'base64'
-      )
+      captchaImage: (await getCaptcha(cookie)).toString('base64')
     }),
     PasswordLogin: data =>
       login(data.username, data.password, data.captcha, {
-        uid: (uid = 0),
-        clientID
+        ...cookie,
+        uid: 0
       })
-        .then(x => {
-          if (x.uid === undefined)
-            throw new Error('Cookie not found in header');
-          uid = x.uid;
-          return { type: x.locked ? ('2fa' as const) : undefined };
+        .then(async x => {
+          cookie = {
+            uid: x.uid ?? cookie.uid,
+            clientID: x.clientID ?? cookie.clientID,
+            extraCookies: x.extraCookies
+          };
+          syncToken = x.syncToken;
+          if (x.locked) return { type: '2fa' as const };
+          cookie = await syncLogin(x.syncToken, cookie);
+          return { type: undefined };
         })
         .then(x => {
           if (x.type === undefined) (successful = true), panel.dispose();
@@ -71,15 +75,16 @@ export default async function showLoginView() {
     CookieLogin: async data => {
       const r = await checkCookie(data);
       if (r) {
-        (uid = data.uid), (clientID = data.clientID), (successful = true);
+        cookie = data;
+        successful = true;
         panel.dispose();
       } else vscode.window.showErrorMessage('验证失败。');
       return { type: r ? undefined : 'error' };
     },
     clearLoginCookie: async () =>
-      void ((uid = 0), (clientID = await genClientID())),
+      void ((cookie = await genLoginCookie()), (syncToken = undefined)),
     SendMailCode: async ({ captcha }) =>
-      sendMail2fa(captcha, { uid, clientID })
+      sendMail2fa(captcha, cookie)
         .then(
           () => (
             vscode.window.showInformationMessage('发送成功'),
@@ -97,8 +102,13 @@ export default async function showLoginView() {
           return { type: 'error' };
         }),
     '2fa': async ({ code }) =>
-      await unlock(code, { uid, clientID })
-        .then(() => ((successful = true), panel.dispose(), { type: undefined }))
+      await unlock(code, cookie)
+        .then(async () => {
+          if (syncToken) cookie = await syncLogin(syncToken, cookie);
+          successful = true;
+          panel.dispose();
+          return { type: undefined };
+        })
         .catch(err => {
           if (isAxiosError(err) && err.response)
             vscode.window.showErrorMessage(err.response.data.errorMessage);
@@ -125,11 +135,20 @@ export default async function showLoginView() {
         </html>
     `;
   await promisify(panel.onDidDispose)();
-  if (successful)
+  if (successful) {
+    const userSummary = await searchUser(cookie.uid.toString(), cookie)
+      .then(result =>
+        result.users.find(
+          user => user !== null && user.uid === cookie.uid
+        )
+      )
+      .catch(() => null);
     return {
-      uid,
-      clientID,
-      name: (await searchUser(uid.toString(), { uid, clientID })).users[0]!.name
+      uid: cookie.uid,
+      clientID: cookie.clientID,
+      extraCookies: cookie.extraCookies,
+      name: userSummary?.name ?? cookie.uid.toString()
     };
+  }
   else return null;
 }

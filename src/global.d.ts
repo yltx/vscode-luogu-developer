@@ -14,6 +14,7 @@ declare global {
   interface Cookie {
     uid: number;
     clientID: string;
+    extraCookies?: Record<string, string>;
   }
   type MaybeThenable<T> = T | Thenable<T>;
 }
