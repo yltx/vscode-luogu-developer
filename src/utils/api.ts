@@ -73,14 +73,14 @@ export namespace API {
     )}&_contentOnly=1`;
   export const SOLUTION_REFERER = (pid: string) => `/problem/solution/${pid}`;
   export const MYARTICLE = `/article/mine?_contentOnly`,
-    DELETE_ARTICLE = (lid: string) => `${apiURL}/article/delete/${lid}`,
-    EDIT_ARTICLE = (lid: string) => `${apiURL}/article/edit/${lid}`,
+    DELETE_ARTICLE = (lid: string) => `/article/${lid}/delete`,
+    EDIT_ARTICLE = (lid: string) => `/article/${lid}/editSubmit`,
     GET_ARTICLE = (lid: string) => `/article/${lid}?_contentOnly`,
-    REQUEST_PROMOTION = (lid: string) => `/api/article/requestPromotion/${lid}`,
+    REQUEST_PROMOTION = (lid: string) => `/article/${lid}/requestPromotion`,
     WITHDRAW_PROMOTION = (lid: string) =>
-      `/api/article/withdrawPromotion/${lid}`,
-    CREATE_ARTICLE = '/api/article/new';
-  export const VOTE_ARTICLE = (lid: string) => `/api/article/vote/${lid}`;
+      `/article/${lid}/withdrawPromotion`,
+    CREATE_ARTICLE = '/article/_newSubmit';
+  export const VOTE_ARTICLE = (lid: string) => `/article/${lid}/vote`;
   export const CSRF_TOKEN = `/ranking`;
   export const CLIENT_ID = `/auth/login`;
 }
