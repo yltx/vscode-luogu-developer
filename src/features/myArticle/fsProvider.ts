@@ -9,6 +9,39 @@ import { isAxiosError } from 'axios';
 import { Article, EditArticleRequest } from 'luogu-api';
 import * as vscode from 'vscode';
 
+function toFileSystemError(uri: vscode.Uri, error: unknown) {
+  const errorMessage =
+    isAxiosError(error) &&
+    error.response?.data &&
+    typeof error.response.data === 'object'
+      ? (
+          error.response.data as {
+            errorMessage?: string;
+            currentData?: { errorMessage?: string };
+            data?: { errorMessage?: string };
+          }
+        ).errorMessage ??
+        (
+          error.response.data as {
+            currentData?: { errorMessage?: string };
+            data?: { errorMessage?: string };
+          }
+        ).currentData?.errorMessage ??
+        (
+          error.response.data as {
+            currentData?: { errorMessage?: string };
+            data?: { errorMessage?: string };
+          }
+        ).data?.errorMessage
+      : undefined;
+  return Object.assign(
+    isAxiosError(error) && (error.code === '404' || error.code === '403')
+      ? vscode.FileSystemError.FileNotFound(uri)
+      : vscode.FileSystemError.Unavailable(errorMessage ?? uri.toString()),
+    { cause: error }
+  );
+}
+
 export default class myArticleFsProvider
   implements vscode.FileSystemProvider, vscode.Disposable
 {
@@ -32,9 +65,7 @@ export default class myArticleFsProvider
         { type: vscode.FileChangeType.Deleted, uri }
       ]);
     } catch (e) {
-      throw Object.assign(vscode.FileSystemError.FileNotFound(uri), {
-        cause: e
-      });
+      throw toFileSystemError(uri, e);
     }
   }
   async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
@@ -49,12 +80,7 @@ export default class myArticleFsProvider
         mtime: 0
       };
     } catch (e) {
-      throw Object.assign(
-        isAxiosError(e) && (e.code === '404' || e.code === '403')
-          ? vscode.FileSystemError.FileNotFound(uri)
-          : vscode.FileSystemError.Unavailable(uri),
-        { cause: e }
-      );
+      throw toFileSystemError(uri, e);
     }
   }
   async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
@@ -70,12 +96,7 @@ export default class myArticleFsProvider
         (await getArticle(uri.query)).data.article.content
       );
     } catch (e) {
-      throw Object.assign(
-        isAxiosError(e) && (e.code === '404' || e.code === '403')
-          ? vscode.FileSystemError.FileNotFound(uri)
-          : vscode.FileSystemError.Unavailable(uri),
-        { cause: e }
-      );
+      throw toFileSystemError(uri, e);
     }
   }
   async writeFile(
@@ -109,12 +130,7 @@ export default class myArticleFsProvider
       ]);
     } catch (e) {
       if (e === 'Canceled') throw e;
-      throw Object.assign(
-        isAxiosError(e) && (e.code === '404' || e.code === '403')
-          ? vscode.FileSystemError.FileNotFound(uri)
-          : vscode.FileSystemError.Unavailable(uri),
-        { cause: e }
-      );
+      throw toFileSystemError(uri, e);
     }
   }
   rename() {

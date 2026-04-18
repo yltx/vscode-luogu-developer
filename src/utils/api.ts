@@ -239,30 +239,47 @@ export const getProblemData = async (pid: string, cid?: number) =>
       return x.data.data;
     });
 
-const extractLentilleCurrentData = (payload: unknown) => {
+const extractLentilleData = <T>(payload: unknown): T | undefined => {
   if (
     payload &&
     typeof payload === 'object' &&
     'currentData' in payload &&
     (payload as { currentData?: unknown }).currentData !== undefined
   )
-    return (payload as { currentData: ContestData }).currentData;
+    return (payload as { currentData: T }).currentData;
   if (
     payload &&
     typeof payload === 'object' &&
     'data' in payload &&
     (payload as { data?: unknown }).data !== undefined
   )
-    return (payload as { data: ContestData }).data;
+    return (payload as { data: T }).data;
   if (typeof payload !== 'string') return undefined;
   const matched = payload.match(
     /<script id="lentille-context" type="application\/json">([\s\S]*?)<\/script>/
   );
   if (!matched?.[1]) return undefined;
   const parsed = JSON.parse(matched[1]) as
-    | { currentData?: ContestData; data?: ContestData }
+    | { currentData?: T; data?: T }
     | undefined;
   return parsed?.currentData ?? parsed?.data;
+};
+
+const toLentilleDataResponse = <T>(
+  payload: unknown,
+  name: string
+): LentilleDataResponse<T> => {
+  const data = extractLentilleData<T>(payload);
+  if (data === undefined) {
+    throw new Error(`${name}数据格式无法识别`);
+  }
+  if (payload && typeof payload === 'object') {
+    return {
+      ...(payload as Record<string, unknown>),
+      data
+    } as LentilleDataResponse<T>;
+  }
+  return { data } as LentilleDataResponse<T>;
 };
 
 const normalizeContestData = (contestData: ContestData): ContestData => ({
@@ -316,7 +333,7 @@ async function getContestSubmittedProblemIds(contestId: number) {
 export const searchContest = async (cid: number) =>
   axios
     .get<DataResponse<ContestData>>(API.CONTEST(cid))
-    .then(res => extractLentilleCurrentData(res?.data))
+    .then(res => extractLentilleData<ContestData>(res?.data))
     .then(async res => {
       if ((res || null) === null) {
         throw new Error('比赛不存在');
@@ -778,7 +795,7 @@ export const listMyArticles = async (params: {
       .get<LentilleDataResponse<ArticleListData>>(API.MYARTICLE, {
         params
       })
-      .then(x => x.data),
+      .then(x => toLentilleDataResponse<ArticleListData>(x.data, '文章列表')),
   listMyAllArticles = async (type?: 'all' | 'promotion') =>
     listMyArticles({ type }).then(async res => [
       ...Object.values(res.data.articles.result),
@@ -809,7 +826,7 @@ export const listMyArticles = async (params: {
   getArticle = async (lid: string) =>
     axios
       .get<LentilleDataResponse<ArticleData>>(API.GET_ARTICLE(lid))
-      .then(x => x.data),
+      .then(x => toLentilleDataResponse<ArticleData>(x.data, '文章')),
   requestPromotion = async (lid: string) =>
     axios.post<void>(API.REQUEST_PROMOTION(lid)).then(x => x.data),
   withdrawPromotion = async (lid: string) =>
