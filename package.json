@@ -7,15 +7,15 @@
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
-    "vscode": "^1.25.0"
+    "vscode": "^1.75.0"
   },
-  "homepage": "https://github.com/yltx/vscode-luogu-developer/blob/master/README.md",
+  "homepage": "https://github.com/yltx/vscode-luogu/blob/master/README.md",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yltx/vscode-luogu-developer.git"
+    "url": "https://github.com/yltx/vscode-luogu.git"
   },
   "bugs": {
-    "url": "https://github.com/yltx/vscode-luogu-developer/issues",
+    "url": "https://github.com/yltx/vscode-luogu/issues",
     "email": "mvp.bxbl@gmail.com"
   },
   "categories": [
@@ -572,7 +572,12 @@
     "package": "npm run build:icons && webpack --mode production",
     "lint": "eslint .",
     "fix": "eslint . --fix",
-    "prettier": "npx prettier . -w"
+    "prettier": "npx prettier . -w",
+    "typecheck": "tsc --noEmit -p tsconfig.check.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "ci": "npm run lint && npm run typecheck && npm run test"
   },
   "devDependencies": {
     "@types/copy-paste": "^1.1.33",
@@ -581,14 +586,14 @@
     "@types/katex": "^0.16.5",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
-    "@types/parse-path": "^7.0.3",
     "@types/picomatch": "^2.3.4",
     "@types/react": "^18.2.67",
     "@types/react-dom": "^18.2.22",
-    "@types/vscode": "^1.25.0",
+    "@types/vscode": "^1.75.0",
     "@types/ws": "^8.5.8",
     "@typescript-eslint/eslint-plugin": "^7.3.1",
     "@typescript-eslint/parser": "^7.3.1",
+    "@vitest/coverage-v8": "^4.1.7",
     "@vscode/vsce": "^3.6.2",
     "@vscode/webview-ui-toolkit": "^1.2.2",
     "css-loader": "^6.11.0",
@@ -601,6 +606,7 @@
     "style-loader": "^3.3.4",
     "ts-loader": "^9.5.1",
     "typescript": "^5.2.2",
+    "vitest": "^4.1.7",
     "webfont": "^11.2.26",
     "webpack": "^5.88.2",
     "webpack-bundle-analyzer": "^4.10.1",
@@ -614,19 +620,16 @@
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.8.2",
-    "dateformat": "^5.0.3",
     "hast-util-from-html": "^2.0.2",
     "jquery": "^3.7.1",
     "lg-markdown-processor": "github:Mr-Python-in-China/lg-markdown-processor",
     "markdown-it": "^13.0.2",
     "markdown-it-highlightjs": "^4.0.1",
-    "parse-path": "^7.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "rehype-highlight": "^7.0.0",
     "rehype-react": "^8.0.0",
     "unist-util-visit": "^5.0.0",
-    "utf-8-validate": "^5.0.10",
     "ws": "^8.18.0"
   },
   "author": "",

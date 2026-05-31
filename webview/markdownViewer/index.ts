@@ -4,7 +4,6 @@ const { default: getLuoguProcessor } = await import('lg-markdown-processor');
 const { fromHtml: hastUtilFromHtml } = await import('hast-util-from-html');
 const { default: rehypeReact } = await import('rehype-react');
 const { visit, SKIP } = await import('unist-util-visit');
-const { default: parsePath } = await import('parse-path');
 const { faBilibili } = await import('@fortawesome/free-brands-svg-icons');
 const { icon } = await import('@fortawesome/fontawesome-svg-core');
 const { default: rehypeHighlight } = await import('rehype-highlight');
@@ -42,11 +41,11 @@ const processor = getLuoguProcessor({
         const t = e.properties.src;
         if ('string' != typeof t) return;
         if (!t.startsWith('bilibili:')) return;
-        const parsedPath = parsePath(t);
-        if ('bilibili' !== (parsedPath.protocol as string)) return;
-        const query = parsedPath.query;
+        const parsedUrl = new URL(t);
+        if ('bilibili:' !== parsedUrl.protocol) return;
+        const query = Object.fromEntries(parsedUrl.searchParams);
         const args: { p?: string; t?: string } = {},
-          pathname = parsedPath.pathname;
+          pathname = parsedUrl.pathname.slice(1);
         let videoId: string;
         const aidMatch = pathname.match(/^(av)?(\d+)$/);
         let page: number, time: number;

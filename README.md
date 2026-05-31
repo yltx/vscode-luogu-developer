@@ -34,7 +34,7 @@
 
 ## 如何贡献本项目
 
-[CONTRIBUTING.md](https://github.com/yltx/vscode-luogu-developer/blob/master/CONTRIBUTING.md)
+[CONTRIBUTING.md](https://github.com/yltx/vscode-luogu/blob/master/CONTRIBUTING.md)
 
 ## Others
 

@@ -126,23 +126,8 @@ export default new SuperCommand({
 	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdn.bootcss.com/jqueryui/1.12.1/jquery-ui.min.js"></script>
 	<!--<![endif]-->
-	<!--[if lte IE 8 ]>
-	<script src="https://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
-	<script src="https://cdn.staticfile.org/modernizr/2.8.3/modernizr.js"></script>
-	<script src="assets/js/amazeui.ie8polyfill.min.js"></script>
-	<![endif]-->
 	<script>
 		const vscode = acquireVsCodeApi();
-
-	    String.prototype.padStart = function padStart(maxLength, fillString) {
-	        var str = String(this);
-	        var fillStr = fillString === undefined ? ' ' : String(fillString);
-	        if (maxLength <= str.length) return str;
-	        var fillLength = maxLength - str.length;
-	        var filler = '';
-	        while (filler.length < fillLength) filler += fillStr;
-	        return filler + str
-	    }
 
 	    H = 600;
 	    W = 1000;
@@ -152,19 +137,19 @@ export default new SuperCommand({
 	    activityStartTime = 1640966400;
 	    activityEndTime = 1641225600;
 	    colorlist = ['rgb(0, 0, 0)', 'rgb(255, 255, 255)', 'rgb(170, 170, 170)', 'rgb(85, 85, 85)', 'rgb(254, 211, 199)', 'rgb(255, 196, 206)', 'rgb(250, 172, 142)', 'rgb(255, 139, 131)', 'rgb(244, 67, 54)', 'rgb(233, 30, 99)', 'rgb(226, 102, 158)', 'rgb(156, 39, 176)', 'rgb(103, 58, 183)', 'rgb(63, 81, 181)', 'rgb(0, 70, 112)', 'rgb(5, 113, 151)', 'rgb(33, 150, 243)', 'rgb(0, 188, 212)', 'rgb(59, 229, 219)', 'rgb(151, 253, 220)', 'rgb(22, 115, 0)', 'rgb(55, 169, 60)', 'rgb(137, 230, 66)', 'rgb(215, 255, 7)', 'rgb(255, 246, 209)', 'rgb(248, 203, 140)', 'rgb(255, 235, 59)', 'rgb(255, 193, 7)', 'rgb(255, 152, 0)', 'rgb(255, 87, 34)', 'rgb(184, 63, 39)', 'rgb(121, 85, 72)'];
-	    var myarr = [];
-	    for (var i = 0; i < H; i++) {
+	    let myarr = [];
+	    for (let i = 0; i < H; i++) {
 	        myarr[i] = [];
-	        for (var j = 0; j < W; j++) {
+	        for (let j = 0; j < W; j++) {
 	            myarr[i][j] = '#dddddd';
 	        }
 	    }
 
 	    function render(arr) {
-	        var c = document.getElementById("mycanvas");
-	        var ctx = c.getContext("2d");
-	        for (var i = 0; i < H; i++) {
-	            for (var j = 0; j < W; j++) {
+	        const c = document.getElementById("mycanvas");
+	        const ctx = c.getContext("2d");
+	        for (let i = 0; i < H; i++) {
+	            for (let j = 0; j < W; j++) {
 	                ctx.fillStyle = arr[i][j];
 	                ctx.fillRect(j * scale, i * scale, scale, scale);
 	            }
@@ -178,8 +163,8 @@ export default new SuperCommand({
 	            return;
 	        }
 	        //alert('ss');
-	        var c = document.getElementById("mycanvas");
-	        var ctx = c.getContext("2d");
+	        const c = document.getElementById("mycanvas");
+	        const ctx = c.getContext("2d");
 	        ctx.fillStyle = color;
 	        ctx.fillRect(x * 5, y * 5, 5, 5);
 	    }
@@ -225,9 +210,9 @@ export default new SuperCommand({
 	    });
 	    $('#mycanvas').bind("mousewheel", function (event, delta) {
 	        event.preventDefault();
-	        var delta = event.originalEvent.deltaY;
-	        var y = parseInt(event.offsetY / scale);
-	        var x = parseInt(event.offsetX / scale);
+	        const delta = event.originalEvent.deltaY;
+	        const y = parseInt(event.offsetY / scale);
+	        const x = parseInt(event.offsetX / scale);
 	        console.log(event);
 	        if (delta > 0) {
 	            if (scale == 10)
@@ -249,26 +234,26 @@ export default new SuperCommand({
 	    });
 
 	    function getDateTime(timestamp, isRangeEnd) {
-	        var d = new Date(timestamp * 1000);
-	        var is2400 = false;
+	        const d = new Date(timestamp * 1000);
+	        let is2400 = false;
 	        if (isRangeEnd && d.getHours() === 0 && d.getMinutes() === 0) {
 	            d.setHours(-24)
 	            is2400 = true;
 	        }
-	        var s = String(d.getFullYear()) + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + ' ';
+	        let s = String(d.getFullYear()) + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + String(d.getDate()).padStart(2, '0') + ' ';
 	        s += is2400 ? '24:00' : String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
             return s;
         }
       
         function getFormattedTime(timestamp) {
-            var str = '';
-            var d = Math.floor(timestamp / 86400);
+            let str = '';
+            let d = Math.floor(timestamp / 86400);
             if (d !== 0 || str.length > 0) str += d + '天';
-            var h = Math.floor(timestamp / 3600) % 24;
+            let h = Math.floor(timestamp / 3600) % 24;
             if (h !== 0 || str.length > 0) str += String(h).padStart(2, '0') + '时';
-            var m = Math.floor(timestamp / 60) % 60;
+            let m = Math.floor(timestamp / 60) % 60;
             if (m !== 0 || str.length > 0) str += String(m).padStart(2, '0') + '分';
-            var s = Math.floor(timestamp) % 60;
+            let s = Math.floor(timestamp) % 60;
             str += String(s).padStart(2, '0') + '秒';
             return str;
         }
@@ -277,7 +262,7 @@ export default new SuperCommand({
             vscode.postMessage({type: 'request-paintboard',data: 0});
         }
       
-        var ws = null;
+        let ws = null;
         function connectWs() {
             try {
                 ws = new WebSocket('wss://ws.luogu.com.cn/ws');
@@ -287,7 +272,7 @@ export default new SuperCommand({
             }
           
             ws.onopen = function() {
-                var message = {
+                const message = {
                     "type": "join_channel",
                     "channel": "paintboard",
                     "channel_param": ""
@@ -296,7 +281,7 @@ export default new SuperCommand({
             };
           
             ws.onmessage = function (event) {
-                var data = JSON.parse(event.data);
+                const data = JSON.parse(event.data);
                 if(data.type === "paintboard_update") {
                     update(data.y, data.x, colorlist[data.color]);
                 } else if(data.type === "result") {
@@ -311,10 +296,10 @@ export default new SuperCommand({
         (function () {
             $('#activity-time-start').html(getDateTime(activityStartTime, false));
             $('#activity-time-end').html(getDateTime(activityEndTime, true));
-            var countBeforeStart = activityStartTime > (new Date().getTime() / 1000);
-            var $$ = $('#timeleft');
-            var clock = setInterval(function () {
-                var time = Math.floor(new Date().getTime() / 1000);
+            const countBeforeStart = activityStartTime > (new Date().getTime() / 1000);
+            const $$ = $('#timeleft');
+            const clock = setInterval(function () {
+                const time = Math.floor(new Date().getTime() / 1000);
                 if (countBeforeStart && (time > activityStartTime)) {
                     clearInterval(clock);
                     window.location.reload();
