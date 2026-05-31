@@ -2944,7 +2944,7 @@ export const formatTime = (
   fmt: string = 'yyyy-MM-dd hh:mm:ss'
 ) => {
   if (typeof date == 'number') date = new Date(date);
-  const o = {
+  const o: Record<string, number> = {
     'y+': date.getFullYear(),
     'M+': date.getMonth() + 1,
     'd+': date.getDate(),
@@ -2955,22 +2955,23 @@ export const formatTime = (
     'S+': date.getMilliseconds()
   };
   for (const k in o) {
-    if (new RegExp('(' + k + ')').test(fmt)) {
+    const match = new RegExp('(' + k + ')').exec(fmt);
+    if (match) {
+      const matched = match[1];
       if (k === 'y+') {
-        fmt = fmt.replace(RegExp.$1, ('' + o[k]).substr(4 - RegExp.$1.length));
+        fmt = fmt.replace(matched, ('' + o[k]).slice(4 - matched.length));
       } else if (k === 'S+') {
-        let lens = RegExp.$1.length;
-        lens = lens === 1 ? 3 : lens;
+        const lens = matched.length === 1 ? 3 : matched.length;
         fmt = fmt.replace(
-          RegExp.$1,
-          ('00' + o[k]).substr(('' + o[k]).length - 1, lens)
+          matched,
+          ('00' + o[k]).slice(('' + o[k]).length - 1, ('' + o[k]).length - 1 + lens)
         );
       } else {
         fmt = fmt.replace(
-          RegExp.$1,
-          RegExp.$1.length === 1
-            ? o[k]
-            : ('00' + o[k]).substr(('' + o[k]).length)
+          matched,
+          matched.length === 1
+            ? String(o[k])
+            : ('00' + o[k]).slice(('' + o[k]).length)
         );
       }
     }

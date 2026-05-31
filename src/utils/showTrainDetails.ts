@@ -7,35 +7,35 @@ import { getScoreColor } from './shared';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {
-    return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" data-v-239a177d="" data-v-6e56e2aa="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path data-v-239a177d="" data-v-6e56e2aa="" fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`;
+    return `<span style="color: rgb(82, 196, 26);"><svg width="16" height="21.82" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="svg-inline--fa fa-check fa-w-16"><path fill="currentColor" d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z" class=""></path></svg></span>`;
   } else {
     if (userScore !== -1) {
       return `<span style="${getScoreColor(
         userScore
       )};font-weight: bold">${userScore}</span>`;
     } else {
-      return `<span data-v-239a177d="" data-v-6e56e2aa="" style="color: rgb(122, 122, 122);"><svg data-v-1b44b3e6="" data-v-c06fccc2="" aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon svg-inline--fa fa-minus fa-w-14" data-v-303bbf52="" style="opacity: 0.7; width: 1em;"><path data-v-1b44b3e6="" fill="currentColor" d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" class=""></path></svg></span>`;
+      return `<span style="color: rgb(122, 122, 122);"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="minus" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="icon svg-inline--fa fa-minus fa-w-14" style="opacity: 0.7; width: 1em;"><path fill="currentColor" d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z" class=""></path></svg></span>`;
     }
   }
 };
 const getDifficultyStatus = (difficulty: number) => {
   switch (difficulty) {
     case 1:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(254, 76, 97); color: rgb(255, 255, 255);">入门</span>`;
+      return `<span class="lfe-caption" style="background: rgb(254, 76, 97); color: rgb(255, 255, 255);">入门</span>`;
     case 2:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(243, 156, 17); color: rgb(255, 255, 255);">普及-</span>`;
+      return `<span class="lfe-caption" style="background: rgb(243, 156, 17); color: rgb(255, 255, 255);">普及-</span>`;
     case 3:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(255, 193, 22); color: rgb(255, 255, 255);">普及/提高-</span>`;
+      return `<span class="lfe-caption" style="background: rgb(255, 193, 22); color: rgb(255, 255, 255);">普及/提高-</span>`;
     case 4:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(82, 196, 26); color: rgb(255, 255, 255);">普及+/提高</span>`;
+      return `<span class="lfe-caption" style="background: rgb(82, 196, 26); color: rgb(255, 255, 255);">普及+/提高</span>`;
     case 5:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(52, 152, 219); color: rgb(255, 255, 255);">提高+/省选-</span>`;
+      return `<span class="lfe-caption" style="background: rgb(52, 152, 219); color: rgb(255, 255, 255);">提高+/省选-</span>`;
     case 6:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(157, 61, 207); color: rgb(255, 255, 255);">省选/NOI-</span>`;
+      return `<span class="lfe-caption" style="background: rgb(157, 61, 207); color: rgb(255, 255, 255);">省选/NOI-</span>`;
     case 7:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(14, 29, 105); color: rgb(255, 255, 255);">NOI/NOI+/CTSC</span>`;
+      return `<span class="lfe-caption" style="background: rgb(14, 29, 105); color: rgb(255, 255, 255);">NOI/NOI+/CTSC</span>`;
     default:
-      return `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
+      return `<span class="lfe-caption" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
   }
 };
 const getTagsStatus = (tags: number[]) => {
@@ -43,10 +43,10 @@ const getTagsStatus = (tags: number[]) => {
   tags.forEach(index => {
     const tag = Tags[index];
     if (tag) {
-      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
+      html += `<span class="lfe-caption" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
     } else {
       // 如果标签不存在，使用默认样式
-      html += `<span data-v-43a42535="" data-v-c06fccc2="" class="lfe-caption" data-v-303bbf52="" style="color: rgb(255, 255, 255); background-color: #000000">未知标签(${index})</span>&nbsp;`;
+      html += `<span class="lfe-caption" style="color: rgb(255, 255, 255); background-color: #000000">未知标签(${index})</span>&nbsp;`;
     }
   });
   return html;
@@ -208,7 +208,7 @@ export const generateTrainDetailsHTML = (
       -webkit-tap-highlight-color: transparent;
     }
     .lfe-tooltip-theme{display:block !important;z-index:10000}.lfe-tooltip-theme .tooltip-inner{background:#000;color:#fff;border-radius:4px;padding:5px 10px 4px}.lfe-tooltip-theme .tooltip-arrow{width:0;height:0;border-style:solid;position:absolute;margin:5px;border-color:#000;z-index:1}.lfe-tooltip-theme[x-placement^=top]{margin-bottom:5px}.lfe-tooltip-theme[x-placement^=top] .tooltip-arrow{border-width:5px 5px 0 5px;border-left-color:transparent !important;border-right-color:transparent !important;border-bottom-color:transparent !important;bottom:-5px;left:calc(50% - 5px);margin-top:0;margin-bottom:0}.lfe-tooltip-theme[x-placement^=bottom]{margin-top:5px}.lfe-tooltip-theme[x-placement^=bottom] .tooltip-arrow{border-width:0 5px 5px 5px;border-left-color:transparent !important;border-right-color:transparent !important;border-top-color:transparent !important;top:-5px;left:calc(50% - 5px);margin-top:0;margin-bottom:0}.lfe-tooltip-theme[x-placement^=right]{margin-left:5px}.lfe-tooltip-theme[x-placement^=right] .tooltip-arrow{border-width:5px 5px 5px 0;border-left-color:transparent !important;border-top-color:transparent !important;border-bottom-color:transparent !important;left:-5px;top:calc(50% - 5px);margin-left:0;margin-right:0}.lfe-tooltip-theme[x-placement^=left]{margin-right:5px}.lfe-tooltip-theme[x-placement^=left] .tooltip-arrow{border-width:5px 0 5px 5px;border-top-color:transparent !important;border-right-color:transparent !important;border-bottom-color:transparent !important;right:-5px;top:calc(50% - 5px);margin-left:0;margin-right:0}.lfe-tooltip-theme.popover .popover-inner{background:#f9f9f9;color:#000;padding:24px;border-radius:5px;box-shadow:0 5px 30px rgba(0,0,0,.1)}.lfe-tooltip-theme.popover .popover-arrow{border-color:#f9f9f9}.lfe-tooltip-theme[aria-hidden=true]{visibility:hidden;opacity:0;transition:opacity .15s,visibility .15s}.lfe-tooltip-theme[aria-hidden=false]{visibility:visible;opacity:1;transition:opacity .15s}
-    span[data-v-43a42535] {
+    .lfe-caption {
       box-sizing: border-box;
       font-weight: 400;
       line-height: 1.5;
