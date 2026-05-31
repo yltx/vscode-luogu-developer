@@ -37,7 +37,8 @@ export default function registerViewProblem(context: vscode.ExtensionContext) {
                     title: problemData.contest.name
                   }
                 : undefined,
-              title: problemData.problem.title
+              title:
+                problemData.problem.title ?? problemData.problem.content.name
             });
             showProblemWebview(problemData);
             return true;

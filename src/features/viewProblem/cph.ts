@@ -72,7 +72,7 @@ export async function sendCphMessage(data: ProblemData) {
           ? ' - ' + data.problem.pid
           : '') +
         (config === 'ProblemName' || config === 'ProblemIDwithProblemName'
-          ? ' - ' + data.problem.title
+          ? ' - ' + (data.problem.title ?? data.problem.content.name)
           : ''),
       url:
         'https://www.luogu.com.cn/problem/' +

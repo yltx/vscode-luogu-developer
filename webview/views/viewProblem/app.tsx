@@ -60,7 +60,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
             >
               {data.problem.pid}
             </a>{' '}
-            {data.problem.title}
+            {data.problem.title ?? data.problem.content.name}
           </h1>
           <div>
             {languagesList.length > 1 && (
