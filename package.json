@@ -544,6 +544,18 @@
           "minimum": 1,
           "maximum": 65535,
           "description": "传送至 CPH 时使用的本地端口号（默认 27121，与 CPH 默认一致）。"
+        },
+        "luogu.webviewViewColumn": {
+          "type": "string",
+          "enum": [
+            "Beside",
+            "Active",
+            "One",
+            "Two",
+            "Three"
+          ],
+          "default": "Beside",
+          "description": "洛谷 Webview 面板的打开位置。Beside=当前编辑器旁，Active=当前活跃编辑器，One/Two/Three=固定列。"
         }
       }
     },

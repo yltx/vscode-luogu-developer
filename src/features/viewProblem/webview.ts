@@ -1,4 +1,5 @@
 import { getDistFilePath } from '@/utils/html';
+import { getWebviewViewColumn } from '@/utils/workspaceUtils';
 import { ProblemData } from 'luogu-api';
 import * as vscode from 'vscode';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
@@ -9,7 +10,7 @@ export default function showProblemWebview(data: ProblemData) {
   const panel = vscode.window.createWebviewPanel(
     'luogu.problemPanel',
     `${data.problem.pid} ${data.problem.title ?? data.problem.content.name}`,
-    vscode.ViewColumn.Two,
+    getWebviewViewColumn(),
     {
       enableScripts: true,
       retainContextWhenHidden: true,

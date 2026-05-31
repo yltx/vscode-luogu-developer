@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { fetchRecords, fetchResult } from '@/utils/api';
 import { getDistFilePath } from '@/utils/html';
 import { createWebsocket, WebsocketSchema } from '@/utils/websocket';
-import { processAxiosError } from '@/utils/workspaceUtils';
+import { processAxiosError, getWebviewViewColumn } from '@/utils/workspaceUtils';
 import { RecordData } from 'luogu-api';
 import { MessageTypes } from '@w/views/record/data';
 
@@ -10,7 +10,7 @@ async function record(record: RecordData) {
   const panel = vscode.window.createWebviewPanel(
     'luogu.recordPanel',
     `R${record.record.id} 记录详情`,
-    vscode.ViewColumn.Two,
+    getWebviewViewColumn(),
     {
       enableScripts: true,
       retainContextWhenHidden: true,

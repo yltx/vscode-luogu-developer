@@ -237,3 +237,21 @@ export async function askForCaptcha() {
   panel.dispose();
   return input;
 }
+
+export function getWebviewViewColumn(): vscode.ViewColumn {
+  const config = vscode.workspace.getConfiguration('luogu');
+  const setting = config.get<string>('webviewViewColumn', 'Beside');
+  switch (setting) {
+    case 'Active':
+      return vscode.ViewColumn.Active;
+    case 'One':
+      return vscode.ViewColumn.One;
+    case 'Two':
+      return vscode.ViewColumn.Two;
+    case 'Three':
+      return vscode.ViewColumn.Three;
+    case 'Beside':
+    default:
+      return vscode.ViewColumn.Beside;
+  }
+}

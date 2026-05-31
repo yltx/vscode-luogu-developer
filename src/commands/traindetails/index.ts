@@ -2,6 +2,7 @@ import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
 import { searchTrainingdetail } from '@/utils/api';
 import { showTrainDetails } from '@/utils/showTrainDetails';
+import { getWebviewViewColumn } from '@/utils/workspaceUtils';
 
 export default new SuperCommand({
   onCommand: 'traindetails',
@@ -25,7 +26,7 @@ export default new SuperCommand({
       const panel = vscode.window.createWebviewPanel(
         '题单详情',
         `${data['training']['name'] ?? data['training']['title']}`,
-        vscode.ViewColumn.Two,
+        getWebviewViewColumn(),
         {
           enableScripts: true,
           retainContextWhenHidden: true,

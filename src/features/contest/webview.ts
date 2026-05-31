@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { getDistFilePath } from '@/utils/html';
+import { getWebviewViewColumn } from '@/utils/workspaceUtils';
 import { ContestData } from 'luogu-api';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { getRanklist, searchContest, joinContest } from '@/utils/api';
@@ -15,7 +16,7 @@ export default function showContestWebview(data: ContestData) {
   const panel = vscode.window.createWebviewPanel(
     'luogu.contestPanel',
     `${data.contest.id} ${data.contest.name}`,
-    vscode.ViewColumn.Two,
+    getWebviewViewColumn(),
     {
       enableScripts: true,
       retainContextWhenHidden: true,

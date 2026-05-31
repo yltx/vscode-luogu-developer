@@ -1,6 +1,7 @@
 import SuperCommand from '../SuperCommand';
 import { getFate } from '@/utils/api';
 import * as vscode from 'vscode';
+import { getWebviewViewColumn } from '@/utils/workspaceUtils';
 
 export default new SuperCommand({
   onCommand: 'fate',
@@ -73,7 +74,7 @@ export default new SuperCommand({
             const pannel = vscode.window.createWebviewPanel(
               '',
               `今日运势`,
-              vscode.ViewColumn.Two
+              getWebviewViewColumn()
             );
             // let pannelClosed = false;
             // pannel.onDidDispose(() => pannelClosed = true)

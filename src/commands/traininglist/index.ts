@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 import { searchTrainingdetail, searchTraininglist } from '@/utils/api';
 import { getResourceFilePath } from '@/utils/html';
 import { showTrainDetails } from '@/utils/showTrainDetails';
-import { getUsernameColor, getUserSvg } from '@/utils/workspaceUtils';
+import { getUsernameColor, getUserSvg, getWebviewViewColumn } from '@/utils/workspaceUtils';
 
 export default new SuperCommand({
   onCommand: 'traininglist',
@@ -11,7 +11,7 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel(
       'traininglist',
       `题单广场`,
-      vscode.ViewColumn.Two,
+      getWebviewViewColumn(),
       {
         enableScripts: true,
         retainContextWhenHidden: true,
@@ -28,7 +28,7 @@ export default new SuperCommand({
         const panel2 = vscode.window.createWebviewPanel(
           '题单详情',
           `${data['training']['name'] ?? data['training']['title']}`,
-          vscode.ViewColumn.Two,
+          getWebviewViewColumn(),
           {
             enableScripts: true,
             retainContextWhenHidden: true,

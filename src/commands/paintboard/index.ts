@@ -1,6 +1,7 @@
 import SuperCommand from '../SuperCommand';
 import * as vscode from 'vscode';
 import axios from '@/utils/api';
+import { getWebviewViewColumn } from '@/utils/workspaceUtils';
 
 export default new SuperCommand({
   onCommand: 'paintboard',
@@ -8,7 +9,7 @@ export default new SuperCommand({
     const panel = vscode.window.createWebviewPanel(
       ``,
       `冬日绘板`,
-      vscode.ViewColumn.One,
+      getWebviewViewColumn(),
       {
         enableScripts: true,
         retainContextWhenHidden: true,

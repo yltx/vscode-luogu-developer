@@ -9,7 +9,7 @@ import {
 import { getDistFilePath } from '@/utils/html';
 import * as vscode from 'vscode';
 import type BenbenData from '@/model/benben';
-import { getUsernameColor } from '@/utils/workspaceUtils';
+import { getUsernameColor, getWebviewViewColumn } from '@/utils/workspaceUtils';
 import useWebviewResponseHandle from '@/utils/webviewResponse';
 import { Activity, UserSummary } from 'luogu-api';
 import { needLogin } from '@/utils/uiUtils';
@@ -179,7 +179,7 @@ export default function registerBenben(context: vscode.ExtensionContext) {
       const panel = vscode.window.createWebviewPanel(
         `luogu.benbenPanel`,
         `犇犇 - ${mode === 0 ? '全网动态' : mode === 1 ? '我关注的' : mode === 2 ? '我发布的' : `${user!.name} 的动态`}`,
-        vscode.ViewColumn.Two,
+        getWebviewViewColumn(),
         {
           enableScripts: true,
           retainContextWhenHidden: true,
