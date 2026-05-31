@@ -29,25 +29,38 @@ export default class LuoguAuthProvider
     this.cache = {} as LuoguSession;
     this.cacheLock = new Promise(resolve => (finishlock = resolve));
     this.secretStorage.get(LuoguAuthProvider.SecretKey).then(async x => {
-      if (x)
-        (this.cache = JSON.parse(x)),
-          (this.status = true),
-          vscode.commands.executeCommand(
-            'setContext',
-            'luoguLoginStatus',
-            true
-          );
-      else
-        (this.cache = new LuoguSession({
+      if (x) {
+        const parsed = JSON.parse(x);
+        try {
+          const valid = await checkCookie({
+            uid: +parsed.account.id,
+            clientID: parsed.accessToken
+          });
+          if (!valid) {
+            await this.secretStorage.delete(LuoguAuthProvider.SecretKey);
+            this.cache = new LuoguSession({
+              uid: 0,
+              clientID: await genClientID(),
+              name: ''
+            });
+            vscode.commands.executeCommand('setContext', 'luoguLoginStatus', false);
+            finishlock();
+            return;
+          }
+        } catch {
+          // Network error — keep the session, validate later
+        }
+        this.cache = parsed;
+        this.status = true;
+        vscode.commands.executeCommand('setContext', 'luoguLoginStatus', true);
+      } else {
+        this.cache = new LuoguSession({
           uid: 0,
           clientID: await genClientID(),
           name: ''
-        })),
-          vscode.commands.executeCommand(
-            'setContext',
-            'luoguLoginStatus',
-            false
-          );
+        });
+        vscode.commands.executeCommand('setContext', 'luoguLoginStatus', false);
+      }
       finishlock();
     });
     this.secretStorage.onDidChange(async e => {

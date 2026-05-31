@@ -105,7 +105,15 @@ export enum DialogType {
   error = 'error'
 }
 
-export const needLogin = () =>
+let needLoginShown = false;
+export const needLogin = () => {
+  if (needLoginShown) return;
+  needLoginShown = true;
   vscode.window.showErrorMessage('未登录', '登录').then(async c => {
     if (c) vscode.commands.executeCommand('luogu.signin');
+  }).then(() => {
+    setTimeout(() => { needLoginShown = false; }, 5000);
+  }, () => {
+    setTimeout(() => { needLoginShown = false; }, 5000);
   });
+};
