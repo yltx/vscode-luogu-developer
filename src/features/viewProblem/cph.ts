@@ -78,7 +78,7 @@ export async function sendCphMessage(data: ProblemData) {
         'https://www.luogu.com.cn/problem/' +
         data.problem.pid +
         (data.contest ? '?contestId=' + data.contest.id : ''),
-      memoryLimit: Math.max(...data.problem.limits.memory),
+      memoryLimit: Math.max(...data.problem.limits.memory) / 1024,
       timeLimit: Math.max(...data.problem.limits.time),
       tests: data.problem.samples.map((d, i) => ({
         input: d[0],
