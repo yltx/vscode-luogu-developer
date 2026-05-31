@@ -16,7 +16,6 @@ import {
   LoginRequest,
   LoginResponse,
   ProblemData,
-  ProblemSetData,
   RecordBase,
   RecordData,
   SolutionsData,
@@ -287,7 +286,10 @@ export const searchTraininglist = async (
 ) =>
   axios
     .get(API.SEARCHTRAINLIST(type, keyword, page))
-    .then(res => res?.data?.currentData)
+    .then(res => {
+      const d = res.data;
+      return d.currentData ?? d.data;
+    })
     .then(async res => {
       // console.log(res)
       if ((res || null) === null) {
@@ -307,8 +309,11 @@ export const searchTraininglist = async (
 
 export const searchTrainingdetail = async (id: number) =>
   axios
-    .get<DataResponse<ProblemSetData>>(API.TRAINLISTDETAIL(id))
-    .then(res => res.data.currentData)
+    .get(API.TRAINLISTDETAIL(id))
+    .then(res => {
+      const d = res.data;
+      return d.currentData ?? d.data;
+    })
     .then(async res => {
       // console.log(res)
       if ((res || null) === null) {

@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.12.2",
+  "version": "4.13.0",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -167,6 +167,16 @@
       {
         "command": "luogu.jumpToCph",
         "title": "在 CPH 中打开当前题目"
+      },
+      {
+        "command": "luogu.history.refresh",
+        "title": "刷新浏览记录",
+        "category": "Luogu"
+      },
+      {
+        "command": "luogu.history.clear",
+        "title": "清空浏览记录",
+        "category": "Luogu"
       }
     ],
     "keybindings": [
@@ -527,8 +537,7 @@
           ],
           "default": "ProblemID",
           "description": "传送至 CPH 时，CPH 创建文件时的文件名形式。"
-        }
-        ,
+        },
         "luogu.cphPort": {
           "type": "integer",
           "default": 27121,

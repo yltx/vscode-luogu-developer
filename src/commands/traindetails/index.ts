@@ -24,7 +24,7 @@ export default new SuperCommand({
       // console.log(data)
       const panel = vscode.window.createWebviewPanel(
         '题单详情',
-        `${data['training']['title']}`,
+        `${data['training']['name'] ?? data['training']['title']}`,
         vscode.ViewColumn.Two,
         {
           enableScripts: true,

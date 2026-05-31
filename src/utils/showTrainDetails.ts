@@ -68,7 +68,7 @@ export class TrainDetals {
   } | null;
 
   public constructor(fields: ProblemSetDetails) {
-    this.title = fields.title;
+    this.title = (fields as any).name ?? fields.title;
     this.problemCount = fields.problemCount;
     this.problemlist = fields.problems;
     this.description = fields.description;
@@ -89,26 +89,21 @@ export class TrainDetals {
       problemlist += '  </tr>\n';
     }
     this.problemlist.forEach(index => {
+      const p = (index as any)['problem'] ?? index;
+      const score = p['accepted'] ? 1 : p['submitted'] ? 0 : -1;
       problemlist += `  <tr>
-    <td nowrap>${index['problem']['pid']}</td>
-    <td style="text-align: center;" nowrap>${getUserScoreStatus(
-      this.userScore
-        ? this.userScore['status'][index['problem']['pid']]
-          ? this.userScore['score'][index['problem']['pid']]
-          : -1
-        : -1,
-      index['problem']['fullScore']
-    )}</td>
+    <td nowrap>${p['pid']}</td>
+    <td style="text-align: center;" nowrap>${getUserScoreStatus(score, 1)}</td>
     <td align="left" nowrap><a href="${
-      index['problem']['pid']
-    }" class="pid" id="${index['problem']['pid']}">${md.render(
-      index['problem']['title']
+      p['pid']
+    }" class="pid" id="${p['pid']}">${md.render(
+      p['name'] ?? p['title'] ?? ''
     )}</a></td>
-    <td align="left" nowrap>${getTagsStatus(index['problem']['tags'])}</td>
-    <td nowrap>${getDifficultyStatus(index['problem']['difficulty']!)}</td>
+    <td align="left" nowrap>${getTagsStatus(p['tags'])}</td>
+    <td nowrap>${getDifficultyStatus(p['difficulty']!)}</td>
     <td nowrap>
-      <progress value="${index['problem']['totalAccepted']}" max="${
-        index['problem']['totalSubmit']
+      <progress value="${p['totalAccepted']}" max="${
+        p['totalSubmit']
       }" style="height: 30px;width: 100px;"></progress>
     </td>
 </tr>`;
@@ -131,7 +126,7 @@ export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
   const train = await searchTrainingdetail(id).then(res => {
     globalThis.luogu.historyTreeviewProvider.addItem({
       type: 'training',
-      title: res.training.title,
+      title: (res.training as any).name ?? res.training.title,
       trainingId: res.training.id,
       trainingType: res.training.type,
       owner:

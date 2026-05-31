@@ -1,5 +1,19 @@
 # Change Log
 
+## 4.13.0
+
+- Fix:
+  1. 适配洛谷 API 变更：题目标题从 `problem.title` 迁移至 `content.name`
+  2. 适配题单响应格式从 `DataResponse` 变为 `LentilleDataResponse`
+  3. 适配题单字段 `title` 重命名为 `name`，题目数组结构扁平化
+  4. 适配题单广场 `trainings.result` 支持 array/object 两种格式
+  5. 适配 `acceptedCounts` 重命名为 `acCounts`
+  6. 适配训练详情使用 `TrainingProblem` 的 `accepted`/`submitted` 字段
+  7. 解决最近浏览中题单图标偏移问题（`folder` → `folder-library`）
+- Add:
+  1. 刷新浏览记录命令（从 API 重新获取标题并去重）
+  2. 清空浏览记录命令（带确认对话框）
+
 ## 4.12.2
 
 - Add:
@@ -19,9 +33,9 @@
 - Add:
   1. 提交代码时若未聚焦任何编辑器则要求选择文件
   2. 重做比赛页面
-    1. 重做 UI
-    2. 自动刷新排行榜
-    3. 在任务栏显示比赛信息
+  3. 重做 UI
+  4. 自动刷新排行榜
+  5. 在任务栏显示比赛信息
 
 ## 4.11.12
 

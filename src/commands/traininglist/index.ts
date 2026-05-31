@@ -27,7 +27,7 @@ export default new SuperCommand({
         const data = await searchTrainingdetail(message.data);
         const panel2 = vscode.window.createWebviewPanel(
           '题单详情',
-          `${data['training']['title']}`,
+          `${data['training']['name'] ?? data['training']['title']}`,
           vscode.ViewColumn.Two,
           {
             enableScripts: true,
@@ -210,8 +210,11 @@ const generategeneralHTML = async (webview: vscode.Webview) => {
 
 const generateOfficialListHTML = async (keyword: string, page: number) => {
   const data = await searchTraininglist('official', keyword, page);
-  const list = data['trainings']['result'];
-  const accepted = data['acceptedCounts'];
+  const trainings = data['trainings'];
+  const list = trainings?.['result'];
+  if (!list) return '<p>加载失败</p>';
+  const items: any[] = Array.isArray(list) ? list : Object.values(list);
+  const accepted = data['acCounts'] ?? data['acceptedCounts'];
   console.log(data);
   console.log(accepted);
   let html = '';
@@ -223,35 +226,32 @@ const generateOfficialListHTML = async (keyword: string, page: number) => {
   html += '          <th nowrap>题目数</th>\n';
   html += '          <th nowrap>收藏数</th>\n';
   html += '        </tr>\n';
-  for (let i = 1; i <= list['length']; i++) {
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i] as any;
     html += '        <tr>\n';
-    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`;
+    html += `          <td align="left" nowrap>${item['id']}</td>\n`;
     html += `          <td align="left" nowrap><a href="${
-      list[i - 1]['title']
-    }" class="detail_btn" id="${list[i - 1]['id']}">${
-      list[i - 1]['title']
+      item['name'] ?? item['title']
+    }" class="detail_btn" id="${item['id']}">${
+      item['name'] ?? item['title']
     }</a></td>\n`;
     html += `          <td align="left" nowrap>\n
-            <progress value="${accepted[list[i - 1]['id']]}" max="${
-              list[i - 1]['problemCount']
+            <progress value="${accepted[item['id']]}" max="${
+              item['problemCount']
             }" style="height: 30px;width: 100px;" title="${
-              accepted[list[i - 1]['id']]
-            }/${list[i - 1]['problemCount']}"></progress>
+              accepted[item['id']]
+            }/${item['problemCount']}"></progress>
                      </td>\n`;
     // html+=`          <td width="15px" align="left"></td>`
-    html += `          <td align="center" nowrap>${
-      list[i - 1]['problemCount']
-    }</td>\n`;
-    html += `          <td align="center" nowrap>${
-      list[i - 1]['markCount']
-    }</td>\n`;
+    html += `          <td align="center" nowrap>${item['problemCount']}</td>\n`;
+    html += `          <td align="center" nowrap>${item['markCount']}</td>\n`;
     html += '        <tr>\n';
   }
   html += '      </table>\n';
   html += `      <script>
       function turnOfficial(towards) {
         pageOfficial+=towards;
-        const count=${data['trainings']['count']};
+        const count=${trainings?.['count'] ?? items.length};
         console.log("official count:",count);
         if(pageOfficial<1){
           swal("好像哪里有点问题", "已经是第一页了", "error");
@@ -266,7 +266,7 @@ const generateOfficialListHTML = async (keyword: string, page: number) => {
       }
       function gotokthofficial() {
         const id=parseInt(document.getElementById('KTHOFFICIAL').value);
-        if(id<1||id>Math.ceil(${data['trainings']['count']}/50.0)){
+        if(id<1||id>Math.ceil(${trainings?.['count'] ?? items.length}/50.0)){
           swal("好像哪里有点问题", "不合法的页数", "error");
           return;
         }
@@ -294,7 +294,10 @@ const generateOfficialListHTML = async (keyword: string, page: number) => {
 };
 const generateSelectedListHTML = async (keyword: string, page: number) => {
   const data = await searchTraininglist('select', keyword, page);
-  const list = data['trainings']['result'];
+  const trainings = data['trainings'];
+  const list = trainings?.['result'];
+  if (!list) return '<p>加载失败</p>';
+  const items: any[] = Array.isArray(list) ? list : Object.values(list);
   console.log(data);
   let html = '';
   html += '      <table border="0" width="100%">\n';
@@ -305,25 +308,22 @@ const generateSelectedListHTML = async (keyword: string, page: number) => {
   html += '          <th nowrap>收藏数</th>\n';
   html += '          <th nowrap>创建者</th>\n';
   html += '        </tr>\n';
-  for (let i = 1; i <= list['length']; i++) {
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i] as any;
     html += '        <tr>\n';
-    html += `          <td align="left" nowrap>${list[i - 1]['id']}</td>\n`;
+    html += `          <td align="left" nowrap>${item['id']}</td>\n`;
     html += `          <td align="left" nowrap><a href="${
-      list[i - 1]['title']
-    }" class="detail_btn" id="${list[i - 1]['id']}">${
-      list[i - 1]['title']
+      item['name'] ?? item['title']
+    }" class="detail_btn" id="${item['id']}">${
+      item['name'] ?? item['title']
     }</a></td>\n`;
-    html += `          <td align="left" nowrap>${
-      list[i - 1]['problemCount']
-    }</td>\n`;
+    html += `          <td align="left" nowrap>${item['problemCount']}</td>\n`;
     // html+=`          <td width="15px" align="left"></td>`
-    html += `          <td align="center" nowrap>${
-      list[i - 1]['markCount']
-    }</td>\n`;
+    html += `          <td align="center" nowrap>${item['markCount']}</td>\n`;
     html += `          <td align="center" style="font-weight: bold; color: ${getUsernameColor(
-      list[i - 1]['provider']['color']
-    )};" nowrap>${list[i - 1]['provider']['name']}${getUserSvg(
-      list[i - 1]['provider']['ccfLevel']
+      item['provider']['color']
+    )};" nowrap>${item['provider']['name']}${getUserSvg(
+      item['provider']['ccfLevel']
     )}</td>\n`;
     html += '        <tr>\n';
   }
@@ -331,7 +331,7 @@ const generateSelectedListHTML = async (keyword: string, page: number) => {
   html += `      <script>
       function turnSelected(towards) {
         page+=towards;
-        const count=${data['trainings']['count']};
+        const count=${trainings?.['count'] ?? items.length};
         console.log("selected count:",count);
         if(page<1){
           swal("好像哪里有点问题", "已经是第一页了", "error");
@@ -346,7 +346,7 @@ const generateSelectedListHTML = async (keyword: string, page: number) => {
       }
       function gotokthselected() {
         const id=parseInt(document.getElementById('KTHSELECTED').value);
-        if(id<1||id>Math.ceil(${data['trainings']['count']}/50.0)){
+        if(id<1||id>Math.ceil(${trainings?.['count'] ?? items.length}/50.0)){
           swal("好像哪里有点问题", "不合法的页数", "error");
           return;
         }

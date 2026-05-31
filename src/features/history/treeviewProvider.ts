@@ -75,7 +75,7 @@ export default class historyTreeviewProvider
           title: '打开题单',
           arguments: [element.trainingId]
         },
-        iconPath: new vscode.ThemeIcon('folder'),
+        iconPath: new vscode.ThemeIcon('folder-library'),
         tooltip: new vscode.MarkdownString(
           `[${element.trainingId}](https://www.luogu.com.cn/training/${element.trainingId}) ${element.title}  \n` +
             `创建者：[${element.owner.name}](https://www.luogu.com.cn${'uid' in element.owner ? `/user/${element.owner.uid}` : `/team/${element.owner.teamId}`})  \n` +
@@ -95,6 +95,10 @@ export default class historyTreeviewProvider
   }
   dispose() {
     this._onDidChangeTreeData.dispose();
+  }
+  clear() {
+    this.setStorage([]);
+    this.refresh();
   }
   async addItem(item: HistoryItem) {
     const dat = (await this.getStorage()).filter(

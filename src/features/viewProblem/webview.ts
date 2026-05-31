@@ -8,7 +8,7 @@ import jumpToCphEventEmitter from './jumpToCphEventEmitter';
 export default function showProblemWebview(data: ProblemData) {
   const panel = vscode.window.createWebviewPanel(
     'luogu.problemPanel',
-    `${data.problem.pid} ${data.problem.title}`,
+    `${data.problem.pid} ${data.problem.title ?? data.problem.content.name}`,
     vscode.ViewColumn.Two,
     {
       enableScripts: true,
