@@ -86,7 +86,10 @@ export default class myArticleFsProvider
     if (uri.query === '') throw vscode.FileSystemError.FileIsADirectory(uri);
     if (!options.overwrite) return;
     try {
-      const res = (await getArticle(uri.query)).data.article;
+      const articleData = (await getArticle(uri.query)).data;
+      const res = articleData.article;
+      if (!articleData.canEdit)
+        throw vscode.FileSystemError.NoPermissions(uri);
       if (res.promoteStatus === 2)
         if (
           (await vscode.window.showWarningMessage(
@@ -95,7 +98,7 @@ export default class myArticleFsProvider
             '取消'
           )) !== '继续'
         )
-          throw 'Canceled';
+          throw vscode.FileSystemError.Unavailable(uri);
       await editArticle(uri.query, {
         title: res.title,
         solutionFor: res.solutionFor?.pid ?? null,
@@ -108,7 +111,7 @@ export default class myArticleFsProvider
         { type: vscode.FileChangeType.Changed, uri }
       ]);
     } catch (e) {
-      if (e === 'Canceled') throw e;
+      if (e instanceof vscode.FileSystemError) throw e;
       throw Object.assign(
         isAxiosError(e) && (e.code === '404' || e.code === '403')
           ? vscode.FileSystemError.FileNotFound(uri)
