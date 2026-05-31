@@ -581,8 +581,6 @@
   },
   "devDependencies": {
     "@types/copy-paste": "^1.1.33",
-    "@types/dateformat": "^5.0.2",
-    "@types/jquery": "^3.5.25",
     "@types/katex": "^0.16.5",
     "@types/markdown-it": "^13.0.4",
     "@types/node": "^20.8.9",
@@ -621,7 +619,6 @@
     "@vscode/markdown-it-katex": "^1.0.3",
     "axios": "^1.8.2",
     "hast-util-from-html": "^2.0.2",
-    "jquery": "^3.7.1",
     "lg-markdown-processor": "github:Mr-Python-in-China/lg-markdown-processor",
     "markdown-it": "^13.0.2",
     "markdown-it-highlightjs": "^4.0.1",

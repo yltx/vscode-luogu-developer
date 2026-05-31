@@ -160,7 +160,6 @@ export const generateTrainDetailsHTML = (
     'katex.min.css'
   )}">
   <link rel="stylesheet" href="${getResourceFilePath(webview, 'problem.css')}">
-  <script src="${getResourceFilePath(webview, 'jquery.min.js')}"></script>
   <style>
     pre {
       margin: .5em 0 !important;
@@ -224,30 +223,33 @@ export const generateTrainDetailsHTML = (
 <body>
 <script>
     const vscode = acquireVsCodeApi();
-    $(document).ready(function () {
-      $(".pid").click(function() {
-        var id=$(this).attr("id");
-        console.log("problem id:",id);
-        vscode.postMessage({type: 'open',data: id});
-      })
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".pid").forEach(function(el) {
+        el.addEventListener("click", function() {
+          const id = this.getAttribute("id");
+          console.log("problem id:", id);
+          vscode.postMessage({type: 'open', data: id});
+        });
+      });
     });
-    var channel = 0,Channel = ['description','problemlist'],top0 = ['Des','Pro'],top1 = ['des','pro'];
+    let channel = 0;
+    const Channel = ['description','problemlist'], top0 = ['Des','Pro'], top1 = ['des','pro'];
     function changechannel(to) {
-        document.getElementById(Channel[channel]).style = "display: none;";
-        document.getElementById(Channel[to]).style = "";
-        document.getElementById(top0[channel]).style = "";
-        document.getElementById(top1[channel]).style = "color: rgb(0,0,0);font-size: large;";
-        document.getElementById(top0[to]).style = "background-color: rgb(52,152,219);";
-        document.getElementById(top1[to]).style = "color: rgb(255,255,255); font-size: large;";
+        document.getElementById(Channel[channel]).style.display = "none";
+        document.getElementById(Channel[to]).style.display = "";
+        document.getElementById(top0[channel]).style.backgroundColor = "";
+        document.getElementById(top1[channel]).style.cssText = "color: rgb(0,0,0);font-size: large;";
+        document.getElementById(top0[to]).style.backgroundColor = "rgb(52,152,219)";
+        document.getElementById(top1[to]).style.cssText = "color: rgb(255,255,255); font-size: large;";
         channel = to;
     }
 </script>
 <span style="background-color: rgb(52,152,219);" id="Des">
-  <a style="color: rgb(255,255,255); font-size: large;" title="题单简介" href="javascript:void(0)" onclick="changechannel(0)" id="des">题单简介</a>
+  <a style="color: rgb(255,255,255); font-size: large;" title="题单简介" onclick="changechannel(0)" id="des">题单简介</a>
 </span>
 &nbsp;&nbsp;&nbsp;
 <span id="Pro">
-  <a style="color: rgb(0,0,0);font-size: large;" title="题目列表" href="javascript:void(0)" onclick="changechannel(1)" id="pro">题目列表</a>
+  <a style="color: rgb(0,0,0);font-size: large;" title="题目列表" onclick="changechannel(1)" id="pro">题目列表</a>
 </span>
 ${train.toHTML()}
 </body>
