@@ -9,6 +9,16 @@ const { default: Markdown } = await import('@w/markdownViewer');
 const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
+
+const useTagsMap = () => {
+  const [tagsMap, setTagsMap] = useState<Record<number, { name: string; color: string }>>({});
+  useEffect(() => {
+    send('GetTags', undefined)
+      .then(tags => setTagsMap(Object.fromEntries(tags.map(t => [t.id, { name: t.name, color: t.color }]))))
+      .catch(() => {});
+  }, []);
+  return tagsMap;
+};
 import { ProblemData } from 'luogu-api';
 
 import CphIcon from './cphIcon';
@@ -37,6 +47,7 @@ function formatMemoryLimit(memoryLimit: number[]) {
 export default function Problem({ children: data }: { children: ProblemData }) {
   const languagesList = Object.keys(data.translations);
   const [cphType, setCphType] = useState(false);
+  const tagsMap = useTagsMap();
   const [choosedLanguage, setChoosedLanguage] = useState(
     'zh-CN' in data.translations ? 'zh-CN' : languagesList[0]
   );
@@ -129,7 +140,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
               <div>
                 <div>
                   {data.problem.tags.map((x, i) => (
-                    <ProblemTag key={i} tag={x} />
+                    <ProblemTag key={i} tag={x} tagMap={tagsMap} />
                   ))}
                 </div>
               </div>

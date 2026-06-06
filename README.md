@@ -1,16 +1,13 @@
-<img align="right" width="150" height="150" src="https://raw.githubusercontent.com/yltx/vscode-luogu/master/logo.png">
-
 # vscode-luogu
 
 轻松的让你在 VSCode 上使用洛谷。
 
 ## 使用说明
 
-# 请参考 `Github` 上的 [wiki](https://www.github.com/yltx/vscode-luogu/wiki) 页面。
+**请参考 `Github` 上的 [wiki](https://www.github.com/yltx/vscode-luogu/wiki) 页面。**
 
-在 issue 或者 QQ 群中提问 wiki 中有的内容，极有可能被无视或者攻击。
+> 在 issue 或者 QQ 群中提问 wiki 中有的内容，极有可能被无视或者攻击。
 
-所有常用功能均有快捷键。
 
 ## 完成功能
 

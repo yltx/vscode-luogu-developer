@@ -2,8 +2,8 @@ import { Problem, ProblemSetDetails, UserSummary } from 'luogu-api';
 import { searchTrainingdetail } from './api';
 import { getResourceFilePath } from './html';
 import md from './markdown';
-import { tagsData as Tags } from './shared';
 import { getScoreColor } from './shared';
+import { tagManager } from './tagManager';
 import * as vscode from 'vscode';
 const getUserScoreStatus = (userScore, fullScore) => {
   if (userScore === fullScore) {
@@ -38,18 +38,14 @@ const getDifficultyStatus = (difficulty: number) => {
       return `<span class="lfe-caption" style="background: rgb(191, 191, 191); color: rgb(255, 255, 255);">暂无评定</span>`;
   }
 };
-const getTagsStatus = (tags: number[]) => {
-  let html = '';
-  tags.forEach(index => {
-    const tag = Tags[index];
-    if (tag) {
-      html += `<span class="lfe-caption" style="color: rgb(255, 255, 255); background-color: ${tag.color}">${tag.name}</span>&nbsp;`;
-    } else {
-      // 如果标签不存在，使用默认样式
-      html += `<span class="lfe-caption" style="color: rgb(255, 255, 255); background-color: #000000">未知标签(${index})</span>&nbsp;`;
-    }
-  });
-  return html;
+const getTagsStatus = async (tagIds: number[]) => {
+  const resolved = await tagManager.getTags(tagIds);
+  return resolved.map((tag, i) => {
+    const id = tagIds[i];
+    const name = tag?.name ?? `未知标签(${id})`;
+    const color = tag?.color ?? '#000000';
+    return `<span class="lfe-caption" style="color: rgb(255, 255, 255); background-color: ${color}">${name}</span>&nbsp;`;
+  }).join('');
 };
 export class TrainDetals {
   public title: string;
@@ -75,7 +71,7 @@ export class TrainDetals {
     this.userScore = fields.userScore;
   }
 
-  toHTML(): string {
+  async toHTML(): Promise<string> {
     let problemlist = '<div>\n';
     if (this.problemCount > 0) {
       problemlist += '<table border="0" width="100%">\n';
@@ -88,9 +84,10 @@ export class TrainDetals {
       problemlist += '    <th nowrap>通过率</th>\n';
       problemlist += '  </tr>\n';
     }
-    this.problemlist.forEach(index => {
+    for (const index of this.problemlist) {
       const p = (index as any)['problem'] ?? index;
       const score = p['accepted'] ? 1 : p['submitted'] ? 0 : -1;
+      const tagsHtml = await getTagsStatus(p['tags']);
       problemlist += `  <tr>
     <td nowrap>${p['pid']}</td>
     <td style="text-align: center;" nowrap>${getUserScoreStatus(score, 1)}</td>
@@ -99,7 +96,7 @@ export class TrainDetals {
     }" class="pid" id="${p['pid']}">${md.render(
       p['name'] ?? p['title'] ?? ''
     )}</a></td>
-    <td align="left" nowrap>${getTagsStatus(p['tags'])}</td>
+    <td align="left" nowrap>${tagsHtml}</td>
     <td nowrap>${getDifficultyStatus(p['difficulty']!)}</td>
     <td nowrap>
       <progress value="${p['totalAccepted']}" max="${
@@ -107,7 +104,7 @@ export class TrainDetals {
       }" style="height: 30px;width: 100px;"></progress>
     </td>
 </tr>`;
-    });
+    }
     if (this.problemCount > 0) {
       problemlist += '</table>\n';
     }
@@ -141,10 +138,12 @@ export const showTrainDetails = async (webview: vscode.Webview, id: number) => {
   });
   return generateTrainDetailsHTML(webview, train);
 };
-export const generateTrainDetailsHTML = (
+export const generateTrainDetailsHTML = async (
   webview: vscode.Webview,
   train: TrainDetals
-) => `
+) => {
+  const htmlContent = await train.toHTML();
+  return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -251,6 +250,7 @@ export const generateTrainDetailsHTML = (
 <span id="Pro">
   <a style="color: rgb(0,0,0);font-size: large;" title="题目列表" onclick="changechannel(1)" id="pro">题目列表</a>
 </span>
-${train.toHTML()}
+${htmlContent}
 </body>
 </html>`;
+};

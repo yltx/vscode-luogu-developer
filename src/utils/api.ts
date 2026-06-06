@@ -722,3 +722,37 @@ globalThis.luogu.waitinit
   .then(() =>
     globalThis.luogu.authProvider.onDidChangeSessions(() => updateCsrfCache())
   );
+
+interface TagData {
+  id: number;
+  name: string;
+  type: number;
+  parent: number | null;
+}
+
+interface TagType {
+  id: number;
+  type: string;
+  name: string;
+  color: string;
+  order: number | null;
+}
+
+interface TagsResponse {
+  tags: TagData[];
+  types: TagType[];
+  _locale: string;
+  _version: string;
+}
+
+export const fetchLuoguTags = async (): Promise<TagsResponse> => {
+  try {
+    const res = await axios.get<TagsResponse>('https://www.luogu.com.cn/_lfe/tags/zh-CN', {
+      myInterceptors_notCheckCookie: true,
+      myInterceptors_cookie: null
+    });
+    return res.data;
+  } catch (err) {
+    throw new Error('获取标签数据失败', { cause: err });
+  }
+};
