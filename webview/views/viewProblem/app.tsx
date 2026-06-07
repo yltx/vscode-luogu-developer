@@ -9,14 +9,7 @@ const { default: Markdown } = await import('@w/markdownViewer');
 const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
-
-const tagsMap: Record<number, { name: string; color: string }> = {};
-const tagsJson = document.getElementById('luogu-tags')?.innerText;
-if (tagsJson) {
-  for (const t of JSON.parse(tagsJson) as { id: number; name: string; color: string }[]) {
-    tagsMap[t.id] = { name: t.name, color: t.color };
-  }
-}
+import '@w/utils/tags';
 
 import { ProblemData } from 'luogu-api';
 
@@ -138,7 +131,7 @@ export default function Problem({ children: data }: { children: ProblemData }) {
               <div>
                 <div>
                   {data.problem.tags.map((x, i) => (
-                    <ProblemTag key={i} tag={x} tagMap={tagsMap} />
+                    <ProblemTag key={i} tag={x} />
                   ))}
                 </div>
               </div>

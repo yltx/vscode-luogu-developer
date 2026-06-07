@@ -249,8 +249,6 @@ export const difficultyColor = [
   '#0E1D69'
 ];
 
-export let tagsData: Record<number, { id: number; name: string; type: number; parent: number | null; color: string }> = {};
-
 export const formatTime = (
   date: Date | number,
   fmt: string = 'yyyy-MM-dd hh:mm:ss'

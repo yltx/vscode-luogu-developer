@@ -34,9 +34,6 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
-  "extensionKind": [
-    "workspace"
-  ],
   "contributes": {
     "commands": [
       {
@@ -642,15 +639,5 @@
     "ws": "^8.18.0"
   },
   "author": "",
-  "packageManager": "npm@*",
-  "prettier": {
-    "printWidth": 80,
-    "tabWidth": 2,
-    "useTabs": false,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "none",
-    "bracketSpacing": true,
-    "arrowParens": "avoid"
-  }
+  "packageManager": "npm@*"
 }
