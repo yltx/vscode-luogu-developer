@@ -10,6 +10,10 @@ declare global {
     var historyTreeviewProvider: historyTreeviewProvider;
     var insertHistory: (value: HistoryItem) => void;
     var lastViewProblem: { pid: string; cid?: number } | undefined;
+    var __luoguTagsCache:
+      | Record<number, { id: number; name: string; color: string }>
+      | undefined;
+    var __luoguTagsCacheTime: number | undefined;
   }
   interface Cookie {
     uid: number;

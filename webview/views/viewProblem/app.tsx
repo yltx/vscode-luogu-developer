@@ -10,15 +10,14 @@ const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
 
-const useTagsMap = () => {
-  const [tagsMap, setTagsMap] = useState<Record<number, { name: string; color: string }>>({});
-  useEffect(() => {
-    send('GetTags', undefined)
-      .then(tags => setTagsMap(Object.fromEntries(tags.map(t => [t.id, { name: t.name, color: t.color }]))))
-      .catch(() => {});
-  }, []);
-  return tagsMap;
-};
+const tagsMap: Record<number, { name: string; color: string }> = {};
+const tagsJson = document.getElementById('luogu-tags')?.innerText;
+if (tagsJson) {
+  for (const t of JSON.parse(tagsJson) as { id: number; name: string; color: string }[]) {
+    tagsMap[t.id] = { name: t.name, color: t.color };
+  }
+}
+
 import { ProblemData } from 'luogu-api';
 
 import CphIcon from './cphIcon';
@@ -47,7 +46,6 @@ function formatMemoryLimit(memoryLimit: number[]) {
 export default function Problem({ children: data }: { children: ProblemData }) {
   const languagesList = Object.keys(data.translations);
   const [cphType, setCphType] = useState(false);
-  const tagsMap = useTagsMap();
   const [choosedLanguage, setChoosedLanguage] = useState(
     'zh-CN' in data.translations ? 'zh-CN' : languagesList[0]
   );

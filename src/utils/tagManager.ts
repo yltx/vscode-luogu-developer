@@ -8,8 +8,6 @@ interface Tag {
 }
 
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
-const CACHE_KEY = '__luoguTagsCache';
-const CACHE_TIME_KEY = '__luoguTagsCacheTime';
 
 class TagManager {
   private tags: Map<number, Tag> = new Map();
@@ -18,8 +16,8 @@ class TagManager {
   private fetchPromise: Promise<void> | null = null;
 
   private loadFromCache(): boolean {
-    const cached = (globalThis as any)[CACHE_KEY];
-    const cacheTime = (globalThis as any)[CACHE_TIME_KEY];
+    const cached = globalThis.__luoguTagsCache;
+    const cacheTime = globalThis.__luoguTagsCacheTime;
     if (cached && cacheTime && Date.now() - cacheTime < CACHE_DURATION) {
       this.tags = new Map(Object.entries(cached).map(([k, v]) => [Number(k), v as Tag]));
       return true;
@@ -28,10 +26,8 @@ class TagManager {
   }
 
   private persistCache(): void {
-    const obj: Record<number, Tag> = {};
-    this.tags.forEach((v, k) => (obj[k] = v));
-    (globalThis as any)[CACHE_KEY] = obj;
-    (globalThis as any)[CACHE_TIME_KEY] = Date.now();
+    globalThis.__luoguTagsCache = Object.fromEntries(this.tags);
+    globalThis.__luoguTagsCacheTime = Date.now();
   }
 
   async fetchTags(): Promise<void> {
@@ -84,8 +80,8 @@ class TagManager {
     this.tags.clear();
     this.types.clear();
     this.lastFetch = 0;
-    delete (globalThis as any)[CACHE_KEY];
-    delete (globalThis as any)[CACHE_TIME_KEY];
+    delete globalThis.__luoguTagsCache;
+    delete globalThis.__luoguTagsCacheTime;
   }
 }
 
