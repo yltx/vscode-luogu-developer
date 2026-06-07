@@ -293,7 +293,7 @@
         },
         {
           "command": "luogu.myarticle.setPromoteStatus",
-          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
+          "when": "false",
           "group": "navigation@6"
         },
         {
