@@ -9,6 +9,8 @@ const { default: Markdown } = await import('@w/markdownViewer');
 const { ProblemTag } = await import('@w/components');
 const { default: send } = await import('@w/webviewRequest');
 const { formatTime, formatMemory } = await import('@/utils/stringUtils');
+import '@w/utils/tags';
+
 import { ProblemData } from 'luogu-api';
 
 import CphIcon from './cphIcon';

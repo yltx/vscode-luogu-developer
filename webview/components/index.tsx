@@ -1,8 +1,7 @@
 const { default: React } = await import('react');
-const { difficultyColor, difficultyName, tagsData } = await import(
-  '@/utils/shared'
-);
+const { difficultyColor, difficultyName } = await import('@/utils/shared');
 import { UserInfo } from '@/model/user';
+import { getTag } from '@w/utils/tags';
 
 export function Tag(
   params:
@@ -87,7 +86,7 @@ export function ProblemDifficultyTag({ difficulty }: { difficulty: number }) {
 }
 
 export function ProblemTag({ tag }: { tag: number }) {
-  const obj = tagsData[tag];
+  const obj = getTag(tag);
   if (obj === undefined) return <Tag color="black">Unknown Tag: id ${tag}</Tag>;
   return <Tag color={obj.color}>{obj.name}</Tag>;
 }

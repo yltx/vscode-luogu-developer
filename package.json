@@ -34,9 +34,6 @@
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
-  "extensionKind": [
-    "workspace"
-  ],
   "contributes": {
     "commands": [
       {

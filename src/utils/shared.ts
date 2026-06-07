@@ -1,7 +1,6 @@
 'use strict';
 
 import { mapColorsToValues } from './color';
-import tagsRaw from '../data/tags.json';
 
 export enum UserStatus {
   SignedIn = 1,
@@ -249,24 +248,6 @@ export const difficultyColor = [
   '#9D3DCF',
   '#0E1D69'
 ];
-
-// https://www.luogu.com.cn/_lfe/tags version 1735629686
-export const tagsData: Record<number, { id: number; name: string; type: number; parent: number | null; color: string }> = Object.fromEntries(
-  (tagsRaw as Array<{ id: number; name: string; type: number; parent: number | null }>).map(x => [
-    x.id,
-    {
-      ...x,
-      color: ({
-        1: '#52c41a',
-        2: '#2949b4',
-        3: '#13c2c2',
-        4: '#3498db',
-        5: '#f39c11',
-        6: '#072401'
-      } as Record<number, string>)[x.type] ?? '#000000'
-    }
-  ])
-);
 
 export const formatTime = (
   date: Date | number,

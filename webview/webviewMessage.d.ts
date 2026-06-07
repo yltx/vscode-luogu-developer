@@ -111,7 +111,6 @@ type ContestMonitorStop = WebviewMessage<
   WebviewRequestMessage<'ContestMonitorStop', void>,
   WebviewResponseMessage<boolean>
 >;
-
 type MessageTypes = MessageTypesBase<
   // Add new types in this array.
   [
