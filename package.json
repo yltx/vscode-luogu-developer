@@ -3,7 +3,7 @@
   "displayName": "vscode-luogu",
   "description": "Solve Luogu Problems in VSCode",
   "icon": "resources/img/luogu-normal.png",
-  "version": "4.13.0",
+  "version": "4.13.1",
   "license": "MIT",
   "publisher": "yltx",
   "engines": {
@@ -293,7 +293,7 @@
         },
         {
           "command": "luogu.myarticle.setPromoteStatus",
-          "when": "view == luogu.myarticle && viewItem =~ /^luogu.article.articleitem/",
+          "when": "false",
           "group": "navigation@6"
         },
         {

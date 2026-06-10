@@ -5,9 +5,10 @@ import { Article } from 'luogu-api';
 import { ArticleCategory } from '@/utils/shared';
 import {
   editArticle,
-  getArticle,
-  requestPromotion,
-  withdrawPromotion
+  getArticle
+  // 未测试，暂不使用
+  // requestPromotion,
+  // withdrawPromotion
 } from '@/utils/api';
 import { isAxiosError } from 'axios';
 import { processAxiosError } from '@/utils/workspaceUtils';
@@ -120,15 +121,16 @@ export default function registerMyArticle(context: vscode.ExtensionContext) {
         view.refresh();
       }
     ),
-    vscode.commands.registerCommand(
-      'luogu.myarticle.setPromoteStatus',
-      async (item: Article) => {
-        await (item.promoteStatus === 0 ? requestPromotion : withdrawPromotion)(
-          item.lid
-        ).catch(processAxiosError('申请/撤销推荐'));
-        view.refresh();
-      }
-    ),
+    // 未测试，暂不使用
+    // vscode.commands.registerCommand(
+    //   'luogu.myarticle.setPromoteStatus',
+    //   async (item: Article) => {
+    //     await (item.promoteStatus === 0 ? requestPromotion : withdrawPromotion)(
+    //       item.lid
+    //     ).catch(processAxiosError('申请/撤销推荐'));
+    //     view.refresh();
+    //   }
+    // ),
     vscode.commands.registerCommand('luogu.myarticle.new', async () => {
       const title = await vscode.window.showInputBox({
         title: '文章标题',
